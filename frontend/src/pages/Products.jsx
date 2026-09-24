@@ -60,10 +60,12 @@ const Products = () => {
     });
 
     setSearchParams(updated);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
   const clearAllFilters = () => {
     setSearchParams({});
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
   // Gender-filtered categories for sidebar
@@ -89,6 +91,7 @@ const Products = () => {
         filterFallback();
       } finally {
         setLoading(false);
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       }
     };
 

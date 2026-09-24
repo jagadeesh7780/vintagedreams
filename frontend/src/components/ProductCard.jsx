@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaHeart, FaRegHeart, FaShoppingCart, FaBolt, FaStar } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaShoppingCart, FaBolt } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import RatingStars from './RatingStars';
@@ -39,7 +39,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <>
-      <div className="group relative bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden">
+      <div className="group relative bg-white rounded-2xl border border-gray-200/90 shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between overflow-hidden">
         
         {/* Product Image Link */}
         <Link to={`/product/${product._id || product.id}`} className="relative aspect-[3/4] overflow-hidden bg-gray-100 block">
@@ -52,7 +52,7 @@ const ProductCard = ({ product }) => {
 
           {/* Discount Badge */}
           {discountPercent > 0 && (
-            <div className="absolute top-2.5 left-2.5 bg-rose-600 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-md shadow-sm">
+            <div className="absolute top-2.5 left-2.5 bg-rose-600 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-md shadow-md">
               {discountPercent}% OFF
             </div>
           )}
@@ -61,18 +61,18 @@ const ProductCard = ({ product }) => {
           <button
             onClick={handleWishlist}
             aria-label="Wishlist"
-            className={`absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 shadow-md ${
+            className={`absolute top-2.5 right-2.5 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 shadow-md ${
               isLiked
                 ? 'bg-rose-50 text-rose-600'
-                : 'bg-white/90 text-gray-600 hover:text-rose-500 hover:bg-white'
+                : 'bg-white/95 text-gray-600 hover:text-rose-500 hover:bg-white'
             }`}
           >
-            {isLiked ? <FaHeart className="text-rose-600 animate-pulse" size={15} /> : <FaRegHeart size={15} />}
+            {isLiked ? <FaHeart className="text-rose-600 animate-pulse" size={16} /> : <FaRegHeart size={16} />}
           </button>
         </Link>
 
-        {/* Product Info */}
-        <div className="p-3.5 flex flex-col flex-1 justify-between">
+        {/* Product Details Area */}
+        <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-between">
           <div>
             {/* Brand & Category */}
             <div className="flex items-center justify-between text-[10px] text-gray-500 uppercase tracking-wider mb-1 font-bold">
@@ -94,32 +94,32 @@ const ProductCard = ({ product }) => {
 
             {/* Price Section */}
             <div className="flex items-baseline gap-2 mb-3">
-              <span className="text-base font-extrabold text-gray-900">₹{product.price}</span>
+              <span className="text-base sm:text-lg font-extrabold text-gray-900">₹{product.price}</span>
               {product.originalPrice && product.originalPrice > product.price && (
                 <span className="text-xs text-gray-400 line-through">₹{product.originalPrice}</span>
               )}
             </div>
           </div>
 
-          {/* TWO CLEAR ACTION BUTTONS: ADD TO CART & BUY NOW */}
+          {/* TWO PROMINENT ACTION BUTTONS (ADD TO CART & BUY NOW) */}
           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100">
             <button
               onClick={handleQuickAdd}
               type="button"
-              className="w-full bg-amber-50 hover:bg-amber-500 text-amber-950 hover:text-gray-950 border border-amber-300 hover:border-transparent py-2 px-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 transition-all shadow-sm"
-              title="Add to Cart"
+              className="w-full bg-amber-400 hover:bg-amber-500 active:scale-95 text-gray-950 font-bold py-2.5 px-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm"
+              title="Add item to shopping cart"
             >
-              <FaShoppingCart size={11} />
-              <span className="truncate">Add Cart</span>
+              <FaShoppingCart size={12} className="shrink-0" />
+              <span className="truncate">Add to Cart</span>
             </button>
 
             <button
               onClick={handleOpenBuyNow}
               type="button"
-              className="w-full bg-rose-600 hover:bg-rose-700 text-white py-2 px-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 transition-all shadow-md shadow-rose-900/20"
+              className="w-full bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-bold py-2.5 px-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-rose-900/20"
               title="Buy Now (Select Size & Color)"
             >
-              <FaBolt size={11} />
+              <FaBolt size={12} className="shrink-0" />
               <span className="truncate">Buy Now</span>
             </button>
           </div>
@@ -127,7 +127,7 @@ const ProductCard = ({ product }) => {
         </div>
       </div>
 
-      {/* Quick Buy Information & Size Selector Modal */}
+      {/* Quick Buy Information & Variant Selector Modal */}
       <QuickBuyModal
         product={product}
         isOpen={quickBuyOpen}
