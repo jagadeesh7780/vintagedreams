@@ -1,0 +1,15 @@
+{
+  "name": "vintagedreams-mern-stack",
+  "version": "1.0.0",
+  "description": "VintageDreams Fashion E-Commerce Platform - Full MERN Stack",
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "start:backend": "cd backend && npm start",
+    "build:frontend": "cd frontend && npm run build",
+    "seed": "cd backend && npm run seed"
+  },
+  "keywords": ["mern", "ecommerce", "react", "express", "mongodb-atlas", "razorpay", "tailwind"],
+  "author": "Jagadeesh",
+  "license": "ISC"
+}
