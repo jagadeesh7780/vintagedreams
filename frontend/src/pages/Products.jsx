@@ -6,7 +6,10 @@ import {
   FaTh, 
   FaSortAmountDown, 
   FaStar,
-  FaCheck
+  FaCheck,
+  FaMale,
+  FaFemale,
+  FaThLarge
 } from 'react-icons/fa';
 import api from '../api/axios';
 import CategoryBar from '../components/CategoryBar';
@@ -14,17 +17,20 @@ import ProductCard from '../components/ProductCard';
 import Loader from '../components/Loader';
 import { fallbackProducts } from '../data/fallbackProducts';
 
-const categoriesList = [
-  { id: 'all', label: 'All Categories' },
-  { id: 'shirts', label: 'Shirts & Polos' },
-  { id: 'pants', label: 'Pants & Cargos' },
-  { id: 'shoes', label: 'Shoes & Sneakers' },
-  { id: 'watches', label: 'Luxury Watches' },
-  { id: 'rings', label: '925 Silver Rings' },
-  { id: 'women-dresses', label: "Women's Dresses" },
-  { id: 'women-tops', label: 'Tops & Kurtis' },
-  { id: 'women-jewelry', label: 'Fine Jewelry' },
-  { id: 'women-sarees', label: 'Silk Sarees' }
+const allCategoriesList = [
+  // Men
+  { id: 'shirts', label: 'Shirts & Polos (52 items)', gender: 'men' },
+  { id: 'pants', label: 'Pants & Cargos (52 items)', gender: 'men' },
+  { id: 'shoes', label: 'Shoes & Sneakers (52 items)', gender: 'men' },
+  { id: 'watches', label: 'Luxury Watches (52 items)', gender: 'men' },
+  { id: 'rings', label: '925 Silver Rings (52 items)', gender: 'men' },
+
+  // Women
+  { id: 'women-dresses', label: "Dresses & Gowns (52 items)", gender: 'women' },
+  { id: 'women-tops', label: 'Tops & Kurtis (52 items)', gender: 'women' },
+  { id: 'women-jewelry', label: 'Fine Jewelry (52 items)', gender: 'women' },
+  { id: 'women-sarees', label: 'Silk Sarees (52 items)', gender: 'women' },
+  { id: 'women-footwear', label: 'Footwear & Handbags (52 items)', gender: 'women' },
 ];
 
 const Products = () => {
@@ -33,7 +39,7 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-  // Filter states
+  // Filter states from URL
   const category = searchParams.get('category') || 'all';
   const gender = searchParams.get('gender') || 'all';
   const keyword = searchParams.get('keyword') || '';
@@ -60,14 +66,21 @@ const Products = () => {
     setSearchParams({});
   };
 
+  // Gender-filtered categories for sidebar
+  const visibleCategories = allCategoriesList.filter((cat) => {
+    if (gender === 'all') return true;
+    return cat.gender === gender;
+  });
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const queryParams = new URLSearchParams(searchParams).toString();
-        const res = await api.get(`/products?${queryParams}`);
+        const params = new URLSearchParams(searchParams);
+        params.set('limit', '100'); // Load large batch for complete browsing
+        const res = await api.get(`/products?${params.toString()}`);
         
-        if (res.data.success && res.data.products) {
+        if (res.data.success && res.data.products?.length > 0) {
           setProducts(res.data.products);
         } else {
           filterFallback();
@@ -86,7 +99,7 @@ const Products = () => {
         filtered = filtered.filter(p => p.category === category);
       }
       if (gender && gender !== 'all') {
-        filtered = filtered.filter(p => p.gender === gender || p.gender === 'unisex');
+        filtered = filtered.filter(p => p.gender === gender);
       }
       if (keyword) {
         filtered = filtered.filter(p => 
@@ -135,15 +148,19 @@ const Products = () => {
               {gender !== 'all' && (
                 <>
                   <span>/</span>
-                  <span className="text-gray-700 capitalize">{gender}</span>
+                  <span className="text-gray-700 capitalize font-bold">{gender}'s Collection</span>
                 </>
               )}
             </div>
             <h1 className="text-2xl sm:text-3xl font-serif-title font-bold text-gray-900 capitalize">
-              {keyword ? `Search Results for "${keyword}"` : category === 'all' ? 'All Fashion Collection' : category.replace('-', ' ')}
+              {keyword 
+                ? `Search Results for "${keyword}"` 
+                : category === 'all' 
+                ? (gender === 'men' ? "Men's Complete Fashion Collection (260+ Items)" : gender === 'women' ? "Women's Complete Fashion Collection (260+ Items)" : "All Catalog (520+ Items)") 
+                : category.replace('-', ' ')}
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 mt-1">
-              Showing {products.length} items
+              Showing <strong className="text-gray-900">{products.length}</strong> handcrafted products
             </p>
           </div>
 
@@ -190,42 +207,61 @@ const Products = () => {
                 onClick={clearAllFilters}
                 className="text-xs text-rose-600 hover:text-rose-700 font-semibold"
               >
-                Clear All
+                Reset All
               </button>
             </div>
 
-            {/* Gender Filter */}
+            {/* Gender Selection */}
             <div>
               <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2.5">
-                Gender
+                Target Gender
               </h4>
-              <div className="flex flex-wrap gap-2">
-                {['all', 'men', 'women'].map((g) => (
+              <div className="flex flex-col gap-1.5">
+                {[
+                  { id: 'all', label: 'All Catalog (520+ Items)' },
+                  { id: 'men', label: "Men's Collection Only (260+ Items)" },
+                  { id: 'women', label: "Women's Collection Only (260+ Items)" }
+                ].map((g) => (
                   <button
-                    key={g}
-                    onClick={() => updateFilters({ gender: g })}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${
-                      gender === g
+                    key={g.id}
+                    onClick={() => updateFilters({ gender: g.id })}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-between ${
+                      gender === g.id
                         ? 'bg-rose-600 text-white shadow-sm'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                     }`}
                   >
-                    {g === 'all' ? 'All' : g}
+                    <span>{g.label}</span>
+                    {gender === g.id && <FaCheck size={11} />}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Category Filter */}
+            {/* Gender-Aware Categories List */}
             <div>
-              <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2.5">
-                Category
+              <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2.5 flex items-center justify-between">
+                <span>{gender === 'men' ? "Men's Categories" : gender === 'women' ? "Women's Categories" : "Categories"}</span>
+                <span className="text-[10px] text-gray-400 font-normal">50+ each</span>
               </h4>
-              <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
-                {categoriesList.map((cat) => (
+              
+              <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
+                <button
+                  onClick={() => updateFilters({ category: 'all' })}
+                  className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs font-medium flex items-center justify-between ${
+                    category === 'all'
+                      ? 'bg-rose-50 text-rose-600 font-bold'
+                      : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <span>All {gender !== 'all' ? `${gender}'s` : ''} Products</span>
+                  {category === 'all' && <FaCheck size={10} />}
+                </button>
+
+                {visibleCategories.map((cat) => (
                   <button
                     key={cat.id}
-                    onClick={() => updateFilters({ category: cat.id })}
+                    onClick={() => updateFilters({ category: cat.id, gender: cat.gender })}
                     className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs font-medium flex items-center justify-between transition-colors ${
                       category === cat.id
                         ? 'bg-rose-50 text-rose-600 font-bold'
@@ -239,12 +275,12 @@ const Products = () => {
               </div>
             </div>
 
-            {/* Price Filter */}
+            {/* Price Range */}
             <div>
               <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2.5">
                 Price Range
               </h4>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {[
                   { label: 'Under ₹500', min: '', max: '500' },
                   { label: '₹500 - ₹1,000', min: '500', max: '1000' },
@@ -270,7 +306,7 @@ const Products = () => {
               </div>
             </div>
 
-            {/* Rating Filter */}
+            {/* Customer Rating */}
             <div>
               <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2.5">
                 Minimum Rating
@@ -286,9 +322,7 @@ const Products = () => {
                         : 'text-gray-600 hover:bg-gray-50'
                     }`}
                   >
-                    <span className="flex items-center gap-1">
-                      <span>{r}★ & above</span>
-                    </span>
+                    <span>{r}★ & above</span>
                     {rating === r && <FaCheck size={10} />}
                   </button>
                 ))}
@@ -296,55 +330,10 @@ const Products = () => {
             </div>
           </div>
 
-          {/* Mobile Filter Drawer */}
-          {mobileFilterOpen && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex justify-end lg:hidden">
-              <div className="w-80 bg-white h-full p-6 overflow-y-auto space-y-6">
-                <div className="flex items-center justify-between border-b pb-3">
-                  <h3 className="font-bold text-base text-gray-900">Filters</h3>
-                  <button onClick={() => setMobileFilterOpen(false)} className="p-1">
-                    <FaTimes size={18} />
-                  </button>
-                </div>
-
-                {/* Categories */}
-                <div>
-                  <h4 className="text-xs font-bold text-gray-900 uppercase mb-2">Category</h4>
-                  <div className="space-y-2">
-                    {categoriesList.map((cat) => (
-                      <button
-                        key={cat.id}
-                        onClick={() => {
-                          updateFilters({ category: cat.id });
-                          setMobileFilterOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium ${
-                          category === cat.id ? 'bg-rose-600 text-white' : 'bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        {cat.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => {
-                    clearAllFilters();
-                    setMobileFilterOpen(false);
-                  }}
-                  className="w-full bg-gray-900 text-white py-2.5 rounded-lg text-xs font-bold"
-                >
-                  Clear All Filters
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Product Grid */}
           <div className="lg:col-span-3">
             {loading ? (
-              <Loader text="Loading catalog..." />
+              <Loader text="Loading fashion catalog..." />
             ) : products.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
                 <div className="w-16 h-16 rounded-full bg-rose-50 text-rose-500 mx-auto flex items-center justify-center mb-4">
@@ -352,7 +341,7 @@ const Products = () => {
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">No products found</h3>
                 <p className="text-xs text-gray-500 max-w-sm mx-auto mb-6">
-                  We couldn't find any products matching your active filters. Try clearing some criteria.
+                  No products matched the active criteria. Try resetting filters to explore all 520+ products.
                 </p>
                 <button
                   onClick={clearAllFilters}

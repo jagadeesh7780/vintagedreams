@@ -1,374 +1,245 @@
-export const fallbackProducts = [
-  // ===================== MEN'S SHIRTS =====================
-  {
-    _id: 'prod_shirt_1',
-    name: 'Lymio Casual Shirt for Men Stylish Shirt',
-    description: 'Casual stylish solid color shirt crafted from lightweight breathable cotton blend. Perfect for casual outings and daily wear.',
-    price: 339,
-    originalPrice: 999,
-    category: 'shirts',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/81dszCJ0etL._SY879_.jpg'],
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Maroon', 'Navy', 'Olive', 'Black'],
-    brand: 'Lymio',
-    stock: 45,
-    rating: 4.4,
-    numReviews: 128,
-    isFeatured: true,
-    isTrending: true,
-    tags: ['shirt', 'casual', 'men', 'cotton', 'lymio']
-  },
-  {
-    _id: 'prod_shirt_2',
-    name: 'The Souled Store Plaid Imperial Blue Men Utility Shirts',
-    description: 'Relaxed fit utility shirt featuring check pattern, twin chest pockets, and durable button-up closure.',
-    price: 999,
-    originalPrice: 1999,
-    category: 'shirts',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/71IU11W8asL._SY741_.jpg'],
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Imperial Blue', 'Charcoal Grey'],
-    brand: 'The Souled Store',
-    stock: 30,
-    rating: 4.6,
-    numReviews: 95,
-    isFeatured: true,
-    isTrending: false,
-    tags: ['shirt', 'plaid', 'utility', 'the souled store', 'blue']
-  },
-  {
-    _id: 'prod_shirt_3',
-    name: 'The Souled Store Solids Faded Green Cotton Relaxed Shirts',
-    description: 'Effortlessly cool faded green cotton shirt with relaxed fit, spread collar, and curved hemline.',
-    price: 1499,
-    originalPrice: 2499,
-    category: 'shirts',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/611SbasaFRL._SY741_.jpg'],
-    sizes: ['M', 'L', 'XL'],
-    colors: ['Faded Green', 'Sage'],
-    brand: 'The Souled Store',
-    stock: 22,
-    rating: 4.5,
-    numReviews: 64,
-    isFeatured: false,
-    isTrending: true,
-    tags: ['shirt', 'relaxed', 'green', 'cotton']
-  },
-  {
-    _id: 'prod_shirt_4',
-    name: "Arrow Men's Premium Formal Shirt",
-    description: 'Executive class formal dress shirt engineered with wrinkle-resistant yarn and reinforced cutaway collar.',
-    price: 899,
-    originalPrice: 1899,
-    category: 'shirts',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/61rRjFn9FJL._AC_UL480_QL65_.jpg'],
-    sizes: ['38', '40', '42', '44'],
-    colors: ['Crisp White', 'Sky Blue', 'Light Pink'],
-    brand: 'Arrow',
-    stock: 50,
-    rating: 4.7,
-    numReviews: 210,
-    isFeatured: true,
-    isTrending: false,
-    tags: ['formal', 'shirt', 'arrow', 'office', 'premium']
-  },
-  {
-    _id: 'prod_shirt_5',
-    name: 'Lymio Casual Shirt for Men Stylish Rib Shirt',
-    description: 'Unique ribbed texture stretch-fit shirt giving a modern, elevated silhouette for evening gatherings.',
-    price: 479,
-    originalPrice: 1299,
-    category: 'shirts',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/71V5gEc8YVL._SY879_.jpg'],
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Black', 'Off-White', 'Wine'],
-    brand: 'Lymio',
-    stock: 35,
-    rating: 4.3,
-    numReviews: 88,
-    isFeatured: false,
-    isTrending: true,
-    tags: ['ribbed', 'shirt', 'stylish', 'partywear']
-  },
-  {
-    _id: 'prod_shirt_6',
-    name: 'Lymio Men T-Shirt Plain Polo Shirt',
-    description: 'Classic pique cotton polo t-shirt with ribbed collar, 3-button placket, and side-slit hem.',
-    price: 379,
-    originalPrice: 999,
-    category: 'shirts',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/71x4rLhMkML._SY879_.jpg'],
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Navy Blue', 'Mustard', 'White'],
-    brand: 'Lymio',
-    stock: 60,
-    rating: 4.2,
-    numReviews: 140,
-    isFeatured: false,
-    isTrending: false,
-    tags: ['polo', 't-shirt', 'casual', 'cotton']
-  },
+// Full 500+ Products Dataset for Vintage Dreams (50+ products per category)
 
-  // ===================== MEN'S PANTS & CARGOS =====================
-  {
-    _id: 'prod_pant_1',
-    name: 'The Souled Store Solids Brown Regular Fit Cotton Cargo Jeans',
-    description: 'Heavyweight cotton cargo pants with 6 utility pockets, relaxed leg opening, and durable zip-fly.',
-    price: 1499,
-    originalPrice: 2999,
-    category: 'pants',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/61wd080+AxL._SY741_.jpg'],
-    sizes: ['30', '32', '34', '36'],
-    colors: ['Khaki Brown', 'Olive Green', 'Jet Black'],
-    brand: 'The Souled Store',
-    stock: 35,
-    rating: 4.7,
-    numReviews: 112,
-    isFeatured: true,
-    isTrending: true,
-    tags: ['cargo', 'pants', 'jeans', 'the souled store', 'brown']
-  },
-  {
-    _id: 'prod_pant_2',
-    name: 'Lymio Track Pant for Men Plain Track Pant',
-    description: 'Ultra-stretch comfortable athletic joggers with moisture-wicking fleece fabric and elastic drawstring waistband.',
-    price: 479,
-    originalPrice: 1199,
-    category: 'pants',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/610IIi6wHuL._SY879_.jpg'],
-    sizes: ['M', 'L', 'XL', 'XXL'],
-    colors: ['Dark Grey', 'Black', 'Navy'],
-    brand: 'Lymio',
-    stock: 55,
-    rating: 4.3,
-    numReviews: 92,
-    isFeatured: false,
-    isTrending: false,
-    tags: ['track pant', 'joggers', 'gym', 'lymio']
-  },
-  {
-    _id: 'prod_pant_3',
-    name: 'Lymio Men Cargo Pants Cotton Cargos for Men',
-    description: 'Multi-pocket tactical street cargo pants designed with reinforced knee panels and gusseted construction.',
-    price: 598,
-    originalPrice: 1599,
-    category: 'pants',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/61j9jJhrStL._SY879_.jpg'],
-    sizes: ['30', '32', '34', '36'],
-    colors: ['Camo Green', 'Black', 'Beige'],
-    brand: 'Lymio',
-    stock: 42,
-    rating: 4.4,
-    numReviews: 76,
-    isFeatured: true,
-    isTrending: true,
-    tags: ['cargo', 'pants', 'streetwear', 'tactical']
-  },
-
-  // ===================== MEN'S SHOES =====================
-  {
-    _id: 'prod_shoe_1',
-    name: "U.S. POLO ASSN. Men's Premium Sneaker",
-    description: 'Iconic athletic lifestyle sneakers with memory foam insole, synthetic leather upper, and anti-slip rubber outsole.',
-    price: 1499,
-    originalPrice: 3499,
-    category: 'shoes',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/71aFuiEntML._SY695_.jpg'],
-    sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10'],
-    colors: ['White/Navy', 'Triple White', 'Black'],
-    brand: 'U.S. POLO ASSN.',
-    stock: 28,
-    rating: 4.8,
-    numReviews: 320,
-    isFeatured: true,
-    isTrending: true,
-    tags: ['shoes', 'sneakers', 'us polo', 'footwear', 'white sneakers']
-  },
-  {
-    _id: 'prod_shoe_2',
-    name: "U.S. POLO ASSN. Men's Canvas Sneaker",
-    description: 'Casual lace-up canvas shoes with vulcanized rubber sole and breathable canvas upper for all-day comfort.',
-    price: 1649,
-    originalPrice: 3299,
-    category: 'shoes',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/61I0AJDKA0S._SY695_.jpg'],
-    sizes: ['UK 7', 'UK 8', 'UK 9', 'UK 10'],
-    colors: ['Navy Blue', 'Grey'],
-    brand: 'U.S. POLO ASSN.',
-    stock: 20,
-    rating: 4.5,
-    numReviews: 89,
-    isFeatured: false,
-    isTrending: false,
-    tags: ['canvas', 'shoes', 'sneakers', 'us polo']
-  },
-
-  // ===================== WATCHES =====================
-  {
-    _id: 'prod_watch_1',
-    name: 'LOUIS DEVIN Leather Strap Analog Wrist Watch for Men',
-    description: 'Luxurious minimalist timepiece featuring genuine leather strap, water resistance, and Japanese quartz movement.',
-    price: 284,
-    originalPrice: 1599,
-    category: 'watches',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/81kLhCWFSjL._SX679_.jpg'],
-    sizes: ['Free Size'],
-    colors: ['Brown Strap / Black Dial', 'Black Strap / Gold Dial'],
-    brand: 'LOUIS DEVIN',
-    stock: 80,
-    rating: 4.2,
-    numReviews: 540,
-    isFeatured: true,
-    isTrending: true,
-    tags: ['watch', 'analog', 'leather', 'accessories', 'luxury']
-  },
-  {
-    _id: 'prod_watch_2',
-    name: 'Matrix Antique Day Date Leather Strap Analog Watch',
-    description: 'Vintage styled watch with day & date calendar sub-dials, roman numerals, and antique copper finish case.',
-    price: 289,
-    originalPrice: 1999,
-    category: 'watches',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/71AjeVD1bPL._SX679_.jpg'],
-    sizes: ['Free Size'],
-    colors: ['Antique Tan', 'Dark Brown'],
-    brand: 'Matrix',
-    stock: 65,
-    rating: 4.3,
-    numReviews: 310,
-    isFeatured: true,
-    isTrending: false,
-    tags: ['watch', 'antique', 'vintage', 'day date']
-  },
-
-  // ===================== MEN'S RINGS =====================
-  {
-    _id: 'prod_ring_1',
-    name: 'GIVA 925 Silver Classic Ring Band for Men',
-    description: 'Hallmarked 925 Pure Sterling Silver minimal band with rhodium polish for long-lasting shine and tarnish protection.',
-    price: 2991,
-    originalPrice: 4999,
-    category: 'rings',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/511QHTo6j3L._SY625_.jpg'],
-    sizes: ['16', '18', '20', '22'],
-    colors: ['Silver Polish'],
-    brand: 'GIVA',
-    stock: 30,
-    rating: 4.9,
-    numReviews: 240,
-    isFeatured: true,
-    isTrending: true,
-    tags: ['ring', 'silver', 'giva', '925 silver', 'luxury', 'jewelry']
-  },
-  {
-    _id: 'prod_ring_2',
-    name: 'ZAVYA Solid CZ Studded 925 Pure Silver Ring For Men',
-    description: 'Contemporary signet style silver ring embedded with AAA cubic zirconia solitaires for an opulent appearance.',
-    price: 979,
-    originalPrice: 2199,
-    category: 'rings',
-    gender: 'men',
-    images: ['https://m.media-amazon.com/images/I/61ahdD6ANdL._SY625_.jpg'],
-    sizes: ['16', '18', '20'],
-    colors: ['Sparkle Silver'],
-    brand: 'ZAVYA',
-    stock: 35,
-    rating: 4.5,
-    numReviews: 145,
-    isFeatured: true,
-    isTrending: false,
-    tags: ['ring', 'cz', 'zavya', 'studded', 'silver']
-  },
-
-  // ===================== WOMEN'S FASHION =====================
-  {
-    _id: 'prod_w_dress_1',
-    name: 'Vintage Dreams Floral Printed A-Line Midi Dress',
-    description: 'Chic boho-chic floral midi dress with sweetheart neckline, puff sleeves, and flowy tiered flare.',
-    price: 899,
-    originalPrice: 2199,
-    category: 'women-dresses',
-    gender: 'women',
-    images: ['https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=800&q=80'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    colors: ['Floral Pink', 'Sky Floral', 'Emerald Green'],
-    brand: 'Vintage Dreams',
-    stock: 40,
-    rating: 4.8,
-    numReviews: 180,
-    isFeatured: true,
-    isTrending: true,
-    tags: ['dress', 'women', 'floral', 'midi dress', 'summer']
-  },
-  {
-    _id: 'prod_w_top_1',
-    name: 'Embroidered Chikankari Pure Cotton Kurti & Pant Set',
-    description: 'Artisanal hand-embroidered Lucknowi Chikankari tunic with matching straight trousers and chiffon dupatta.',
-    price: 1299,
-    originalPrice: 2899,
-    category: 'women-tops',
-    gender: 'women',
-    images: ['https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80'],
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Pastel Peach', 'Mint Green', 'Powder Blue'],
-    brand: 'Vintage Dreams',
-    stock: 50,
-    rating: 4.7,
-    numReviews: 215,
-    isFeatured: true,
-    isTrending: false,
-    tags: ['kurti', 'ethnic', 'chikankari', 'cotton', 'women']
-  },
-  {
-    _id: 'prod_w_jewel_1',
-    name: 'GIVA 925 Sterling Silver Rose Gold Plated Heart Necklace',
-    description: 'Dainty heart pendant adorned with shimmering zircon stones on an adjustable 18-inch rose gold chain.',
-    price: 1999,
-    originalPrice: 3999,
-    category: 'women-jewelry',
-    gender: 'women',
-    images: ['https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80'],
-    sizes: ['Adjustable'],
-    colors: ['Rose Gold', 'Silver Platinum'],
-    brand: 'GIVA',
-    stock: 45,
-    rating: 4.9,
-    numReviews: 420,
-    isFeatured: true,
-    isTrending: true,
-    tags: ['necklace', 'jewelry', 'giva', 'rose gold', 'heart pendant']
-  },
-  {
-    _id: 'prod_w_saree_1',
-    name: 'Royal Heritage Kanjivaram Silk Zari Border Saree',
-    description: 'Luxurious woven pure art silk saree with ornate temple golden zari border and rich designer pallu.',
-    price: 2499,
-    originalPrice: 5999,
-    category: 'women-sarees',
-    gender: 'women',
-    images: ['https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=800&q=80'],
-    sizes: ['Free Size (5.5m + 0.8m Blouse)'],
-    colors: ['Royal Maroon Gold', 'Peacock Green Gold', 'Mustard Yellow'],
-    brand: 'Vintage Dreams',
-    stock: 30,
-    rating: 4.8,
-    numReviews: 160,
-    isFeatured: true,
-    isTrending: true,
-    tags: ['saree', 'kanjivaram', 'silk', 'ethnic', 'wedding']
-  }
+const shirtImages = [
+  'https://m.media-amazon.com/images/I/81dszCJ0etL._SY879_.jpg',
+  'https://m.media-amazon.com/images/I/71IU11W8asL._SY741_.jpg',
+  'https://m.media-amazon.com/images/I/611SbasaFRL._SY741_.jpg',
+  'https://m.media-amazon.com/images/I/61rRjFn9FJL._AC_UL480_QL65_.jpg',
+  'https://m.media-amazon.com/images/I/71V5gEc8YVL._SY879_.jpg',
+  'https://m.media-amazon.com/images/I/71x4rLhMkML._SY879_.jpg',
+  'https://m.media-amazon.com/images/I/617QdnlnfZL._SY879_.jpg',
+  'https://m.media-amazon.com/images/I/51Txwy6l6CL.jpg',
+  'https://m.media-amazon.com/images/I/71BwxuB0p-L._SY879_.jpg',
+  'https://m.media-amazon.com/images/I/71DQ6U-OVQL._SY879_.jpg',
+  'https://m.media-amazon.com/images/I/61uKUY6hQ7L._SY741_.jpg',
+  'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&q=80',
+  'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&q=80',
+  'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=800&q=80'
 ];
+
+const pantImages = [
+  'https://m.media-amazon.com/images/I/61wd080+AxL._SY741_.jpg',
+  'https://m.media-amazon.com/images/I/610IIi6wHuL._SY879_.jpg',
+  'https://m.media-amazon.com/images/I/61m5W8DEuLL._SY741_.jpg',
+  'https://m.media-amazon.com/images/I/61j9jJhrStL._SY879_.jpg',
+  'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&q=80',
+  'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800&q=80',
+  'https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=800&q=80'
+];
+
+const shoeImages = [
+  'https://m.media-amazon.com/images/I/71aFuiEntML._SY695_.jpg',
+  'https://m.media-amazon.com/images/I/61I0AJDKA0S._SY695_.jpg',
+  'https://m.media-amazon.com/images/I/71OPYKJ4nuL._SX695_.jpg',
+  'https://m.media-amazon.com/images/I/61u2GljumvL._SY695_.jpg',
+  'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&q=80',
+  'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=800&q=80',
+  'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800&q=80'
+];
+
+const watchImages = [
+  'https://m.media-amazon.com/images/I/81kLhCWFSjL._SX679_.jpg',
+  'https://m.media-amazon.com/images/I/71AjeVD1bPL._SX679_.jpg',
+  'https://m.media-amazon.com/images/I/711NXCmUfbL._SX679_.jpg',
+  'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80',
+  'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=800&q=80',
+  'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&q=80'
+];
+
+const ringImages = [
+  'https://m.media-amazon.com/images/I/511QHTo6j3L._SY625_.jpg',
+  'https://m.media-amazon.com/images/I/519HMAUTrQL._SY625_.jpg',
+  'https://m.media-amazon.com/images/I/41UfkhGo3eL._SY695_.jpg',
+  'https://m.media-amazon.com/images/I/61ahdD6ANdL._SY625_.jpg',
+  'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80',
+  'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=800&q=80'
+];
+
+const dressImages = [
+  'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&q=80',
+  'https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800&q=80',
+  'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&q=80',
+  'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=800&q=80',
+  'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800&q=80'
+];
+
+const topImages = [
+  'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80',
+  'https://images.unsplash.com/photo-1534126511673-b6899657816a?w=800&q=80',
+  'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800&q=80',
+  'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=800&q=80'
+];
+
+const jewelImages = [
+  'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&q=80',
+  'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80',
+  'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80',
+  'https://images.unsplash.com/photo-1611591475166-068305c48834?w=800&q=80'
+];
+
+const sareeImages = [
+  'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800&q=80',
+  'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80',
+  'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=800&q=80',
+  'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&q=80'
+];
+
+const wFootwearImages = [
+  'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80',
+  'https://images.unsplash.com/photo-1535043934128-cf0b28d52f95?w=800&q=80',
+  'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80',
+  'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=800&q=80'
+];
+
+const allSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
+const shoeSizes = ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'];
+const ringSizes = ['14', '16', '18', '20', '22', '24'];
+
+const buildCatalog = () => {
+  const list = [];
+  let idCounter = 1;
+
+  const addItems = (cat, gender, names, images, sizes, colorList, basePrice, brandList) => {
+    for (let i = 0; i < 52; i++) {
+      const namePattern = names[i % names.length];
+      const name = `${namePattern} ${i > names.length - 1 ? `Edition ${Math.floor(i / names.length) + 1}` : ''}`.trim();
+      const img = images[i % images.length];
+      const brand = brandList[i % brandList.length];
+      const price = basePrice + (i * 37) % 1800;
+      const originalPrice = Math.round(price * (1.3 + (i % 5) * 0.1));
+
+      list.push({
+        _id: `prod_${cat}_${idCounter++}`,
+        name,
+        description: `Premium handcrafted ${name} designed with authentic ${gender === 'men' ? "men's" : "women's"} tailoring, breathable fabrics, and durable stitching.`,
+        price,
+        originalPrice,
+        category: cat,
+        gender,
+        images: [img],
+        sizes,
+        colors: colorList,
+        brand,
+        stock: 20 + (i % 40),
+        rating: +(4.1 + (i % 9) * 0.1).toFixed(1),
+        numReviews: 18 + (i * 14) % 450,
+        isFeatured: i % 7 === 0,
+        isTrending: i % 5 === 0,
+        tags: [cat, gender, brand.toLowerCase(), 'fashion', 'vintagedreams']
+      });
+    }
+  };
+
+  // 1. Shirts (Men)
+  addItems('shirts', 'men', [
+    'Lymio Casual Cotton Regular Fit Shirt',
+    'The Souled Store Plaid Utility Shirt',
+    'Arrow Executive Pure Cotton Formal Shirt',
+    'Lymio Modern Stretch Ribbed Textured Shirt',
+    'Symbol Classic Button-Down Oxford Shirt',
+    'OTUS Vintage Vertical Striped Shirt',
+    'The Souled Store Solids Faded Sage Shirt',
+    'Van Heusen Slim Fit Wrinkle-Free Shirt',
+    'Park Avenue Executive Luxury Dress Shirt',
+    'Allen Solly Streetwear Oversized Shirt',
+    'Blackberrys Textured Weave Formal Shirt',
+    'US Polo Assn Classic Pique Polo T-Shirt'
+  ], shirtImages, allSizes, ['Black', 'White', 'Navy Blue', 'Wine Red', 'Sage Green', 'Charcoal'], 349, ['Lymio', 'The Souled Store', 'Arrow', 'Symbol']);
+
+  // 2. Pants & Cargos (Men)
+  addItems('pants', 'men', [
+    'The Souled Store Solids Heavyweight Cotton Cargos',
+    'Lymio 6-Pocket Tactical Street Cargo Pants',
+    'Symbol Premium Stretch Chino Trousers',
+    'Levi Strauss 511 Slim Fit Denim Jeans',
+    'Lymio Athletic Fleece Jogger Track Pants',
+    'Highlander Relaxed Fit Ankle Length Trousers',
+    'Peter England Smart Casual Flat Front Pants',
+    'Wrangler Heavy Duty Outdoor Khaki Cargos'
+  ], pantImages, ['30', '32', '34', '36', '38', '40'], ['Khaki Brown', 'Olive Green', 'Jet Black', 'Navy', 'Steel Grey'], 599, ['The Souled Store', 'Lymio', 'Symbol', 'Levis']);
+
+  // 3. Shoes & Sneakers (Men)
+  addItems('shoes', 'men', [
+    "U.S. POLO ASSN. Men's Leather Lifestyle Sneaker",
+    "U.S. POLO ASSN. Retro Low-Top Canvas Shoes",
+    'Red Tape Classic Handcrafted Leather Loafers',
+    'Puma Vintage Court Star Tennis Sneakers',
+    'Bata Men Formal Oxford Leather Dress Shoes',
+    'Woodland Rugged Nubuck Leather High-Ankle Boots',
+    'Nike Air Court Vintage Streetwear Trainers'
+  ], shoeImages, shoeSizes, ['Triple White', 'Black/White', 'Navy Blue', 'Tan Brown', 'Olive'], 1299, ['U.S. POLO ASSN.', 'Puma', 'Red Tape', 'Woodland']);
+
+  // 4. Watches (Men)
+  addItems('watches', 'men', [
+    'LOUIS DEVIN Luxury Leather Strap Analog Wrist Watch',
+    'Matrix Antique Dual Day & Date Calendar Watch',
+    'Matrix 2.0 Matte Black Silicone Sport Chronograph',
+    'Titan Classic Champagne Dial Stainless Steel Watch',
+    'Fossil Minimalist Chronograph Brown Leather Watch',
+    'Casio Vintage Gold Tone Digital Retro Watch'
+  ], watchImages, ['Free Size', 'Standard Fit'], ['Antique Brown', 'Midnight Black', 'Gold / Silver', 'Navy Blue'], 289, ['LOUIS DEVIN', 'Matrix', 'Titan', 'Fossil']);
+
+  // 5. 925 Silver Rings (Men)
+  addItems('rings', 'men', [
+    'GIVA 925 Pure Sterling Silver Classic Band Ring',
+    'Clara Pure 925 Oxidised Gothic Cross Ring',
+    'Clara Platinum Plated Infinity Motif Masculine Ring',
+    'ZAVYA Solid AAA CZ Studded Signet Silver Ring',
+    'Voylla Royal Rajputana Antique Floral Carved Ring',
+    'GIVA Black Onyx Stone 925 Sterling Silver Ring'
+  ], ringImages, ringSizes, ['925 Pure Silver', 'Oxidized Silver', 'Rose Gold Plated', 'Platinum Shine'], 899, ['GIVA', 'Clara', 'ZAVYA', 'Voylla']);
+
+  // 6. Dresses & Gowns (Women)
+  addItems('women-dresses', 'women', [
+    'Vintage Dreams Floral Printed Sweetheart Midi Dress',
+    'Vintage Elegance Glossy Satin Wrap Evening Gown',
+    'Berrylush V-Neck Ruffled Hem Tiered Maxi Dress',
+    'Tokyo Talkies Bodycon Slit Partywear Cocktail Dress',
+    'Harpa Square Neck Lantern Sleeve Fit & Flare Dress',
+    'Athena Elegant Velvet A-Line Evening Gown'
+  ], dressImages, allSizes, ['Floral Pink', 'Burgundy Wine', 'Emerald Green', 'Sky Blue', 'Midnight Black'], 799, ['Vintage Dreams', 'Berrylush', 'Tokyo Talkies', 'Harpa']);
+
+  // 7. Tops & Kurtis (Women)
+  addItems('women-tops', 'women', [
+    'Embroidered Chikankari Pure Cotton Kurti & Pant Set',
+    'Vintage Dreams Oversized Crop Shirt with Puff Sleeves',
+    'Biba Traditional Printed Anarkali Kurta Set',
+    'W for Woman Solid Straight Fit Rayon Tunic',
+    'Aurelia Handblock Printed Festive Kurti',
+    'Vero Moda Elegant Satin Formal Button-Up Blouse'
+  ], topImages, allSizes, ['Powder Blue', 'Pastel Peach', 'Mint Green', 'Ivory White', 'Mustard Yellow'], 549, ['Vintage Dreams', 'Biba', 'W for Woman', 'Vero Moda']);
+
+  // 8. Fine Jewelry (Women)
+  addItems('women-jewelry', 'women', [
+    'GIVA 925 Sterling Silver Rose Gold Plated Heart Necklace',
+    'GIVA Shimmering Zircon Solitaire Dainty Pendant Chain',
+    'Clara Pure 925 Silver Classic Tennis Bracelet',
+    'ZAVYA Floral Bloom Cubic Zirconia Drop Earrings',
+    'Voylla Kundan Pearl Bridal Choker Set',
+    'GIVA Feather Motif Platinum Plated Anklet'
+  ], jewelImages, ['Adjustable (Free Size)', 'Standard'], ['Rose Gold', '925 Platinum Silver', '18K Gold Plated', 'Pearl White'], 1199, ['GIVA', 'Clara', 'ZAVYA', 'Voylla']);
+
+  // 9. Sarees & Ethnic (Women)
+  addItems('women-sarees', 'women', [
+    'Royal Heritage Kanjivaram Pure Art Silk Zari Saree',
+    'Banarasi Woven Brocade Silk Wedding Saree with Blouse',
+    'Chanderi Handloom Cotton Silk Festive Saree',
+    'Bollywood Georgette Ruffle Saree with Sequin Border',
+    'Kalamkari Hand Painted Pure Cotton Heritage Saree',
+    'Tussar Silk Embroidered Temple Border Designer Saree'
+  ], sareeImages, ['5.5m Saree + 0.8m Blouse (Free Size)'], ['Royal Maroon Gold', 'Peacock Green', 'Mustard Gold', 'Pastel Pink'], 1899, ['Vintage Dreams Heritage', 'Banarasi Weaves', 'Kanjivaram Silk']);
+
+  // 10. Footwear & Handbags (Women)
+  addItems('women-footwear', 'women', [
+    'Vintage Dreams Handcrafted Leather Block Heel Sandals',
+    'Metro Classic Pointed-Toe Stiletto Pumps',
+    'Mochi Embroidered Punjabi Ethnic Jutti',
+    'Catwalk Comfortable Wedge Heel Party Slip-Ons',
+    'Lavie Luxury Structured Vegan Leather Handbag',
+    'Caprese Chic Multi-Pocket Shoulder Tote Bag'
+  ], wFootwearImages, ['UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8', 'Standard Bag Size'], ['Tan Brown', 'Blush Nude', 'Classic Black', 'Metallic Gold'], 999, ['Vintage Dreams', 'Lavie', 'Caprese', 'Mochi']);
+
+  return list;
+};
+
+export const fallbackProducts = buildCatalog();
