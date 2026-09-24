@@ -7,7 +7,9 @@
     "dev:frontend": "cd frontend && npm run dev",
     "start:backend": "cd backend && npm start",
     "build:frontend": "cd frontend && npm run build",
-    "seed": "cd backend && npm run seed"
+    "seed": "cd backend && npm run seed",
+    "render-build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "node backend/server.js"
   },
   "keywords": ["mern", "ecommerce", "react", "express", "mongodb-atlas", "razorpay", "tailwind"],
   "author": "Jagadeesh",
