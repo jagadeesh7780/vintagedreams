@@ -44,8 +44,8 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Add Item to Cart
-  const addToCart = async (product, quantity = 1, size = 'M', color = 'Standard') => {
+  // Add Item to Cart (Optimistic & Instant)
+  const addToCart = (product, quantity = 1, size = 'M', color = 'Standard') => {
     const itemToAdd = {
       product: product._id || product.id,
       name: product.name,
@@ -56,37 +56,36 @@ export const CartProvider = ({ children }) => {
       quantity: Number(quantity)
     };
 
-    if (isAuthenticated) {
-      try {
-        const res = await api.post('/cart', {
-          productId: itemToAdd.product,
-          quantity,
-          size,
-          color
-        });
-        if (res.data.success) {
-          setCartItems(res.data.cart.items);
-          toast.success('Added to Cart! 🛍️');
-        }
-      } catch (error) {
-        toast.error('Failed to add item to cart');
-      }
-    } else {
-      // Guest Cart
-      setCartItems((prevItems) => {
-        const existingIndex = prevItems.findIndex(
-          (item) => (item.product === itemToAdd.product || item.product?._id === itemToAdd.product) && item.size === size
-        );
+    // Instant local UI state update
+    setCartItems((prevItems) => {
+      const existingIndex = prevItems.findIndex(
+        (item) => (item.product === itemToAdd.product || item.product?._id === itemToAdd.product) && item.size === size
+      );
 
-        if (existingIndex > -1) {
-          const updated = [...prevItems];
-          updated[existingIndex].quantity += Number(quantity);
-          toast.success('Cart updated! 🛍️');
-          return updated;
-        } else {
-          toast.success('Added to Cart! 🛍️');
-          return [...prevItems, { ...itemToAdd, _id: Date.now().toString() }];
+      if (existingIndex > -1) {
+        const updated = [...prevItems];
+        updated[existingIndex].quantity += Number(quantity);
+        toast.success('Cart updated! 🛍️');
+        return updated;
+      } else {
+        toast.success('Added to Cart! 🛍️');
+        return [...prevItems, { ...itemToAdd, _id: Date.now().toString() }];
+      }
+    });
+
+    // Background server sync if authenticated
+    if (isAuthenticated) {
+      api.post('/cart', {
+        productId: itemToAdd.product,
+        quantity,
+        size,
+        color
+      }).then((res) => {
+        if (res.data.success && res.data.cart?.items) {
+          setCartItems(res.data.cart.items);
         }
+      }).catch((err) => {
+        // Handled silently in background
       });
     }
   };

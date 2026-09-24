@@ -30,13 +30,20 @@ const ProductDetails = () => {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { isAuthenticated } = useAuth();
 
-  const [product, setProduct] = useState(null);
-  const [selectedImage, setSelectedImage] = useState('');
-  const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState('');
+  const getInitialProduct = (targetId) => {
+    return fallbackProducts.find(p => p._id === targetId || p.name === targetId) || fallbackProducts[0];
+  };
+
+  const initialItem = getInitialProduct(id);
+  const [product, setProduct] = useState(initialItem);
+  const [selectedImage, setSelectedImage] = useState(initialItem?.images?.[0] || initialItem?.image || '');
+  const [selectedSize, setSelectedSize] = useState(initialItem?.sizes?.[0] || 'M');
+  const [selectedColor, setSelectedColor] = useState(initialItem?.colors?.[0] || 'Standard');
   const [quantity, setQuantity] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [similarProducts, setSimilarProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [similarProducts, setSimilarProducts] = useState(() => 
+    fallbackProducts.filter(p => p.category === initialItem.category && p._id !== id).slice(0, 4)
+  );
   
   // Review form state
   const [reviewRating, setReviewRating] = useState(5);
@@ -44,52 +51,45 @@ const ProductDetails = () => {
   const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
+    const activeItem = getInitialProduct(id);
+    setProduct(activeItem);
+    setSelectedImage(activeItem?.images?.[0] || activeItem?.image || '');
+    setSelectedSize(activeItem?.sizes?.[0] || 'M');
+    setSelectedColor(activeItem?.colors?.[0] || 'Standard');
+    setSimilarProducts(fallbackProducts.filter(p => p.category === activeItem.category && p._id !== id).slice(0, 4));
+
     const fetchProduct = async () => {
       try {
-        setLoading(true);
         const res = await api.get(`/products/${id}`);
         if (res.data.success && res.data.product) {
           setupProduct(res.data.product);
           fetchSimilar(res.data.product.category);
-        } else {
-          fallbackSingle();
         }
       } catch (error) {
-        fallbackSingle();
-      } finally {
-        setLoading(false);
+        // Fallback already rendered instantly
       }
-    };
-
-    const fallbackSingle = () => {
-      const found = fallbackProducts.find(p => p._id === id || p.name === id) || fallbackProducts[0];
-      setupProduct(found);
-      fetchSimilar(found.category);
     };
 
     const setupProduct = (p) => {
       setProduct(p);
-      setSelectedImage(p.images?.[0] || p.image || '');
-      setSelectedSize(p.sizes?.[0] || 'M');
-      setSelectedColor(p.colors?.[0] || 'Standard');
+      if (!selectedImage) setSelectedImage(p.images?.[0] || p.image || '');
     };
 
     const fetchSimilar = async (category) => {
       try {
         const res = await api.get(`/products?category=${category}&limit=4`);
-        if (res.data.success) {
+        if (res.data.success && res.data.products?.length > 0) {
           setSimilarProducts(res.data.products.filter(p => p._id !== id));
         }
       } catch (e) {
-        setSimilarProducts(fallbackProducts.filter(p => p.category === category && p._id !== id).slice(0, 4));
+        // Fallback already rendered
       }
     };
 
     fetchProduct();
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [id]);
 
-  if (loading) return <Loader fullScreen text="Loading product details..." />;
   if (!product) return <div className="p-12 text-center">Product not found.</div>;
 
   const isLiked = isInWishlist(product._id || product.id);

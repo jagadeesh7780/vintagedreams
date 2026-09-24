@@ -63,51 +63,43 @@ export const WishlistProvider = ({ children }) => {
     }
   };
 
-  const addToWishlist = async (product) => {
+  const addToWishlist = (product) => {
     const pId = product._id || product.id;
+    const newItem = {
+      _id: Date.now().toString(),
+      product: pId,
+      name: product.name,
+      price: product.price,
+      image: product.images?.[0] || product.image || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500',
+      category: product.category
+    };
+
+    setWishlistItems((prev) => [...prev.filter(item => (item.product !== pId && item._id !== pId)), newItem]);
+    toast.success('Added to Wishlist ❤️');
 
     if (isAuthenticated) {
-      try {
-        const res = await api.post('/wishlist', { productId: pId });
-        if (res.data.success) {
+      api.post('/wishlist', { productId: pId }).then((res) => {
+        if (res.data.success && res.data.wishlist?.items) {
           setWishlistItems(res.data.wishlist.items);
-          toast.success('Added to Wishlist ❤️');
         }
-      } catch (error) {
-        toast.error('Item already in wishlist or error occurred');
-      }
-    } else {
-      const newItem = {
-        _id: Date.now().toString(),
-        product: pId,
-        name: product.name,
-        price: product.price,
-        image: product.images?.[0] || product.image || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500',
-        category: product.category
-      };
-      setWishlistItems((prev) => [...prev, newItem]);
-      toast.success('Added to Wishlist ❤️');
+      }).catch(() => {});
     }
   };
 
-  const removeFromWishlist = async (productId) => {
+  const removeFromWishlist = (productId) => {
+    setWishlistItems((prev) =>
+      prev.filter(
+        (item) => item.product !== productId && item.product?._id !== productId && item._id !== productId
+      )
+    );
+    toast.success('Removed from Wishlist');
+
     if (isAuthenticated) {
-      try {
-        const res = await api.delete(`/wishlist/${productId}`);
-        if (res.data.success) {
+      api.delete(`/wishlist/${productId}`).then((res) => {
+        if (res.data.success && res.data.wishlist?.items) {
           setWishlistItems(res.data.wishlist.items);
-          toast.success('Removed from Wishlist');
         }
-      } catch (error) {
-        toast.error('Failed to remove from wishlist');
-      }
-    } else {
-      setWishlistItems((prev) =>
-        prev.filter(
-          (item) => item.product !== productId && item.product?._id !== productId && item._id !== productId
-        )
-      );
-      toast.success('Removed from Wishlist');
+      }).catch(() => {});
     }
   };
 
