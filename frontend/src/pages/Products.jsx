@@ -35,9 +35,6 @@ const allCategoriesList = [
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // Filter states from URL
   const category = searchParams.get('category') || 'all';
@@ -47,6 +44,47 @@ const Products = () => {
   const minPrice = searchParams.get('minPrice') || '';
   const maxPrice = searchParams.get('maxPrice') || '';
   const rating = searchParams.get('rating') || '';
+
+  const computeFilteredProducts = () => {
+    let filtered = [...fallbackProducts];
+
+    if (category && category !== 'all') {
+      filtered = filtered.filter(p => p.category === category);
+    }
+    if (gender && gender !== 'all') {
+      filtered = filtered.filter(p => p.gender === gender);
+    }
+    if (keyword) {
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(keyword.toLowerCase()) || 
+        p.tags?.some(t => t.toLowerCase().includes(keyword.toLowerCase()))
+      );
+    }
+    if (minPrice) {
+      filtered = filtered.filter(p => p.price >= Number(minPrice));
+    }
+    if (maxPrice) {
+      filtered = filtered.filter(p => p.price <= Number(maxPrice));
+    }
+    if (rating) {
+      filtered = filtered.filter(p => p.rating >= Number(rating));
+    }
+
+    // Sort
+    if (sort === 'price-low') {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (sort === 'price-high') {
+      filtered.sort((a, b) => b.price - a.price);
+    } else if (sort === 'rating') {
+      filtered.sort((a, b) => b.rating - a.rating);
+    }
+
+    return filtered;
+  };
+
+  const [products, setProducts] = useState(computeFilteredProducts);
+  const [loading, setLoading] = useState(false);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   const updateFilters = (newParams) => {
     const current = Object.fromEntries(searchParams.entries());
@@ -75,61 +113,21 @@ const Products = () => {
   });
 
   useEffect(() => {
+    // Immediately display filtered local products for instant UI response
+    setProducts(computeFilteredProducts());
+
     const fetchProducts = async () => {
       try {
-        setLoading(true);
         const params = new URLSearchParams(searchParams);
-        params.set('limit', '100'); // Load large batch for complete browsing
+        params.set('limit', '100');
         const res = await api.get(`/products?${params.toString()}`);
         
         if (res.data.success && res.data.products?.length > 0) {
           setProducts(res.data.products);
-        } else {
-          filterFallback();
         }
       } catch (error) {
-        filterFallback();
-      } finally {
-        setLoading(false);
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        // Fallback already rendered instantly
       }
-    };
-
-    const filterFallback = () => {
-      let filtered = [...fallbackProducts];
-
-      if (category && category !== 'all') {
-        filtered = filtered.filter(p => p.category === category);
-      }
-      if (gender && gender !== 'all') {
-        filtered = filtered.filter(p => p.gender === gender);
-      }
-      if (keyword) {
-        filtered = filtered.filter(p => 
-          p.name.toLowerCase().includes(keyword.toLowerCase()) || 
-          p.tags?.some(t => t.toLowerCase().includes(keyword.toLowerCase()))
-        );
-      }
-      if (minPrice) {
-        filtered = filtered.filter(p => p.price >= Number(minPrice));
-      }
-      if (maxPrice) {
-        filtered = filtered.filter(p => p.price <= Number(maxPrice));
-      }
-      if (rating) {
-        filtered = filtered.filter(p => p.rating >= Number(rating));
-      }
-
-      // Sort
-      if (sort === 'price-low') {
-        filtered.sort((a, b) => a.price - b.price);
-      } else if (sort === 'price-high') {
-        filtered.sort((a, b) => b.price - a.price);
-      } else if (sort === 'rating') {
-        filtered.sort((a, b) => b.rating - a.rating);
-      }
-
-      setProducts(filtered);
     };
 
     fetchProducts();

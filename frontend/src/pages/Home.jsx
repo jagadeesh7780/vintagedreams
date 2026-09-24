@@ -16,29 +16,20 @@ import Loader from '../components/Loader';
 import { fallbackProducts } from '../data/fallbackProducts';
 
 const Home = () => {
-  const [featuredProducts, setFeaturedProducts] = useState([]);
-  const [trendingProducts, setTrendingProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [featuredProducts, setFeaturedProducts] = useState(() => fallbackProducts.slice(0, 8));
+  const [trendingProducts, setTrendingProducts] = useState(() => fallbackProducts.slice(4, 12));
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadHomeData = async () => {
       try {
-        setLoading(true);
         const res = await api.get('/products?limit=12');
         if (res.data.success && res.data.products?.length > 0) {
           setFeaturedProducts(res.data.products.filter(p => p.isFeatured).slice(0, 8));
           setTrendingProducts(res.data.products.slice(0, 8));
-        } else {
-          // Use seed fallback if backend DB is empty
-          setFeaturedProducts(fallbackProducts.slice(0, 8));
-          setTrendingProducts(fallbackProducts.slice(4, 12));
         }
       } catch (error) {
-        // Fallback to local items so UI renders immediately
-        setFeaturedProducts(fallbackProducts.slice(0, 8));
-        setTrendingProducts(fallbackProducts.slice(4, 12));
-      } finally {
-        setLoading(false);
+        // Keeps instant offline fallback
       }
     };
 
