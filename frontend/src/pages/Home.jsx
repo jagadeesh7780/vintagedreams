@@ -220,15 +220,12 @@ const Home = () => {
           </Link>
         </div>
 
-        {loading ? (
-          <Loader text="Loading featured fashion items..." />
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product._id || product.id || product.name} product={product} />
-            ))}
-          </div>
-        )}
+        {/* Featured Products Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          {featuredProducts.map((product) => (
+            <ProductCard key={product._id || product.id || product.name} product={product} />
+          ))}
+        </div>
       </section>
 
       {/* Flash Sale Banner / Deal of the Day */}
@@ -282,15 +279,12 @@ const Home = () => {
           </Link>
         </div>
 
-        {loading ? (
-          <Loader text="Loading best sellers..." />
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {trendingProducts.map((product) => (
-              <ProductCard key={product._id || product.id || product.name} product={product} />
-            ))}
-          </div>
-        )}
+        {/* Trending Products Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          {trendingProducts.map((product) => (
+            <ProductCard key={product._id || product.id || product.name} product={product} />
+          ))}
+        </div>
       </section>
 
     </div>

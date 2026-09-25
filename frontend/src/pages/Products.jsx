@@ -416,9 +416,7 @@ const Products = () => {
 
           {/* Product Grid */}
           <main className="lg:col-span-3">
-            {loading ? (
-              <Loader text="Loading fashion catalog..." />
-            ) : products.length === 0 ? (
+            {products.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center shadow-sm">
                 <div className="w-16 h-16 rounded-full bg-rose-50 text-rose-500 mx-auto flex items-center justify-center mb-4">
                   <FaTh size={24} />
