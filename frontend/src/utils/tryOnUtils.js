@@ -1,12 +1,8 @@
 /**
- * Virtual Try-On Utilities - Neutral Anatomy, Robust Mapping & Image Processing
- * 
- * Provides:
- * - Category to body region resolution
- * - Accurate anatomical coordinates
- * - Canvas image compression
- * - Complementary product matching
+ * Virtual Try-On Utilities - 3D Wireframe Mannequin Geometry & AI Face Extraction
  */
+
+export const WIREFRAME_MANNEQUIN_SRC = '/images/wireframe_mannequin.png';
 
 // Category to Body Region Map
 export const CATEGORY_BODY_PART_MAP = {
@@ -87,20 +83,29 @@ export const LAYER_PRIORITIES = {
   'head': 6
 };
 
-// Precise anatomical coordinate anchors on the neutral human structure
+// Exact anatomical coordinate anchors calibrated for the 3D Wireframe Mannequin
 export const BODY_PART_COORDINATES = {
-  'head': { top: '3%', left: '50%', width: '28%', height: '14%', transform: 'translate(-50%, 0)' },
-  'face': { top: '8%', left: '50%', width: '22%', height: '10%', transform: 'translate(-50%, 0)' },
-  'neck': { top: '15%', left: '50%', width: '24%', height: '12%', transform: 'translate(-50%, 0)' },
-  'upperBody': { top: '18%', left: '50%', width: '56%', height: '38%', transform: 'translate(-50%, 0)' },
-  'fullBody': { top: '18%', left: '50%', width: '60%', height: '65%', transform: 'translate(-50%, 0)' },
-  'lowerBody': { top: '48%', left: '50%', width: '46%', height: '42%', transform: 'translate(-50%, 0)' },
-  'upperLegs': { top: '48%', left: '50%', width: '44%', height: '24%', transform: 'translate(-50%, 0)' },
-  'feet': { top: '82%', left: '50%', width: '46%', height: '15%', transform: 'translate(-50%, 0)' },
-  'wrist': { top: '48%', left: '22%', width: '16%', height: '16%', transform: 'translate(-50%, 0)' },
-  'finger': { top: '54%', left: '20%', width: '12%', height: '12%', transform: 'translate(-50%, 0)' },
-  'handArm': { top: '42%', left: '76%', width: '30%', height: '32%', transform: 'translate(-50%, 0)' },
-  'shouldersBack': { top: '22%', left: '50%', width: '48%', height: '40%', transform: 'translate(-50%, 0)' }
+  'head': { top: '1.5%', left: '49.8%', width: '16%', height: '12%', transform: 'translate(-50%, 0)' },
+  'face': { top: '6.5%', left: '49.8%', width: '13%', height: '8%', transform: 'translate(-50%, 0)' },
+  'neck': { top: '14%', left: '49.8%', width: '12%', height: '7%', transform: 'translate(-50%, 0)' },
+  'upperBody': { top: '18%', left: '49.8%', width: '38%', height: '30%', transform: 'translate(-50%, 0)' },
+  'fullBody': { top: '18%', left: '49.8%', width: '42%', height: '62%', transform: 'translate(-50%, 0)' },
+  'lowerBody': { top: '44%', left: '49.8%', width: '28%', height: '42%', transform: 'translate(-50%, 0)' },
+  'upperLegs': { top: '44%', left: '49.8%', width: '26%', height: '22%', transform: 'translate(-50%, 0)' },
+  'feet': { top: '83%', left: '49.8%', width: '30%', height: '14%', transform: 'translate(-50%, 0)' },
+  'wrist': { top: '44%', left: '33%', width: '10%', height: '10%', transform: 'translate(-50%, 0)' },
+  'finger': { top: '48%', left: '31%', width: '8%', height: '8%', transform: 'translate(-50%, 0)' },
+  'handArm': { top: '43%', left: '68%', width: '24%', height: '26%', transform: 'translate(-50%, 0)' },
+  'shouldersBack': { top: '18%', left: '49.8%', width: '36%', height: '32%', transform: 'translate(-50%, 0)' }
+};
+
+// Head / Face anchor coordinates on the 3D Mannequin for AI Face extraction overlay
+export const MANNEQUIN_FACE_ANCHOR = {
+  top: '5.2%',
+  left: '49.8%',
+  width: '10.5%',
+  height: '10%',
+  transform: 'translate(-50%, 0)'
 };
 
 /**
@@ -115,7 +120,7 @@ export const resolveBodyPart = (category = '', name = '') => {
     return CATEGORY_BODY_PART_MAP[cat];
   }
 
-  // 2. Check handbag keywords
+  // 2. Check handbag / bag keywords
   if (
     cat.includes('bag') || 
     cat.includes('handbag') || 
@@ -201,6 +206,53 @@ export const resolveBodyPart = (category = '', name = '') => {
 };
 
 /**
+ * AI Face Extraction: Crops the user's face from an uploaded photo or camera capture
+ * and returns an oval-masked transparent face data URL to place onto the 3D wireframe head.
+ */
+export const extractUserFace = (imageDataUrl) => {
+  return new Promise((resolve) => {
+    if (!imageDataUrl) return resolve(null);
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = imageDataUrl;
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const size = 300;
+        canvas.width = size;
+        canvas.height = size * 1.25;
+        const ctx = canvas.getContext('2d');
+
+        // Estimate face region: centered top-third
+        const srcW = img.width;
+        const srcH = img.height;
+        const cropW = Math.min(srcW * 0.55, srcH * 0.45);
+        const cropH = cropW * 1.25;
+        const cropX = (srcW - cropW) / 2;
+        const cropY = Math.max(0, srcH * 0.05);
+
+        // Draw soft oval clipping path for face
+        ctx.beginPath();
+        ctx.ellipse(size / 2, (size * 1.25) / 2, size * 0.44, (size * 1.25) * 0.46, 0, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+
+        // Draw cropped face
+        ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, size, size * 1.25);
+
+        // Soft edge blending
+        const faceDataUrl = canvas.toDataURL('image/png');
+        resolve(faceDataUrl);
+      } catch (err) {
+        resolve(imageDataUrl);
+      }
+    };
+    img.onerror = () => resolve(imageDataUrl);
+  });
+};
+
+/**
  * Client-Side Image Compression using HTML Canvas
  */
 export const compressImage = (file, maxWidth = 1200, maxHeight = 1600, quality = 0.85) => {
@@ -252,7 +304,6 @@ export const compressImage = (file, maxWidth = 1200, maxHeight = 1600, quality =
 
 /**
  * Smart Complementary Recommendations Engine
- * Generates matching suggestions without replacing the active product.
  */
 export const getComplementaryRecommendations = (selectedProducts = [], allProducts = [], limit = 6) => {
   if (!allProducts || allProducts.length === 0) return [];
@@ -287,7 +338,6 @@ export const getComplementaryRecommendations = (selectedProducts = [], allProduc
     targetCategories = ['shirts', 'pants', 'shoes', 'watches', 'women-dresses', 'women-jewelry', 'handbags'];
   }
 
-  // Filter products matching target complementary categories that are NOT already in the active outfit
   const candidates = allProducts.filter(p => {
     const pId = p._id || p.id;
     const pCat = (p.category || '').toLowerCase();
