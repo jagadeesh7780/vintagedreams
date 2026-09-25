@@ -8,8 +8,13 @@ const WishlistContext = createContext();
 export const WishlistProvider = ({ children }) => {
   const { isAuthenticated, token } = useAuth();
   const [wishlistItems, setWishlistItems] = useState(() => {
-    const localWishlist = localStorage.getItem('vintage_guest_wishlist');
-    return localWishlist ? JSON.parse(localWishlist) : [];
+    try {
+      const localWishlist = localStorage.getItem('vintage_guest_wishlist');
+      const parsed = localWishlist ? JSON.parse(localWishlist) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
   });
   const [loading, setLoading] = useState(false);
 
@@ -18,8 +23,13 @@ export const WishlistProvider = ({ children }) => {
     if (isAuthenticated) {
       fetchBackendWishlist();
     } else {
-      const localWishlist = localStorage.getItem('vintage_guest_wishlist');
-      setWishlistItems(localWishlist ? JSON.parse(localWishlist) : []);
+      try {
+        const localWishlist = localStorage.getItem('vintage_guest_wishlist');
+        const parsed = localWishlist ? JSON.parse(localWishlist) : [];
+        setWishlistItems(Array.isArray(parsed) ? parsed : []);
+      } catch (e) {
+        setWishlistItems([]);
+      }
     }
   }, [isAuthenticated, token]);
 
