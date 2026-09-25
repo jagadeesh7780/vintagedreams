@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
 import { 
   FaShieldAlt, 
   FaCreditCard, 
@@ -11,7 +11,9 @@ import {
   FaTrashAlt,
   FaCheck,
   FaLock,
-  FaArrowRight
+  FaArrowRight,
+  FaExclamationTriangle,
+  FaBoxes
 } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -59,26 +61,64 @@ const getCategoryColors = (productColors) => {
 
 const BuyNow = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { clearCart } = useCart();
+  const { cartItems, clearCart } = useCart();
 
-  const productId = searchParams.get('productId');
-  const initialParamSize = searchParams.get('size');
-  const initialParamColor = searchParams.get('color');
-  const initialParamQty = Number(searchParams.get('quantity')) || 1;
+  const productId = searchParams.get('productId') || location.state?.productId;
+  const initialParamSize = searchParams.get('size') || location.state?.size;
+  const initialParamColor = searchParams.get('color') || location.state?.color;
+  const initialParamQty = Number(searchParams.get('quantity')) || Number(location.state?.quantity) || 1;
 
-  // Find initial matching product from fallback
-  const initialProduct = productId
-    ? fallbackProducts.find(p => p._id === productId || p.name === productId) || fallbackProducts[0]
-    : fallbackProducts[0];
+  // Multi-tier Initial Product Resolver (State -> SearchParam -> SessionStorage -> Fallback -> Cart)
+  const resolveInitialProduct = () => {
+    // 1. Direct location state product
+    if (location.state?.product) {
+      return location.state.product;
+    }
 
-  const [product, setProduct] = useState(initialProduct);
-  const [size, setSize] = useState(initialParamSize || (initialProduct?.sizes?.[0] || getCategorySizes(initialProduct?.category, initialProduct?.sizes)[0]));
-  const [color, setColor] = useState(initialParamColor || (initialProduct?.colors?.[0] || getCategoryColors(initialProduct?.colors)[0]));
+    // 2. SearchParams in fallback products
+    if (productId) {
+      const found = fallbackProducts.find(p => p._id === productId || p.name === productId);
+      if (found) return found;
+    }
+
+    // 3. Saved sessionStorage from previous Buy Now click
+    try {
+      const saved = sessionStorage.getItem('vintage_active_buynow');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && (parsed._id || parsed.name)) {
+          return parsed;
+        }
+      }
+    } catch (e) {}
+
+    // 4. Cart Items if navigated from Cart
+    if (cartItems && cartItems.length > 0) {
+      const first = cartItems[0];
+      return {
+        _id: first.product?._id || first.product || first._id,
+        name: first.name,
+        price: first.price,
+        images: [first.image],
+        category: first.category || 'Fashion',
+        sizes: [first.size || 'M'],
+        colors: [first.color || 'Standard']
+      };
+    }
+
+    // 5. Default initial fallback
+    return fallbackProducts[0] || null;
+  };
+
+  const [product, setProduct] = useState(resolveInitialProduct);
+  const [size, setSize] = useState(() => initialParamSize || (product?.sizes?.[0] || getCategorySizes(product?.category, product?.sizes)[0]));
+  const [color, setColor] = useState(() => initialParamColor || (product?.colors?.[0] || getCategoryColors(product?.colors)[0]));
   const [quantity, setQuantity] = useState(initialParamQty);
 
-  // Coupon state (pre-applied VINTAGE10 for instant customer savings)
+  // Coupon state
   const [couponCode, setCouponCode] = useState('VINTAGE10');
   const [couponApplied, setCouponApplied] = useState(true);
 
@@ -95,27 +135,39 @@ const BuyNow = () => {
   const [paymentMethod, setPaymentMethod] = useState('Razorpay');
   const [processing, setProcessing] = useState(false);
 
-  // Fetch product from backend API if productId is dynamic (e.g. MongoDB ID)
+  // Sync and persist active product across page refreshes and fetch dynamic MongoDB products
   useEffect(() => {
     let active = true;
 
-    const fetchProductData = async () => {
-      if (!productId) return;
+    // Persist current product in sessionStorage
+    if (product) {
+      try {
+        sessionStorage.setItem('vintage_active_buynow', JSON.stringify(product));
+      } catch (e) {}
+    }
+
+    const hydrateLiveProduct = async () => {
+      const targetId = productId || location.state?.productId;
+      if (!targetId) return;
 
       // Check fallback first
-      const local = fallbackProducts.find(p => p._id === productId || p.name === productId);
+      const local = fallbackProducts.find(p => p._id === targetId || p.name === targetId);
       if (local && active) {
         setProduct(local);
         if (!initialParamSize) setSize(getCategorySizes(local.category, local.sizes)[0]);
         if (!initialParamColor) setColor(getCategoryColors(local.colors)[0]);
       }
 
-      // Fetch from API for full live 500+ product catalog
+      // Fetch from API for full live catalog
       try {
-        const res = await api.get(`/products/${productId}`);
+        const res = await api.get(`/products/${targetId}`);
         if (active && res.data.success && res.data.product) {
           const liveProd = res.data.product;
           setProduct(liveProd);
+          try {
+            sessionStorage.setItem('vintage_active_buynow', JSON.stringify(liveProd));
+          } catch (e) {}
+
           if (!initialParamSize) {
             setSize(getCategorySizes(liveProd.category, liveProd.sizes)[0]);
           }
@@ -124,30 +176,56 @@ const BuyNow = () => {
           }
         }
       } catch (err) {
-        // Fallback already rendered seamlessly
+        // Fallback already active
       }
     };
 
-    fetchProductData();
+    hydrateLiveProduct();
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 
     return () => {
       active = false;
     };
-  }, [productId, initialParamSize, initialParamColor]);
+  }, [productId, location.state]);
+
+  // Safe fallback if product is null
+  if (!product) {
+    return (
+      <div className="min-h-[75vh] bg-[#f8f9fa] flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-8 sm:p-12 text-center max-w-md w-full space-y-4">
+          <div className="w-16 h-16 rounded-full bg-rose-50 text-rose-600 mx-auto flex items-center justify-center">
+            <FaBoxes size={28} />
+          </div>
+          <h2 className="font-serif-title text-xl font-bold text-gray-900">
+            No Product Selected
+          </h2>
+          <p className="text-xs text-gray-500 leading-relaxed">
+            Please pick a product from our fashion catalog to proceed with instant Buy Now checkout.
+          </p>
+          <Link
+            to="/products"
+            className="inline-flex items-center justify-center gap-2 w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md text-xs uppercase tracking-wider"
+          >
+            <span>Browse Fashion Catalog</span>
+            <FaArrowRight size={12} />
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const availableSizes = getCategorySizes(product?.category, product?.sizes);
   const availableColors = getCategoryColors(product?.colors);
 
-  // Price calculations matching exact screenshot specs
+  // Price calculations
   const unitPrice = Number(product?.price) || 0;
   const unitOriginalPrice = Number(product?.originalPrice) || unitPrice;
-  const rawSubtotal = unitPrice * quantity;
+  const rawSubtotal = unitPrice * (Number(quantity) || 1);
 
   // 10% special discount on orders > ₹999
   const specialDiscount = rawSubtotal > 999 ? Math.round(rawSubtotal * 0.1) : 0;
   
-  // 10% extra coupon discount when VINTAGE10 is applied
+  // 10% coupon discount when VINTAGE10 applied
   const couponDiscount = couponApplied ? Math.round(rawSubtotal * 0.1) : 0;
   
   // Free delivery
@@ -187,9 +265,9 @@ const BuyNow = () => {
         name: product?.name || 'Vintage Fashion Item',
         image: product?.images?.[0] || product?.image,
         price: unitPrice,
-        quantity: quantity,
-        size: size,
-        color: color
+        quantity: Number(quantity) || 1,
+        size: size || 'M',
+        color: color || 'Standard'
       }],
       shippingAddress: formData,
       paymentMethod,
@@ -323,10 +401,10 @@ const BuyNow = () => {
 
         <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* LEFT COLUMN: Product Selector Card, Coupon Strip, Delivery Address */}
+          {/* LEFT COLUMN: Product Card, Coupon Strip, Delivery Address */}
           <div className="lg:col-span-8 space-y-5">
             
-            {/* 1. Main Product Card (Exact layout requested: Image on left, Title & Options on right) */}
+            {/* 1. Main Product Card */}
             <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 shadow-sm">
               <div className="flex flex-col sm:flex-row gap-5 items-start">
                 
@@ -370,7 +448,7 @@ const BuyNow = () => {
                             key={s}
                             type="button"
                             onClick={() => setSize(s)}
-                            className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
+                            className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
                               size === s
                                 ? 'border-rose-600 bg-rose-600 text-white shadow-sm'
                                 : 'border-gray-200 text-gray-700 bg-gray-50 hover:bg-gray-100 hover:border-gray-300'
@@ -393,7 +471,7 @@ const BuyNow = () => {
                             key={c}
                             type="button"
                             onClick={() => setColor(c)}
-                            className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all ${
+                            className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
                               color === c
                                 ? 'border-gray-900 bg-gray-900 text-white shadow-sm'
                                 : 'border-gray-200 text-gray-700 bg-gray-50 hover:bg-gray-100 hover:border-gray-300'
@@ -457,7 +535,7 @@ const BuyNow = () => {
               </div>
             </div>
 
-            {/* 2. Coupon Card Strip (Matching Screenshot Design) */}
+            {/* 2. Coupon Card Strip */}
             <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm flex flex-col sm:flex-row gap-3 items-center">
               <div className="relative flex-1 w-full">
                 <input
@@ -649,17 +727,15 @@ const BuyNow = () => {
 
           </div>
 
-          {/* RIGHT COLUMN: Price Details Card (Matching Screenshot Design 1-to-1) */}
+          {/* RIGHT COLUMN: Price Details Card */}
           <div className="lg:col-span-4 sticky top-28 space-y-4">
             
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-5">
               
-              {/* Header */}
               <h3 className="text-xs font-extrabold uppercase tracking-wider text-gray-400 pb-3 border-b border-gray-100">
                 Price Details
               </h3>
 
-              {/* Price Breakdown list matching screenshot */}
               <div className="space-y-3.5 text-sm">
                 
                 <div className="flex items-center justify-between text-gray-700">
@@ -686,7 +762,6 @@ const BuyNow = () => {
                   <span className="text-emerald-600 font-bold">FREE</span>
                 </div>
 
-                {/* Total Payable */}
                 <div className="pt-3.5 border-t border-dashed border-gray-200 flex items-center justify-between text-base font-bold text-gray-900">
                   <span>Total Payable</span>
                   <span className="text-rose-600 text-xl font-extrabold">
@@ -696,7 +771,6 @@ const BuyNow = () => {
 
               </div>
 
-              {/* Green Savings Pill matching screenshot */}
               {totalSavings > 0 && (
                 <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-semibold py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5">
                   <FaCheck className="text-emerald-600" />
@@ -704,7 +778,6 @@ const BuyNow = () => {
                 </div>
               )}
 
-              {/* Big Red Button matching screenshot */}
               <button
                 type="submit"
                 disabled={processing}
@@ -714,7 +787,6 @@ const BuyNow = () => {
                 <FaArrowRight size={13} />
               </button>
 
-              {/* Safe & Secure badge */}
               <div className="pt-1 flex items-center justify-center gap-2 text-gray-400 text-xs text-center">
                 <FaShieldAlt className="text-emerald-500" />
                 <span>Safe & Secure 256-bit Encrypted Checkout</span>
