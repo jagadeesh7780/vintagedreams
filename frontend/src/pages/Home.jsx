@@ -16,8 +16,8 @@ import Loader from '../components/Loader';
 import { fallbackProducts } from '../data/fallbackProducts';
 
 const Home = () => {
-  const [featuredProducts, setFeaturedProducts] = useState(() => fallbackProducts.slice(0, 8));
-  const [trendingProducts, setTrendingProducts] = useState(() => fallbackProducts.slice(4, 12));
+  const [featuredProducts, setFeaturedProducts] = useState(() => fallbackProducts.slice(0, 4));
+  const [trendingProducts, setTrendingProducts] = useState(() => fallbackProducts.slice(4, 8));
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -25,8 +25,14 @@ const Home = () => {
       try {
         const res = await api.get('/products?limit=12');
         if (res.data.success && res.data.products?.length > 0) {
-          setFeaturedProducts(res.data.products.filter(p => p.isFeatured).slice(0, 8));
-          setTrendingProducts(res.data.products.slice(0, 8));
+          const allProds = res.data.products;
+          const feat = allProds.filter(p => p.isFeatured);
+          const finalFeat = feat.length >= 4 
+            ? feat.slice(0, 4) 
+            : [...feat, ...allProds.filter(p => !p.isFeatured)].slice(0, 4);
+
+          setFeaturedProducts(finalFeat);
+          setTrendingProducts(allProds.slice(4, 8).length >= 4 ? allProds.slice(4, 8) : allProds.slice(0, 4));
         }
       } catch (error) {
         // Keeps instant offline fallback
@@ -221,8 +227,8 @@ const Home = () => {
         </div>
 
         {/* Featured Products Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {featuredProducts.map((product) => (
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          {featuredProducts.slice(0, 4).map((product) => (
             <ProductCard key={product._id || product.id || product.name} product={product} />
           ))}
         </div>
@@ -280,8 +286,8 @@ const Home = () => {
         </div>
 
         {/* Trending Products Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {trendingProducts.map((product) => (
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          {trendingProducts.slice(0, 4).map((product) => (
             <ProductCard key={product._id || product.id || product.name} product={product} />
           ))}
         </div>

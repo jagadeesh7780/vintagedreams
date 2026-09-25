@@ -108,8 +108,91 @@ const Checkout = () => {
   const [items, setItems] = useState(resolveInitialItems);
 
   useEffect(() => {
-    setItems(resolveInitialItems());
+    let active = true;
+
+    const syncItems = async () => {
+      // 1. If direct product in fallback
+      const directInFallback = directProductId 
+        ? fallbackProducts.find(p => p._id === directProductId || p.name === directProductId)
+        : null;
+
+      if (directInFallback) {
+        if (active) {
+          setItems([{
+            product: directInFallback._id,
+            name: directInFallback.name,
+            price: directInFallback.price,
+            originalPrice: directInFallback.originalPrice,
+            image: directInFallback.images?.[0] || directInFallback.image,
+            size: directSize,
+            color: directColor,
+            quantity: directQuantity,
+            sizes: directInFallback.sizes || ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+            colors: directInFallback.colors || ['Black', 'White', 'Navy Blue', 'Wine Red']
+          }]);
+        }
+        return;
+      }
+
+      // 2. If directProductId from API
+      if (directProductId) {
+        try {
+          const res = await api.get(`/products/${directProductId}`);
+          if (active && res.data.success && res.data.product) {
+            const p = res.data.product;
+            setItems([{
+              product: p._id,
+              name: p.name,
+              price: p.price,
+              originalPrice: p.originalPrice,
+              image: p.images?.[0] || p.image,
+              size: directSize,
+              color: directColor,
+              quantity: directQuantity,
+              sizes: p.sizes?.length > 0 ? p.sizes : ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+              colors: p.colors?.length > 0 ? p.colors : ['Black', 'White', 'Navy Blue', 'Wine Red']
+            }]);
+            return;
+          }
+        } catch (err) {}
+      }
+
+      // 3. From Cart items
+      if (contextCartItems && contextCartItems.length > 0) {
+        if (active) {
+          setItems(contextCartItems.map(item => ({
+            ...item,
+            sizes: item.sizes || ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+            colors: item.colors || ['Black', 'White', 'Navy Blue', 'Wine Red']
+          })));
+        }
+        return;
+      }
+
+      // 4. Default fallback
+      if (active && fallbackProducts.length > 0) {
+        const def = fallbackProducts[0];
+        setItems([{
+          product: def._id,
+          name: def.name,
+          price: def.price,
+          originalPrice: def.originalPrice,
+          image: def.images?.[0] || def.image,
+          size: 'M',
+          color: 'Standard',
+          quantity: 1,
+          sizes: def.sizes || ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+          colors: def.colors || ['Black', 'White', 'Navy Blue', 'Wine Red']
+        }]);
+      }
+    };
+
+    syncItems();
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
+    return () => {
+      active = false;
+    };
   }, [directProductId, directSize, directColor, directQuantity, contextCartItems]);
 
   // Calculate prices

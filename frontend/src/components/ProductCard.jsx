@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaHeart, FaRegHeart, FaShoppingCart, FaBolt } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -10,6 +10,7 @@ const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [quickBuyOpen, setQuickBuyOpen] = useState(false);
+  const navigate = useNavigate();
 
   const isLiked = isInWishlist(product._id || product.id);
   const image = product.images?.[0] || product.image || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500';
@@ -28,7 +29,11 @@ const ProductCard = ({ product }) => {
   const handleOpenBuyNow = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setQuickBuyOpen(true);
+    const size = product.sizes?.[0] || 'M';
+    const color = product.colors?.[0] || 'Standard';
+    addToCart(product, 1, size, color);
+    const pId = product._id || product.id;
+    navigate(`/checkout?productId=${pId}&size=${encodeURIComponent(size)}&color=${encodeURIComponent(color)}&quantity=1`);
   };
 
   const handleWishlist = (e) => {
