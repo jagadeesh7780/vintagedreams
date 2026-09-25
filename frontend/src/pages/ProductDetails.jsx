@@ -27,7 +27,8 @@ import { useAuth } from '../context/AuthContext';
 import RatingStars from '../components/RatingStars';
 import ProductCard from '../components/ProductCard';
 import SizeGuideModal from '../components/SizeGuideModal';
-import Product360Viewer from '../components/Product360Viewer';
+import VirtualTryOnModal from '../components/VirtualTryOnModal';
+import TryItNowButton from '../components/TryItNowButton';
 import toast from 'react-hot-toast';
 import { fallbackProducts } from '../data/fallbackProducts';
 
@@ -52,7 +53,7 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
-  const [show360Modal, setShow360Modal] = useState(false);
+  const [tryOnOpen, setTryOnOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
   
   // Delivery PIN code checker state
@@ -420,25 +421,13 @@ const ProductDetails = () => {
 
             </div>
 
-            {/* VIRTUAL TRY-ON & 360° SHOWROOM BUTTONS */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-4 border-t border-gray-100">
-              <Link
-                to={`/virtual-try-on?productId=${product._id || product.id}`}
-                className="w-full bg-gradient-to-r from-gray-950 via-gray-900 to-rose-950 hover:from-black hover:to-rose-900 text-white font-bold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md border border-white/10 active:scale-98 transition-all"
-              >
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
-                <FaMagic className="text-rose-400" />
-                <span className="uppercase tracking-wider">✨ Virtual Try-On Studio</span>
-              </Link>
-
-              <button
-                type="button"
-                onClick={() => setShow360Modal(true)}
-                className="w-full bg-white hover:bg-gray-50 text-gray-900 font-bold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 border border-gray-300 shadow-xs active:scale-98 transition-all cursor-pointer"
-              >
-                <FaCube className="text-rose-600" />
-                <span className="uppercase tracking-wider">Inspect in 360° View</span>
-              </button>
+            {/* VIRTUAL TRY-ON ACTION */}
+            <div className="pt-4 border-t border-gray-100">
+              <TryItNowButton
+                product={product}
+                onClick={() => setTryOnOpen(true)}
+                size="lg"
+              />
             </div>
 
             {/* TWO ACTION BUTTONS: Add to Cart & Buy Now */}
@@ -619,29 +608,14 @@ const ProductDetails = () => {
         category={product.category}
       />
 
-      {/* 360° Interactive Showroom Modal */}
-      {show360Modal && product && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-2xl w-full border border-gray-200 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-4 bg-gray-950 text-white flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <FaCube className="text-rose-400" />
-                <h3 className="font-serif-title text-sm font-bold truncate">{product.name}</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShow360Modal(false)}
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
-              >
-                <FaTimes size={13} />
-              </button>
-            </div>
-            <div className="p-4">
-              <Product360Viewer product={product} />
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Virtual Try-On Modal */}
+      <VirtualTryOnModal
+        isOpen={tryOnOpen}
+        onClose={() => setTryOnOpen(false)}
+        product={product}
+        selectedSize={selectedSize}
+        selectedColor={selectedColor}
+      />
     </div>
   );
 };

@@ -17,7 +17,6 @@ import {
 import api from '../api/axios';
 import CategoryBar from '../components/CategoryBar';
 import ProductCard from '../components/ProductCard';
-import VirtualMirror360 from '../components/VirtualMirror360';
 import { fallbackProducts } from '../data/fallbackProducts';
 
 const allCategoriesList = [
@@ -115,19 +114,6 @@ const Products = () => {
   const [products, setProducts] = useState(computeFilteredProducts);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isMirrorOpen, setIsMirrorOpen] = useState(true);
-  const [equippedProduct, setEquippedProduct] = useState(null);
-
-  useEffect(() => {
-    const handleEquipEvent = (e) => {
-      if (e.detail) {
-        setEquippedProduct(e.detail);
-        setIsMirrorOpen(true);
-      }
-    };
-    window.addEventListener('vintage_equip_item', handleEquipEvent);
-    return () => window.removeEventListener('vintage_equip_item', handleEquipEvent);
-  }, []);
 
   const itemsPerPage = 24;
 
@@ -524,7 +510,7 @@ const Products = () => {
           </aside>
 
           {/* Product Grid Main Area */}
-          <main className={`${isMirrorOpen ? 'lg:col-span-5' : 'lg:col-span-9'}`}>
+          <main className="lg:col-span-9">
             {products.length === 0 ? (
               <div className="bg-white rounded-3xl border border-gray-200 p-12 text-center shadow-sm space-y-4">
                 <div className="w-20 h-20 rounded-full bg-rose-50 text-rose-500 mx-auto flex items-center justify-center">
@@ -567,7 +553,7 @@ const Products = () => {
               </div>
             ) : (
               <div className="space-y-8">
-                <div className={`grid ${isMirrorOpen ? 'grid-cols-2 gap-3.5 sm:gap-4' : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6'}`}>
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                   {paginatedProducts.map((product) => (
                     <ProductCard 
                       key={product._id || product.id || product.name} 
@@ -640,31 +626,6 @@ const Products = () => {
             )}
           </main>
 
-          {/* 3. Right-Side 360° AI Virtual Try-On Fitting Room (Matching user screenshot) */}
-          {isMirrorOpen && (
-            <div className="lg:col-span-4 sticky top-28 space-y-4">
-              <VirtualMirror360 
-                isOpen={isMirrorOpen}
-                onClose={() => setIsMirrorOpen(false)}
-                activeEquippedProduct={equippedProduct}
-                onProductEquip={(p) => setEquippedProduct(p)}
-              />
-            </div>
-          )}
-
-        </div>
-
-        {/* Floating 360 Try-On Mirror FAB */}
-        <div className="fixed bottom-6 right-6 z-40">
-          <button
-            type="button"
-            onClick={() => setIsMirrorOpen(!isMirrorOpen)}
-            className="bg-gradient-to-r from-gray-950 via-gray-900 to-rose-900 hover:from-black hover:to-rose-800 text-white font-bold py-3 px-5 rounded-full shadow-2xl flex items-center gap-2.5 text-xs uppercase tracking-wider border border-white/20 active:scale-95 transition-all cursor-pointer group"
-          >
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
-            <FaMagic className="text-rose-400 group-hover:rotate-12 transition-transform" />
-            <span>{isMirrorOpen ? 'Docked 360° Mirror' : '✨ Open 360° Try-On'}</span>
-          </button>
         </div>
 
       </div>

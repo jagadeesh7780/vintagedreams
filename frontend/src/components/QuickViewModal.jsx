@@ -16,6 +16,8 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import RatingStars from './RatingStars';
 import SizeGuideModal from './SizeGuideModal';
+import VirtualTryOnModal from './VirtualTryOnModal';
+import TryItNowButton from './TryItNowButton';
 import toast from 'react-hot-toast';
 
 const defaultSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
@@ -31,6 +33,7 @@ const QuickViewModal = ({ product, isOpen, onClose }) => {
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [tryOnOpen, setTryOnOpen] = useState(false);
 
   if (!isOpen || !product) return null;
 
@@ -243,6 +246,13 @@ const QuickViewModal = ({ product, isOpen, onClose }) => {
 
               {/* Action Buttons */}
               <div className="space-y-2 pt-4 border-t border-gray-100">
+                {/* Try It Now Button */}
+                <TryItNowButton
+                  product={product}
+                  onClick={() => setTryOnOpen(true)}
+                  size="md"
+                />
+
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
@@ -284,6 +294,15 @@ const QuickViewModal = ({ product, isOpen, onClose }) => {
         isOpen={sizeGuideOpen}
         onClose={() => setSizeGuideOpen(false)}
         category={product.category}
+      />
+
+      {/* Virtual Try-On Modal (Phase 1) */}
+      <VirtualTryOnModal
+        isOpen={tryOnOpen}
+        onClose={() => setTryOnOpen(false)}
+        product={product}
+        selectedSize={selectedSize}
+        selectedColor={selectedColor}
       />
     </>
   );

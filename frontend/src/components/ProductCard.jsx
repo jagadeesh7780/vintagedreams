@@ -13,12 +13,15 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import RatingStars from './RatingStars';
 import QuickViewModal from './QuickViewModal';
+import VirtualTryOnModal from './VirtualTryOnModal';
+import TryItNowButton from './TryItNowButton';
 import toast from 'react-hot-toast';
 
 const ProductCard = ({ product, onTryOn }) => {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [quickViewOpen, setQuickViewOpen] = useState(false);
+  const [tryOnOpen, setTryOnOpen] = useState(false);
   const [adding, setAdding] = useState(false);
   const navigate = useNavigate();
 
@@ -65,12 +68,13 @@ const ProductCard = ({ product, onTryOn }) => {
     setQuickViewOpen(true);
   };
 
-  const handleTryOn = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    window.dispatchEvent(new CustomEvent('vintage_equip_item', { detail: product }));
+  const handleOpenTryOn = (e) => {
+    if (e && e.preventDefault) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setTryOnOpen(true);
     if (onTryOn) onTryOn(product);
-    toast.success(`Sent ${product.name} to 360° Try-On Room!`, { icon: '✨' });
   };
 
   const handleDragStart = (e) => {
@@ -112,7 +116,7 @@ const ProductCard = ({ product, onTryOn }) => {
             )}
           </div>
 
-          {/* Action Overlay Buttons (Wishlist & QuickView & 360 Try-On) */}
+          {/* Action Overlay Buttons (Wishlist & QuickView & Try-On) */}
           <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 z-10">
             {/* Wishlist Heart */}
             <button
@@ -127,14 +131,14 @@ const ProductCard = ({ product, onTryOn }) => {
               {isLiked ? <FaHeart className="text-rose-600 animate-pulse" size={15} /> : <FaRegHeart size={15} />}
             </button>
 
-            {/* 360 Try On Icon Button */}
+            {/* Quick Try-On Icon Button */}
             <button
-              onClick={handleTryOn}
-              aria-label="Try On in 360 Mirror"
-              title="✨ Try On in 360° Mirror"
+              onClick={handleOpenTryOn}
+              aria-label="Try On in Virtual Studio"
+              title="✨ Try It Now"
               className="w-8 h-8 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center transition-all duration-200 shadow-md cursor-pointer group-hover:scale-110 active:scale-95"
             >
-              <span className="text-[10px] font-black">360°</span>
+              <span className="text-[9px] font-black tracking-tight">TRY</span>
             </button>
 
             {/* Quick View */}
@@ -186,16 +190,14 @@ const ProductCard = ({ product, onTryOn }) => {
             </div>
           </div>
 
-          {/* Virtual Try-On Studio Gateway */}
-          <Link
-            to={`/virtual-try-on?productId=${product._id || product.id}`}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full mb-2 bg-gradient-to-r from-gray-950 via-gray-900 to-rose-950 hover:from-black hover:to-rose-900 text-white font-bold py-1.5 px-2 rounded-xl text-[10px] flex items-center justify-center gap-1.5 transition-all shadow-xs border border-white/10 active:scale-98"
-            title="Open Virtual Try-On & 360° View"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
-            <span className="truncate uppercase tracking-wider font-extrabold">✨ TRY IT ON (360° STUDIO)</span>
-          </Link>
+          {/* Reusable TRY IT NOW Button */}
+          <div className="mb-2">
+            <TryItNowButton
+              product={product}
+              onClick={handleOpenTryOn}
+              size="sm"
+            />
+          </div>
 
           {/* TWO PROMINENT ACTION BUTTONS */}
           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100">
@@ -229,6 +231,13 @@ const ProductCard = ({ product, onTryOn }) => {
         product={product}
         isOpen={quickViewOpen}
         onClose={() => setQuickViewOpen(false)}
+      />
+
+      {/* Virtual Try-On Modal (Phase 1) */}
+      <VirtualTryOnModal
+        product={product}
+        isOpen={tryOnOpen}
+        onClose={() => setTryOnOpen(false)}
       />
     </>
   );

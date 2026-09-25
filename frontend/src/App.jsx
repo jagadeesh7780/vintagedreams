@@ -80,7 +80,6 @@ function App() {
                   <Route path="/buynow" element={<BuyNow />} />
                   <Route path="/virtual-try-on" element={<VirtualTryOn />} />
                   <Route path="/try-on" element={<VirtualTryOn />} />
-                  <Route path="/showroom" element={<VirtualTryOn />} />
                   <Route path="/order-success" element={<OrderSuccess />} />
                   <Route path="/order-success/:orderId" element={<OrderSuccess />} />
                   <Route path="/orders" element={<MyOrders />} />
