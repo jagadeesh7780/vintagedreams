@@ -27,8 +27,6 @@ import { useAuth } from '../context/AuthContext';
 import RatingStars from '../components/RatingStars';
 import ProductCard from '../components/ProductCard';
 import SizeGuideModal from '../components/SizeGuideModal';
-import VirtualTryOnModal from '../components/VirtualTryOnModal';
-import TryItNowButton from '../components/TryItNowButton';
 import toast from 'react-hot-toast';
 import { fallbackProducts } from '../data/fallbackProducts';
 
@@ -53,7 +51,6 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
-  const [tryOnOpen, setTryOnOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
   
   // Delivery PIN code checker state
@@ -421,15 +418,6 @@ const ProductDetails = () => {
 
             </div>
 
-            {/* VIRTUAL TRY-ON ACTION */}
-            <div className="pt-4 border-t border-gray-100">
-              <TryItNowButton
-                product={product}
-                onClick={() => setTryOnOpen(true)}
-                size="lg"
-              />
-            </div>
-
             {/* TWO ACTION BUTTONS: Add to Cart & Buy Now */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3">
               <button
@@ -606,15 +594,6 @@ const ProductDetails = () => {
         isOpen={sizeGuideOpen}
         onClose={() => setSizeGuideOpen(false)}
         category={product.category}
-      />
-
-      {/* Virtual Try-On Modal */}
-      <VirtualTryOnModal
-        isOpen={tryOnOpen}
-        onClose={() => setTryOnOpen(false)}
-        product={product}
-        selectedSize={selectedSize}
-        selectedColor={selectedColor}
       />
     </div>
   );

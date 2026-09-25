@@ -373,6 +373,44 @@ const generateProducts = () => {
     ['Vintage Dreams', 'Lavie', 'Caprese', 'Mochi', 'Metro', 'Catwalk']
   );
 
+  // 11. VINTAGE HERITAGE & ARCHIVE COLLECTION (52 products)
+  const vintageImages = [
+    'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80',
+    'https://images.unsplash.com/photo-1548883354-7622d03aca27?w=800&q=80',
+    'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&q=80',
+    'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=800&q=80',
+    'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&q=80',
+    'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&q=80',
+    'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80',
+    'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=800&q=80',
+    'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&q=80',
+    'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80'
+  ];
+
+  createCategoryItems(
+    'vintage-collection',
+    'all',
+    [
+      '1950s Bomber Distressed Genuine Leather Flight Jacket',
+      '1970s Retro Ribbed Corduroy Overshirt with Horn Buttons',
+      'Heritage Herringbone Scottish Wool Tweed Tailored Blazer',
+      '1980s Vintage Acid-Wash Classic Heavy Denim Trucker',
+      'Victorian Antique Steampunk Hand-Engraved Roman Pocket Watch',
+      '1960s Bohemian Prairie Floral Embroidered Swing Maxi Dress',
+      'Victorian Heirloom 925 Solid Silver Filigree Signet Ring',
+      '1970s Distressed Italian Suede High-Ankle Chelsea Boots',
+      'Artisanal Hand-Tooled Vintage Saddle Leather Crossbody Bag',
+      '1940s Retro Polka-Dot A-Line Tea Party Gown',
+      'Art Deco 1930s Emerald Cut Vintage Solitaire Ring',
+      'Vintage Royal Antique Gold Zari Brocade Wedding Saree'
+    ],
+    vintageImages,
+    allSizes,
+    ['Aged Tobacco Brown', 'Vintage Olive', 'Cognac Tan', 'Distressed Indigo', 'Antique Gold', 'Charcoal Heather'],
+    1499,
+    ['Vintage Archive 1974', 'Heritage Atelier', 'Retro Royale', 'Vintage Dreams']
+  );
+
   return list;
 };
 

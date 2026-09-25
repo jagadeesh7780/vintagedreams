@@ -156,12 +156,12 @@ const Navbar = () => {
               <FaFire size={11} />
               <span>New Arrivals</span>
             </Link>
-            <Link to="/virtual-try-on" className="hover:text-rose-600 transition-colors flex items-center gap-1.5 bg-rose-50 text-rose-700 px-3 py-1.5 rounded-full border border-rose-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping"></span>
-              <span>✨ 360° Try-On</span>
+            <Link to="/products?category=vintage-collection" className="hover:text-amber-800 transition-colors flex items-center gap-1.5 bg-amber-50 text-amber-800 px-3 py-1.5 rounded-full border border-amber-300 font-extrabold shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-ping"></span>
+              <span>✨ Vintage Collection</span>
             </Link>
             <Link to="/products" className="hover:text-rose-600 transition-colors">
-              Catalog (520+)
+              Catalog (500+)
             </Link>
           </nav>
 
@@ -450,16 +450,16 @@ const Navbar = () => {
                   🔥 New Arrivals 2026
                 </Link>
                 <Link
-                  to="/virtual-try-on"
-                  className="block px-3 py-2.5 rounded-xl bg-gradient-to-r from-gray-900 to-rose-950 text-white font-bold transition-all shadow-xs"
+                  to="/products?category=vintage-collection"
+                  className="block px-3 py-2.5 rounded-xl bg-gradient-to-r from-amber-900 to-amber-700 text-amber-50 font-bold transition-all shadow-xs"
                 >
-                  ✨ 360° Virtual Try-On Studio
+                  ✨ Vintage Heritage Collection
                 </Link>
                 <Link
                   to="/products"
                   className="block px-3 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
                 >
-                  All Products Catalog (520+)
+                  All Products Catalog (500+)
                 </Link>
                 <Link
                   to="/wishlist"

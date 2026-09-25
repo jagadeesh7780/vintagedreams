@@ -8,11 +8,14 @@ import {
   FaGem, 
   FaThLarge,
   FaMale,
-  FaShoppingBag
+  FaCrown
 } from 'react-icons/fa';
 import { GiTrousers, GiRunningShoe, GiDress, GiIndianPalace, GiHighHeel } from 'react-icons/gi';
 
 const allCategories = [
+  // Vintage Highlight Collection (both genders)
+  { id: 'vintage-collection', name: 'Vintage Archive', icon: FaCrown, color: 'bg-amber-100 text-amber-900 border border-amber-300', gender: 'all' },
+
   // Men's categories
   { id: 'shirts', name: 'Shirts & Polos', icon: FaTshirt, color: 'bg-blue-50 text-blue-600', gender: 'men' },
   { id: 'pants', name: 'Pants & Cargos', icon: GiTrousers, color: 'bg-emerald-50 text-emerald-600', gender: 'men' },

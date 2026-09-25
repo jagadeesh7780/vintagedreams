@@ -20,6 +20,9 @@ import ProductCard from '../components/ProductCard';
 import { fallbackProducts } from '../data/fallbackProducts';
 
 const allCategoriesList = [
+  // Vintage Highlight
+  { id: 'vintage-collection', label: '✨ Vintage Heritage Collection', gender: 'all' },
+
   // Men
   { id: 'shirts', label: 'Shirts & Polos (52 items)', gender: 'men' },
   { id: 'pants', label: 'Pants & Cargos (52 items)', gender: 'men' },
@@ -209,18 +212,8 @@ const Products = () => {
             </p>
           </div>
 
-          {/* Sort & Mobile filter & Try-On button */}
+          {/* Sort & Mobile filter buttons */}
           <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
-            <button
-              type="button"
-              onClick={() => setIsMirrorOpen(!isMirrorOpen)}
-              className="flex items-center gap-2 bg-gradient-to-r from-gray-950 via-gray-900 to-rose-950 hover:from-black hover:to-rose-900 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-md cursor-pointer transition-all active:scale-95 border border-white/10"
-              title="Toggle 360 Virtual Try-On Fitting Room"
-            >
-              <FaMagic className="text-rose-400" />
-              <span>{isMirrorOpen ? 'Close 360° Mirror' : '✨ 360° Try-On Room'}</span>
-            </button>
-
             <button
               onClick={() => setMobileFilterOpen(true)}
               className="lg:hidden flex items-center gap-2 bg-white border border-gray-300 text-gray-700 text-xs font-semibold px-4 py-2 rounded-xl shadow-sm cursor-pointer"
@@ -558,10 +551,6 @@ const Products = () => {
                     <ProductCard 
                       key={product._id || product.id || product.name} 
                       product={product} 
-                      onTryOn={(p) => {
-                        setEquippedProduct(p);
-                        setIsMirrorOpen(true);
-                      }}
                     />
                   ))}
                 </div>

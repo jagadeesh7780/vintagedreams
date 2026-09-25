@@ -57,6 +57,7 @@ const customerReviews = [
 ];
 
 const Home = () => {
+  const vintageProducts = fallbackProducts.filter(p => p.category === 'vintage-collection' || p.tags?.includes('vintage')).slice(0, 8);
   const [featuredProducts, setFeaturedProducts] = useState(() => fallbackProducts.slice(0, 4));
   const [trendingProducts, setTrendingProducts] = useState(() => fallbackProducts.slice(4, 8));
   const [bestSellers, setBestSellers] = useState(() => fallbackProducts.slice(8, 12));
@@ -129,11 +130,11 @@ const Home = () => {
 
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-2">
                 <Link
-                  to="/virtual-try-on"
+                  to="/products?category=vintage-collection"
                   className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-950 font-bold px-6 py-3.5 rounded-xl shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5"
                 >
-                  <FaMagic />
-                  <span>✨ 360° Try-On Studio</span>
+                  <FaCrown />
+                  <span>✨ Explore Vintage Collection</span>
                 </Link>
 
                 <Link
@@ -265,6 +266,43 @@ const Home = () => {
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* VINTAGE HERITAGE ARCHIVE & COLLECTION SPOTLIGHT */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="bg-gradient-to-br from-[#1c1917] via-[#292524] to-[#0c0a09] rounded-3xl p-6 sm:p-10 border border-amber-500/20 shadow-2xl relative overflow-hidden">
+          {/* Subtle Vintage Gold Glow */}
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-6 border-b border-white/10 gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 text-xs font-black tracking-widest uppercase px-3 py-1 rounded-full mb-2 border border-amber-500/30">
+                <FaCrown className="text-amber-400" />
+                <span>AUTHENTIC VINTAGE ARCHIVE 1950s–1990s</span>
+              </div>
+              <h2 className="font-serif-title text-2xl sm:text-4xl font-extrabold text-white">
+                The Vintage Dreams Heritage Collection
+              </h2>
+              <p className="text-stone-300 text-xs sm:text-sm mt-1 max-w-2xl">
+                Rare distressed leather jackets, handcrafted corduroy overshirts, Scottish wool blazers, antique Roman pocket watches, and heirloom jewellery.
+              </p>
+            </div>
+
+            <Link
+              to="/products?category=vintage-collection"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-950 text-xs sm:text-sm font-extrabold px-6 py-3.5 rounded-xl shadow-lg transition-all shrink-0 hover:scale-105"
+            >
+              <span>Explore Full Archive</span>
+              <FaArrowRight size={12} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+            {vintageProducts.slice(0, 4).map((product) => (
+              <ProductCard key={product._id || product.id || product.name} product={product} />
+            ))}
+          </div>
         </div>
       </section>
 

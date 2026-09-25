@@ -6,22 +6,17 @@ import {
   FaShoppingCart, 
   FaBolt, 
   FaEye, 
-  FaCheck, 
-  FaStar 
+  FaCheck
 } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import RatingStars from './RatingStars';
 import QuickViewModal from './QuickViewModal';
-import VirtualTryOnModal from './VirtualTryOnModal';
-import TryItNowButton from './TryItNowButton';
-import toast from 'react-hot-toast';
 
-const ProductCard = ({ product, onTryOn }) => {
+const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [quickViewOpen, setQuickViewOpen] = useState(false);
-  const [tryOnOpen, setTryOnOpen] = useState(false);
   const [adding, setAdding] = useState(false);
   const navigate = useNavigate();
 
@@ -35,6 +30,7 @@ const ProductCard = ({ product, onTryOn }) => {
 
   const isLowStock = product.stock && product.stock <= 5;
   const isNewArrival = product.isFeatured || (product.name && product.name.includes('Edition'));
+  const isVintage = product.category === 'vintage-collection' || product.isVintage || product.tags?.includes('vintage');
 
   const handleQuickAdd = (e) => {
     e.preventDefault();
@@ -68,15 +64,6 @@ const ProductCard = ({ product, onTryOn }) => {
     setQuickViewOpen(true);
   };
 
-  const handleOpenTryOn = (e) => {
-    if (e && e.preventDefault) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    setTryOnOpen(true);
-    if (onTryOn) onTryOn(product);
-  };
-
   const handleDragStart = (e) => {
     e.dataTransfer.setData('application/json', JSON.stringify(product));
     e.dataTransfer.setData('text/plain', product._id || product.id);
@@ -104,6 +91,11 @@ const ProductCard = ({ product, onTryOn }) => {
 
           {/* Badges */}
           <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
+            {isVintage && (
+              <span className="bg-gradient-to-r from-amber-600 to-amber-800 text-amber-50 text-[10px] font-black px-2 py-0.5 rounded shadow tracking-wider uppercase border border-amber-400/30">
+                ✨ VINTAGE ARCHIVE
+              </span>
+            )}
             {discountPercent > 0 && (
               <span className="bg-rose-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded shadow">
                 {discountPercent}% OFF
@@ -116,7 +108,7 @@ const ProductCard = ({ product, onTryOn }) => {
             )}
           </div>
 
-          {/* Action Overlay Buttons (Wishlist & QuickView & Try-On) */}
+          {/* Action Overlay Buttons (Wishlist & QuickView) */}
           <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 z-10">
             {/* Wishlist Heart */}
             <button
@@ -129,16 +121,6 @@ const ProductCard = ({ product, onTryOn }) => {
               }`}
             >
               {isLiked ? <FaHeart className="text-rose-600 animate-pulse" size={15} /> : <FaRegHeart size={15} />}
-            </button>
-
-            {/* Quick Try-On Icon Button */}
-            <button
-              onClick={handleOpenTryOn}
-              aria-label="Try On in Virtual Studio"
-              title="✨ Try It Now"
-              className="w-8 h-8 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center transition-all duration-200 shadow-md cursor-pointer group-hover:scale-110 active:scale-95"
-            >
-              <span className="text-[9px] font-black tracking-tight">TRY</span>
             </button>
 
             {/* Quick View */}
@@ -190,15 +172,6 @@ const ProductCard = ({ product, onTryOn }) => {
             </div>
           </div>
 
-          {/* Reusable TRY IT NOW Button */}
-          <div className="mb-2">
-            <TryItNowButton
-              product={product}
-              onClick={handleOpenTryOn}
-              size="sm"
-            />
-          </div>
-
           {/* TWO PROMINENT ACTION BUTTONS */}
           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100">
             <button
@@ -231,13 +204,6 @@ const ProductCard = ({ product, onTryOn }) => {
         product={product}
         isOpen={quickViewOpen}
         onClose={() => setQuickViewOpen(false)}
-      />
-
-      {/* Virtual Try-On Modal (Phase 1) */}
-      <VirtualTryOnModal
-        product={product}
-        isOpen={tryOnOpen}
-        onClose={() => setTryOnOpen(false)}
       />
     </>
   );

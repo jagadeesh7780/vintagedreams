@@ -75,6 +75,21 @@ const wFootwearImages = [
   'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=450&q=75'
 ];
 
+const vintageImages = [
+  'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1548883354-7622d03aca27?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=600&q=80'
+];
+
 const allSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
 const shoeSizes = ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'];
 const ringSizes = ['14', '16', '18', '20', '22', '24'];
@@ -222,6 +237,22 @@ const buildCatalog = () => {
     'Lavie Luxury Structured Vegan Leather Handbag',
     'Caprese Chic Multi-Pocket Shoulder Tote Bag'
   ], wFootwearImages, ['UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8', 'Standard Bag Size'], ['Tan Brown', 'Blush Nude', 'Classic Black', 'Metallic Gold'], 999, ['Vintage Dreams', 'Lavie', 'Caprese', 'Mochi']);
+
+  // 11. Vintage Heritage & Archive Collection (Unisex / Both)
+  addItems('vintage-collection', 'all', [
+    '1950s Bomber Distressed Genuine Leather Flight Jacket',
+    '1970s Retro Ribbed Corduroy Overshirt with Horn Buttons',
+    'Heritage Herringbone Scottish Wool Tweed Tailored Blazer',
+    '1980s Vintage Acid-Wash Classic Heavy Denim Trucker',
+    'Victorian Antique Steampunk Hand-Engraved Roman Pocket Watch',
+    '1960s Bohemian Prairie Floral Embroidered Swing Maxi Dress',
+    'Victorian Heirloom 925 Solid Silver Filigree Signet Ring',
+    '1970s Distressed Italian Suede High-Ankle Chelsea Boots',
+    'Artisanal Hand-Tooled Vintage Saddle Leather Crossbody Bag',
+    '1940s Retro Polka-Dot A-Line Tea Party Gown',
+    'Art Deco 1930s Emerald Cut Vintage Solitaire Ring',
+    'Vintage Royal Antique Gold Zari Brocade Wedding Saree'
+  ], vintageImages, allSizes, ['Aged Tobacco Brown', 'Vintage Olive', 'Cognac Tan', 'Distressed Indigo', 'Antique Gold', 'Charcoal Heather'], 1499, ['Vintage Archive 1974', 'Heritage Atelier', 'Retro Royale', 'Vintage Dreams']);
 
   return list;
 };
