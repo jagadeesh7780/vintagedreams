@@ -20,6 +20,7 @@ import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import Wishlist from './pages/Wishlist';
 import Checkout from './pages/Checkout';
+import BuyNow from './pages/BuyNow';
 import OrderSuccess from './pages/OrderSuccess';
 import MyOrders from './pages/MyOrders';
 import Login from './pages/Login';
@@ -71,7 +72,8 @@ function App() {
                   <Route path="/product/:id" element={<ProductDetails />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/wishlist" element={<Wishlist />} />
-                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/checkout" element={<BuyNow />} />
+                  <Route path="/buy-now" element={<BuyNow />} />
                   <Route path="/order-success" element={<OrderSuccess />} />
                   <Route path="/orders" element={<MyOrders />} />
                   <Route path="/login" element={<Login />} />

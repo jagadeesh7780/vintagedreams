@@ -29,11 +29,8 @@ const ProductCard = ({ product }) => {
   const handleOpenBuyNow = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const size = product.sizes?.[0] || 'M';
-    const color = product.colors?.[0] || 'Standard';
-    addToCart(product, 1, size, color);
     const pId = product._id || product.id;
-    navigate(`/checkout?productId=${pId}&size=${encodeURIComponent(size)}&color=${encodeURIComponent(color)}&quantity=1`);
+    navigate(`/buy-now?productId=${pId}`);
   };
 
   const handleWishlist = (e) => {
