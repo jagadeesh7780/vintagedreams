@@ -238,8 +238,17 @@ const buildCatalog = () => {
     'Caprese Chic Multi-Pocket Shoulder Tote Bag'
   ], wFootwearImages, ['UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8', 'Standard Bag Size'], ['Tan Brown', 'Blush Nude', 'Classic Black', 'Metallic Gold'], 999, ['Vintage Dreams', 'Lavie', 'Caprese', 'Mochi']);
 
-  // 11. Vintage Heritage & Archive Collection (Unisex / Both)
+  // 11. Vintage Heritage & 1990s Archive Collection (Unisex / Both)
   addItems('vintage-collection', 'all', [
+    '1990s Grunge Heavyweight Brushed Cotton Flannel Shirt',
+    '1990s Baggy Stonewashed Relaxed Fit Denim Jeans',
+    '1990s Retro Color-Block Windbreaker Athletic Jacket',
+    '1990s Minimalist Silk Bias-Cut Party Slip Dress',
+    '1990s Heavyweight Boxy Graphic Rock Band Tour Tee',
+    '1990s Chunky Leather Lug-Sole Combat Boots',
+    '1990s Clueless Plaid Pleated Mini Skirt & Cardigan Set',
+    '1990s Vintage Gold-Tone Oval Rimless Sunglasses',
+    '1990s Retro Sherpa-Lined Corduroy Trucker Jacket',
     '1950s Bomber Distressed Genuine Leather Flight Jacket',
     '1970s Retro Ribbed Corduroy Overshirt with Horn Buttons',
     'Heritage Herringbone Scottish Wool Tweed Tailored Blazer',
@@ -252,7 +261,7 @@ const buildCatalog = () => {
     '1940s Retro Polka-Dot A-Line Tea Party Gown',
     'Art Deco 1930s Emerald Cut Vintage Solitaire Ring',
     'Vintage Royal Antique Gold Zari Brocade Wedding Saree'
-  ], vintageImages, allSizes, ['Aged Tobacco Brown', 'Vintage Olive', 'Cognac Tan', 'Distressed Indigo', 'Antique Gold', 'Charcoal Heather'], 1499, ['Vintage Archive 1974', 'Heritage Atelier', 'Retro Royale', 'Vintage Dreams']);
+  ], vintageImages, allSizes, ['Aged Tobacco Brown', 'Vintage Olive', 'Cognac Tan', 'Distressed Indigo', 'Antique Gold', 'Charcoal Heather', 'Stonewashed Blue'], 1499, ['Vintage 90s Atelier', 'Heritage 1974', 'Retro Royale', 'Vintage Dreams']);
 
   return list;
 };

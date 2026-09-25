@@ -27,6 +27,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import About from './pages/About';
 import AdminDashboard from './pages/AdminDashboard';
+import Contact from './pages/Contact';
+import FAQ from './pages/FAQ';
+import PolicyPage from './pages/PolicyPage';
 
 function App() {
   return (
@@ -85,6 +88,14 @@ function App() {
                   <Route path="/register" element={<Register />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/help" element={<FAQ />} />
+                  <Route path="/shipping" element={<PolicyPage />} />
+                  <Route path="/returns" element={<PolicyPage />} />
+                  <Route path="/refund" element={<PolicyPage />} />
+                  <Route path="/privacy" element={<PolicyPage />} />
+                  <Route path="/terms" element={<PolicyPage />} />
                   {/* Catch-all wildcard route */}
                   <Route path="*" element={<Products />} />
                 </Routes>

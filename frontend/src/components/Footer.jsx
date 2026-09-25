@@ -102,46 +102,48 @@ const Footer = () => {
           {/* Quick Links */}
           <div>
             <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
-              Quick Links
+              Explore Store
             </h3>
             <ul className="space-y-2.5 text-sm text-gray-400">
               <li><Link to="/" className="hover:text-rose-400 transition-colors">Home</Link></li>
-              <li><Link to="/products" className="hover:text-rose-400 transition-colors">All Products</Link></li>
+              <li><Link to="/products?category=vintage-collection" className="hover:text-amber-400 font-bold transition-colors text-amber-300">✨ Vintage Collection (90s)</Link></li>
+              <li><Link to="/products" className="hover:text-rose-400 transition-colors">All Products (500+)</Link></li>
               <li><Link to="/products?gender=men" className="hover:text-rose-400 transition-colors">Men's Fashion</Link></li>
               <li><Link to="/products?gender=women" className="hover:text-rose-400 transition-colors">Women's Fashion</Link></li>
-              <li><Link to="/about" className="hover:text-rose-400 transition-colors">About Us</Link></li>
               <li><Link to="/orders" className="hover:text-rose-400 transition-colors">Track Orders</Link></li>
+              <li><Link to="/wishlist" className="hover:text-rose-400 transition-colors">Saved Wishlist</Link></li>
             </ul>
           </div>
 
-          {/* Top Categories */}
+          {/* Customer Service & Policies */}
           <div>
             <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
-              Categories
+              Customer Care
             </h3>
             <ul className="space-y-2.5 text-sm text-gray-400">
-              <li><Link to="/products?category=shirts" className="hover:text-rose-400 transition-colors">Casual & Formal Shirts</Link></li>
-              <li><Link to="/products?category=pants" className="hover:text-rose-400 transition-colors">Pants & Utility Cargos</Link></li>
-              <li><Link to="/products?category=shoes" className="hover:text-rose-400 transition-colors">Shoes & Sneakers</Link></li>
-              <li><Link to="/products?category=watches" className="hover:text-rose-400 transition-colors">Luxury Wristwatches</Link></li>
-              <li><Link to="/products?category=rings" className="hover:text-rose-400 transition-colors">925 Silver Rings</Link></li>
-              <li><Link to="/products?category=women-dresses" className="hover:text-rose-400 transition-colors">Evening & Midi Dresses</Link></li>
+              <li><Link to="/faq" className="hover:text-rose-400 transition-colors">Help Center & FAQ</Link></li>
+              <li><Link to="/contact" className="hover:text-rose-400 transition-colors">Contact Support</Link></li>
+              <li><Link to="/shipping" className="hover:text-rose-400 transition-colors">Shipping & Delivery</Link></li>
+              <li><Link to="/returns" className="hover:text-rose-400 transition-colors">7-Day Easy Returns</Link></li>
+              <li><Link to="/privacy" className="hover:text-rose-400 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-rose-400 transition-colors">Terms of Service</Link></li>
+              <li><Link to="/about" className="hover:text-rose-400 transition-colors">About Vintage Dreams</Link></li>
             </ul>
           </div>
 
           {/* Contact Details */}
           <div>
             <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">
-              Contact Us
+              Direct Contact
             </h3>
             <ul className="space-y-3 text-sm text-gray-400">
               <li className="flex items-start gap-2.5">
                 <FaPhoneAlt className="text-rose-500 mt-1 shrink-0" size={14} />
-                <a href="tel:7780597718" className="hover:text-white transition-colors">+91 77805 97718</a>
+                <a href="tel:7780597718" className="hover:text-white transition-colors font-medium">+91 77805 97718</a>
               </li>
               <li className="flex items-start gap-2.5">
                 <FaWhatsapp className="text-emerald-500 mt-1 shrink-0" size={15} />
-                <a href="https://wa.me/917780597718" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">+91 77805 97718</a>
+                <a href="https://wa.me/917780597718" target="_blank" rel="noreferrer" className="hover:text-white transition-colors font-medium">+91 77805 97718</a>
               </li>
               <li className="flex items-start gap-2.5">
                 <FaEnvelope className="text-rose-500 mt-1 shrink-0" size={14} />
@@ -149,7 +151,12 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-2.5">
                 <FaMapMarkerAlt className="text-rose-500 mt-1 shrink-0" size={14} />
-                <span>Hyderabad, Telangana, India</span>
+                <span>Jubilee Hills, Hyderabad, India</span>
+              </li>
+              <li className="pt-2">
+                <Link to="/contact" className="inline-block bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg transition-colors border border-white/10">
+                  Send Message Form →
+                </Link>
               </li>
             </ul>
           </div>
@@ -160,8 +167,16 @@ const Footer = () => {
       {/* Bottom Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 border-t border-gray-900 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-3">
         <p>&copy; {new Date().getFullYear()} Vintage Dreams. All rights reserved.</p>
-        <div className="flex items-center gap-4">
-          <span>Supported Payments: Razorpay · UPI · Cards · NetBanking · COD</span>
+        <div className="flex items-center gap-4 flex-wrap justify-center">
+          <Link to="/privacy" className="hover:text-gray-300 transition-colors">Privacy</Link>
+          <span>·</span>
+          <Link to="/terms" className="hover:text-gray-300 transition-colors">Terms</Link>
+          <span>·</span>
+          <Link to="/shipping" className="hover:text-gray-300 transition-colors">Shipping</Link>
+          <span>·</span>
+          <Link to="/returns" className="hover:text-gray-300 transition-colors">Returns</Link>
+          <span>·</span>
+          <Link to="/faq" className="hover:text-gray-300 transition-colors">FAQ</Link>
         </div>
       </div>
     </footer>

@@ -20,10 +20,28 @@ const MyOrders = () => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        const res = await api.get('/orders/myorders');
-        if (res.data.success) {
-          setOrders(res.data.orders);
+        let apiOrders = [];
+        try {
+          const res = await api.get('/orders/myorders');
+          if (res.data.success && Array.isArray(res.data.orders)) {
+            apiOrders = res.data.orders;
+          }
+        } catch (apiErr) {
+          console.warn('Backend orders load notice:', apiErr.message);
         }
+
+        const localOrders = JSON.parse(localStorage.getItem('vintage_user_orders') || '[]');
+        
+        // Merge without duplicate IDs
+        const existingIds = new Set(apiOrders.map(o => o._id));
+        const combined = [...apiOrders];
+        localOrders.forEach(lo => {
+          if (!existingIds.has(lo._id)) {
+            combined.push(lo);
+          }
+        });
+
+        setOrders(combined);
       } catch (error) {
         console.error('Error fetching orders:', error);
       } finally {

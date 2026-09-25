@@ -51,20 +51,34 @@ const AdminDashboard = () => {
   const fetchAdminData = async () => {
     try {
       setLoading(true);
-      const [prodRes, orderRes] = await Promise.allSettled([
-        api.get('/products?limit=100'),
-        api.get('/orders')
-      ]);
+      let apiProds = initialProducts;
+      let apiOrders = [];
 
-      if (prodRes.status === 'fulfilled' && prodRes.value.data.success) {
-        setProductsList(prodRes.value.data.products);
-      } else {
-        setProductsList(initialProducts);
-      }
+      try {
+        const prodRes = await api.get('/products?limit=100');
+        if (prodRes.data.success && prodRes.data.products?.length > 0) {
+          apiProds = prodRes.data.products;
+        }
+      } catch (e) {}
 
-      if (orderRes.status === 'fulfilled' && orderRes.value.data.success) {
-        setOrdersList(orderRes.value.data.orders);
-      }
+      try {
+        const orderRes = await api.get('/orders');
+        if (orderRes.data.success && orderRes.data.orders?.length > 0) {
+          apiOrders = orderRes.data.orders;
+        }
+      } catch (e) {}
+
+      const localOrders = JSON.parse(localStorage.getItem('vintage_all_orders') || localStorage.getItem('vintage_user_orders') || '[]');
+      const orderMap = new Map();
+      apiOrders.forEach(o => orderMap.set(o._id, o));
+      localOrders.forEach(o => {
+        if (!orderMap.has(o._id)) {
+          orderMap.set(o._id, o);
+        }
+      });
+
+      setProductsList(apiProds);
+      setOrdersList(Array.from(orderMap.values()));
     } catch (e) {
       console.error(e);
       setProductsList(initialProducts);

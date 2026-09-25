@@ -241,11 +241,26 @@ const BuyNow = () => {
       itemsPrice: rawSubtotal,
       discountPrice: totalSavings,
       shippingPrice: deliveryCharges,
-      totalPrice: totalPayable
+      totalPrice: totalPayable,
+      createdAt: new Date().toISOString(),
+      orderStatus: 'Processing',
+      isPaid: paymentMethod !== 'COD',
+      _id: orderId
+    };
+
+    const saveOrderToStorage = (finalOrder) => {
+      try {
+        const existingUserOrders = JSON.parse(localStorage.getItem('vintage_user_orders') || '[]');
+        localStorage.setItem('vintage_user_orders', JSON.stringify([finalOrder, ...existingUserOrders]));
+
+        const existingAllOrders = JSON.parse(localStorage.getItem('vintage_all_orders') || '[]');
+        localStorage.setItem('vintage_all_orders', JSON.stringify([finalOrder, ...existingAllOrders]));
+      } catch (e) {}
     };
 
     try {
       if (paymentMethod === 'COD') {
+        saveOrderToStorage(orderPayload);
         try {
           await api.post('/orders', orderPayload);
         } catch (apiErr) {
