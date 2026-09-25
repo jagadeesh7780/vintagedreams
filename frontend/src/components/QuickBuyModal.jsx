@@ -18,14 +18,14 @@ const QuickBuyModal = ({ product, isOpen, onClose }) => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
+  const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedColor, setSelectedColor] = useState('Standard');
+  const [quantity, setQuantity] = useState(1);
+
   if (!isOpen || !product) return null;
 
   const sizes = product.sizes && product.sizes.length > 0 ? product.sizes : defaultSizes;
   const colors = product.colors && product.colors.length > 0 ? product.colors : ['Black', 'White', 'Navy Blue', 'Wine Red'];
-
-  const [selectedSize, setSelectedSize] = useState(sizes[0] || 'M');
-  const [selectedColor, setSelectedColor] = useState(colors[0] || 'Standard');
-  const [quantity, setQuantity] = useState(1);
 
   const image = product.images?.[0] || product.image || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500';
   const discountPercent = product.originalPrice && product.originalPrice > product.price

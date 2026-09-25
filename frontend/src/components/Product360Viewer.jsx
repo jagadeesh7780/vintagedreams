@@ -30,20 +30,6 @@ const Product360Viewer = ({ product, className = '', onAngleChange }) => {
   const dragStartAngle = useRef(0);
   const containerRef = useRef(null);
 
-  if (!product) return null;
-
-  // Multi-frame resolution
-  const availableImages = Array.isArray(product.images) && product.images.length > 0 
-    ? product.images 
-    : [product.image || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500'];
-
-  const hasMultipleFrames = availableImages.length > 1 || (product.rotationFrames && product.rotationFrames.length > 1);
-  const totalFrames = (product.rotationFrames && product.rotationFrames.length) || availableImages.length;
-
-  // Map 0-360 angle to active frame index
-  const activeFrameIndex = Math.floor(((angle % 360) / 360) * totalFrames) % totalFrames;
-  const activeImage = (product.rotationFrames && product.rotationFrames[activeFrameIndex]) || availableImages[activeFrameIndex] || availableImages[0];
-
   // Auto spin timer
   useEffect(() => {
     let timer;
@@ -58,6 +44,20 @@ const Product360Viewer = ({ product, className = '', onAngleChange }) => {
     }
     return () => clearInterval(timer);
   }, [isAutoSpin, onAngleChange]);
+
+  if (!product) return null;
+
+  // Multi-frame resolution
+  const availableImages = Array.isArray(product?.images) && product?.images.length > 0 
+    ? product.images 
+    : [product?.image || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500'];
+
+  const hasMultipleFrames = availableImages.length > 1 || (product?.rotationFrames && product?.rotationFrames.length > 1);
+  const totalFrames = (product?.rotationFrames && product?.rotationFrames.length) || availableImages.length;
+
+  // Map 0-360 angle to active frame index
+  const activeFrameIndex = Math.floor(((angle % 360) / 360) * totalFrames) % totalFrames;
+  const activeImage = (product?.rotationFrames && product?.rotationFrames[activeFrameIndex]) || availableImages[activeFrameIndex] || availableImages[0];
 
   // Mouse & Touch Drag rotation handlers
   const handleDragStart = (e) => {
