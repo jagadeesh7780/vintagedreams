@@ -82,9 +82,11 @@ const VirtualMirror360 = ({
   const dragStartX = useRef(0);
   const dragStartAngle = useRef(0);
 
-  // Equipped Garments State (Upper, Lower, Accessory)
-  const [equippedUpper, setEquippedUpper] = useState(activeEquippedProduct || null);
+  // Equipped Garments State (FullBody vs Upper + Lower + Accessory + Footwear)
+  const [equippedFullBody, setEquippedFullBody] = useState(null);
+  const [equippedUpper, setEquippedUpper] = useState(null);
   const [equippedLower, setEquippedLower] = useState(null);
+  const [equippedFootwear, setEquippedFootwear] = useState(null);
   const [equippedAccessory, setEquippedAccessory] = useState(null);
   
   // Selected variant for the active garment
@@ -118,19 +120,119 @@ const VirtualMirror360 = ({
     };
   }, []);
 
+  // Smart Classifier for Direct Fitting
+  const classifyItem = (item) => {
+    if (!item) return 'unknown';
+    const cat = (item.category || '').toLowerCase();
+    const name = (item.name || '').toLowerCase();
+    const gender = (item.gender || '').toLowerCase();
+
+    // Full-body dresses, sarees, gowns, anarkalis, lehengas, kurtis
+    if (
+      cat.includes('dress') ||
+      cat.includes('saree') ||
+      cat.includes('gown') ||
+      cat.includes('anarkali') ||
+      cat.includes('lehenga') ||
+      cat.includes('women-dresses') ||
+      cat.includes('women-sarees') ||
+      name.includes('dress') ||
+      name.includes('saree') ||
+      name.includes('gown') ||
+      name.includes('anarkali') ||
+      name.includes('lehenga') ||
+      name.includes('silk saree') ||
+      name.includes('kanjivaram') ||
+      name.includes('banarasi')
+    ) {
+      return 'fullbody';
+    }
+
+    // Lower body (pants, cargos, jeans, trousers, bottoms)
+    if (
+      cat.includes('pant') ||
+      cat.includes('cargo') ||
+      cat.includes('jean') ||
+      cat.includes('trouser') ||
+      cat.includes('bottom') ||
+      name.includes('pant') ||
+      name.includes('cargo') ||
+      name.includes('jeans') ||
+      name.includes('trouser')
+    ) {
+      return 'lower';
+    }
+
+    // Footwear (shoes, sneakers, footwear)
+    if (
+      cat.includes('shoe') ||
+      cat.includes('sneaker') ||
+      cat.includes('footwear') ||
+      cat.includes('women-footwear') ||
+      name.includes('shoe') ||
+      name.includes('sneaker') ||
+      name.includes('boot') ||
+      name.includes('heel')
+    ) {
+      return 'footwear';
+    }
+
+    // Accessories (watches, rings, jewelry)
+    if (
+      cat.includes('watch') ||
+      cat.includes('ring') ||
+      cat.includes('jewel') ||
+      cat.includes('women-jewelry') ||
+      name.includes('watch') ||
+      name.includes('ring') ||
+      name.includes('necklace')
+    ) {
+      return 'accessory';
+    }
+
+    // Upper body (shirts, tops, polos, jackets, t-shirts)
+    return 'upper';
+  };
+
   const equipItem = (item) => {
     if (!item) return;
+    const type = classifyItem(item);
+    const gender = (item.gender || '').toLowerCase();
     const cat = (item.category || '').toLowerCase();
-    
-    if (cat.includes('pant') || cat.includes('cargo') || cat.includes('jeans') || cat.includes('bottom')) {
+
+    // Auto-switch model preset to match gender if in preset mode
+    if (avatarMode === 'preset') {
+      if (gender === 'women' || cat.startsWith('women') || type === 'fullbody') {
+        const femalePreset = MODEL_PRESETS.find(p => p.gender === 'women');
+        if (femalePreset) setSelectedPreset(femalePreset);
+      } else if (gender === 'men') {
+        const malePreset = MODEL_PRESETS.find(p => p.gender === 'men');
+        if (malePreset) setSelectedPreset(malePreset);
+      }
+    }
+
+    if (type === 'fullbody') {
+      // Direct fit full body dress/saree - remove any separate tops/pants so only the dress is fitted!
+      setEquippedFullBody(item);
+      setEquippedUpper(null);
+      setEquippedLower(null);
+      toast.success(`✨ Fitted ${item.name} onto 360° Model!`, { icon: '👗' });
+    } else if (type === 'lower') {
+      // Direct fit pants - clear full body dress if any
+      setEquippedFullBody(null);
       setEquippedLower(item);
-      toast.success(`Equipped ${item.name} to Lower Body`, { icon: '👖' });
-    } else if (cat.includes('watch') || cat.includes('ring') || cat.includes('jewelry') || cat.includes('shoe')) {
+      toast.success(`👖 Fitted ${item.name} to Lower Body`, { icon: '👖' });
+    } else if (type === 'footwear') {
+      setEquippedFootwear(item);
+      toast.success(`👟 Fitted ${item.name}`, { icon: '👟' });
+    } else if (type === 'accessory') {
       setEquippedAccessory(item);
-      toast.success(`Equipped ${item.name}`, { icon: '✨' });
+      toast.success(`💍 Equipped ${item.name}`, { icon: '✨' });
     } else {
+      // Direct fit upper body shirt/top - clear full body dress if any
+      setEquippedFullBody(null);
       setEquippedUpper(item);
-      toast.success(`Equipped ${item.name} on Model!`, { icon: '👕' });
+      toast.success(`👕 Fitted ${item.name} on Model!`, { icon: '👕' });
     }
 
     if (item.sizes && item.sizes.length > 0) {
@@ -259,11 +361,11 @@ const VirtualMirror360 = ({
     (rotationAngle >= 135 && rotationAngle < 225) ? 'Back View 180°' : 'Left Side 270°';
 
   // Active primary garment to purchase
-  const activeGarment = equippedUpper || equippedLower || equippedAccessory;
+  const activeGarment = equippedFullBody || equippedUpper || equippedLower || equippedFootwear || equippedAccessory;
 
   const handleAddToCart = () => {
     if (!activeGarment) {
-      toast.error('Please equip a garment first by dragging or clicking Try On!');
+      toast.error('Please equip a garment first by selecting or clicking Try On!');
       return;
     }
     setAddingToCart(true);
@@ -286,11 +388,15 @@ const VirtualMirror360 = ({
   };
 
   const clearAllGarments = () => {
+    setEquippedFullBody(null);
     setEquippedUpper(null);
     setEquippedLower(null);
+    setEquippedFootwear(null);
     setEquippedAccessory(null);
     toast('Fitting room cleared', { icon: '🧹' });
   };
+
+  const hasAnyEquipped = equippedFullBody || equippedUpper || equippedLower || equippedFootwear || equippedAccessory;
 
   return (
     <aside
@@ -465,8 +571,35 @@ const VirtualMirror360 = ({
                 draggable={false}
               />
 
-              {/* OVERLAY GARMENTS (Equipped Tops / Shirts / Dresses) */}
-              {equippedUpper && (
+              {/* 1. FULL BODY GARMENT (Dresses, Sarees, Gowns, Kurtis, Anarkalis) */}
+              {equippedFullBody && (
+                <div 
+                  className="absolute inset-0 flex items-center justify-center pointer-events-none transition-all duration-300"
+                  style={{
+                    opacity: isBackView ? 0.88 : 0.96,
+                    filter: isBackView 
+                      ? 'contrast(1.1) brightness(0.9) drop-shadow(0 20px 30px rgba(0,0,0,0.4))' 
+                      : 'drop-shadow(0 20px 35px rgba(0,0,0,0.38))'
+                  }}
+                >
+                  <div className="relative w-[84%] max-w-[320px] top-[14%] h-[76%] flex items-center justify-center transform hover:scale-105 transition-transform">
+                    <img
+                      src={equippedFullBody.images?.[0] || equippedFullBody.image}
+                      alt={equippedFullBody.name}
+                      className="w-full h-full object-contain mix-blend-multiply drop-shadow-2xl"
+                      draggable={false}
+                    />
+                    {isBackView && (
+                      <span className="absolute top-3 right-3 bg-black/80 backdrop-blur-xs text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow">
+                        360° Back View
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* 2. OVERLAY GARMENTS: EQUIPPED UPPER (Tops / Shirts / Polos / Jackets) */}
+              {!equippedFullBody && equippedUpper && (
                 <div 
                   className="absolute inset-0 flex items-center justify-center pointer-events-none transition-all duration-300"
                   style={{
@@ -490,8 +623,8 @@ const VirtualMirror360 = ({
                 </div>
               )}
 
-              {/* OVERLAY GARMENTS (Equipped Lower / Pants) */}
-              {equippedLower && (
+              {/* 3. OVERLAY GARMENTS: EQUIPPED LOWER (Pants / Cargos / Jeans) */}
+              {!equippedFullBody && equippedLower && (
                 <div 
                   className="absolute inset-0 flex items-center justify-center pointer-events-none"
                   style={{
@@ -510,9 +643,30 @@ const VirtualMirror360 = ({
                 </div>
               )}
 
-              {/* OVERLAY ACCESSORIES (Watches / Rings / Shoes) */}
+              {/* 4. OVERLAY FOOTWEAR (Shoes / Sneakers / Boots) */}
+              {equippedFootwear && (
+                <div 
+                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                  style={{
+                    opacity: 0.95,
+                    filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.35))'
+                  }}
+                >
+                  <div className="relative w-[50%] max-w-[170px] top-[80%]">
+                    <img
+                      src={equippedFootwear.images?.[0] || equippedFootwear.image}
+                      alt={equippedFootwear.name}
+                      className="w-full h-auto object-contain mix-blend-multiply"
+                      draggable={false}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* 5. OVERLAY ACCESSORIES (Watches / Rings / Jewelry) */}
               {equippedAccessory && (
-                <div className="absolute bottom-6 right-6 w-20 h-20 bg-white/90 backdrop-blur-md rounded-2xl p-2 border border-gray-200 shadow-xl pointer-events-none flex flex-col items-center justify-center text-center">
+                <div className="absolute bottom-6 right-6 w-24 h-24 bg-white/95 backdrop-blur-md rounded-2xl p-2.5 border border-gray-200 shadow-xl pointer-events-none flex flex-col items-center justify-center text-center space-y-1">
+                  <span className="text-[8px] font-extrabold text-rose-600 uppercase tracking-wider">Accessory</span>
                   <img
                     src={equippedAccessory.images?.[0] || equippedAccessory.image}
                     alt={equippedAccessory.name}
@@ -526,14 +680,14 @@ const VirtualMirror360 = ({
             </div>
 
             {/* Empty fitting room prompt if nothing is equipped */}
-            {!equippedUpper && !equippedLower && !equippedAccessory && (
+            {!hasAnyEquipped && (
               <div className="absolute inset-x-4 top-4 bg-white/90 backdrop-blur-md rounded-2xl p-3 border border-gray-200 shadow-lg text-center space-y-1 z-20">
                 <p className="text-[11px] font-bold text-gray-900 flex items-center justify-center gap-1.5">
                   <FaMagic className="text-rose-600" />
-                  <span>Drag & Drop Any Product Here!</span>
+                  <span>Select Any Product to Direct-Fit On Model!</span>
                 </p>
                 <p className="text-[10px] text-gray-500">
-                  Or click <strong className="text-rose-600">"✨ Try On"</strong> on any product card on the left.
+                  Click <strong className="text-rose-600">"✨ Try On"</strong> on any shirt, pant, dress, or saree.
                 </p>
               </div>
             )}

@@ -65,22 +65,94 @@ const PRESET_MODELS = [
 ];
 
 // Intelligent category placement coordinates (x%, y%, width%, height%)
-const getInitialPlacement = (category = '') => {
-  const cat = category.toLowerCase();
-  if (cat.includes('pant') || cat.includes('cargo') || cat.includes('jeans')) {
-    return { x: 50, y: 56, scale: 1.05, rotate: 0, opacity: 0.95 };
+export const classifyGarment = (item) => {
+  if (!item) return 'unknown';
+  const cat = (item.category || '').toLowerCase();
+  const name = (item.name || '').toLowerCase();
+
+  // Full-body dresses, sarees, gowns, anarkalis, lehengas, kurtis
+  if (
+    cat.includes('dress') ||
+    cat.includes('saree') ||
+    cat.includes('gown') ||
+    cat.includes('anarkali') ||
+    cat.includes('lehenga') ||
+    cat.includes('women-dresses') ||
+    cat.includes('women-sarees') ||
+    name.includes('dress') ||
+    name.includes('saree') ||
+    name.includes('gown') ||
+    name.includes('anarkali') ||
+    name.includes('lehenga') ||
+    name.includes('silk saree') ||
+    name.includes('kanjivaram') ||
+    name.includes('banarasi')
+  ) {
+    return 'fullbody';
   }
-  if (cat.includes('shoe') || cat.includes('sneaker') || cat.includes('footwear')) {
-    return { x: 50, y: 82, scale: 0.85, rotate: 0, opacity: 0.95 };
+
+  // Lower body (pants, cargos, jeans, trousers, bottoms)
+  if (
+    cat.includes('pant') ||
+    cat.includes('cargo') ||
+    cat.includes('jean') ||
+    cat.includes('trouser') ||
+    cat.includes('bottom') ||
+    name.includes('pant') ||
+    name.includes('cargo') ||
+    name.includes('jeans') ||
+    name.includes('trouser')
+  ) {
+    return 'lower';
   }
-  if (cat.includes('watch')) {
-    return { x: 28, y: 46, scale: 0.55, rotate: 10, opacity: 1 };
+
+  // Footwear (shoes, sneakers, footwear)
+  if (
+    cat.includes('shoe') ||
+    cat.includes('sneaker') ||
+    cat.includes('footwear') ||
+    cat.includes('women-footwear') ||
+    name.includes('shoe') ||
+    name.includes('sneaker') ||
+    name.includes('boot') ||
+    name.includes('heel')
+  ) {
+    return 'footwear';
   }
-  if (cat.includes('ring') || cat.includes('jewelry')) {
-    return { x: 50, y: 32, scale: 0.45, rotate: 0, opacity: 1 };
+
+  // Accessories (watches, rings, jewelry)
+  if (
+    cat.includes('watch') ||
+    cat.includes('ring') ||
+    cat.includes('jewel') ||
+    cat.includes('women-jewelry') ||
+    name.includes('watch') ||
+    name.includes('ring') ||
+    name.includes('necklace')
+  ) {
+    return 'accessory';
   }
-  // Default upper body (Shirts, Polos, Dresses, Sarees, Tops)
-  return { x: 50, y: 24, scale: 1.15, rotate: 0, opacity: 0.95 };
+
+  // Upper body (shirts, tops, polos, jackets, t-shirts)
+  return 'upper';
+};
+
+const getInitialPlacement = (category = '', name = '') => {
+  const type = classifyGarment({ category, name });
+  if (type === 'fullbody') {
+    return { x: 50, y: 48, scale: 1.15, rotate: 0, opacity: 0.98 };
+  }
+  if (type === 'lower') {
+    return { x: 50, y: 64, scale: 1.05, rotate: 0, opacity: 0.96 };
+  }
+  if (type === 'footwear') {
+    return { x: 50, y: 86, scale: 0.85, rotate: 0, opacity: 0.96 };
+  }
+  if (type === 'accessory') {
+    return { x: 50, y: 32, scale: 0.55, rotate: 0, opacity: 1 };
+  }
+  // Default upper body (Shirts, Polos, Tops)
+  return { x: 50, y: 32, scale: 1.12, rotate: 0, opacity: 0.96 };
 };
 
 const VirtualTryOn = () => {
@@ -105,9 +177,29 @@ const VirtualTryOn = () => {
   const [selectedColor, setSelectedColor] = useState('Standard');
   const [quantity, setQuantity] = useState(1);
 
+  // Equipped Wardrobe Slots (FullBody vs Upper + Lower + Footwear + Accessory)
+  const [equippedFullBody, setEquippedFullBody] = useState(() => {
+    return classifyGarment(initialProduct) === 'fullbody' ? initialProduct : null;
+  });
+  const [equippedUpper, setEquippedUpper] = useState(() => {
+    return classifyGarment(initialProduct) === 'upper' ? initialProduct : null;
+  });
+  const [equippedLower, setEquippedLower] = useState(() => {
+    return classifyGarment(initialProduct) === 'lower' ? initialProduct : null;
+  });
+  const [equippedFootwear, setEquippedFootwear] = useState(() => {
+    return classifyGarment(initialProduct) === 'footwear' ? initialProduct : null;
+  });
+  const [equippedAccessory, setEquippedAccessory] = useState(() => {
+    return classifyGarment(initialProduct) === 'accessory' ? initialProduct : null;
+  });
+
   // User Photo / Avatar state
   const [userPhotoUrl, setUserPhotoUrl] = useState(null);
-  const [activePreset, setActivePreset] = useState(PRESET_MODELS[0]);
+  const [activePreset, setActivePreset] = useState(() => {
+    const isWomen = initialProduct?.gender === 'women' || (initialProduct?.category || '').startsWith('women') || classifyGarment(initialProduct) === 'fullbody';
+    return isWomen ? PRESET_MODELS[1] : PRESET_MODELS[0];
+  });
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState(null);
 
@@ -116,7 +208,7 @@ const VirtualTryOn = () => {
   const [canvasPan, setCanvasPan] = useState({ x: 0, y: 0 });
 
   // Product Overlay Transform State
-  const [overlayPlacement, setOverlayPlacement] = useState(() => getInitialPlacement(initialProduct?.category));
+  const [overlayPlacement, setOverlayPlacement] = useState(() => getInitialPlacement(initialProduct?.category, initialProduct?.name));
   const [isDraggingOverlay, setIsDraggingOverlay] = useState(false);
   const [isDragOverCanvas, setIsDragOverCanvas] = useState(false);
   const [show360Modal, setShow360Modal] = useState(false);
@@ -127,20 +219,67 @@ const VirtualTryOn = () => {
   const videoRef = useRef(null);
   const captureCanvasRef = useRef(null);
   const fileInputRef = useRef(null);
-  const dragStartRef = useRef({ mouseX: 0, mouseY: 0, initialX: 50, initialY: 24 });
+  const dragStartRef = useRef({ mouseX: 0, mouseY: 0, initialX: 50, initialY: 32 });
+
+  // Intelligent Equip Handler
+  const equipProduct = (product, showToast = true) => {
+    if (!product) return;
+    setActiveProduct(product);
+    const type = classifyGarment(product);
+    const gender = (product.gender || '').toLowerCase();
+    const cat = (product.category || '').toLowerCase();
+
+    // Auto-switch model preset to match gender if user hasn't uploaded a photo
+    if (!userPhotoUrl) {
+      if (gender === 'women' || cat.startsWith('women') || type === 'fullbody') {
+        const femalePreset = PRESET_MODELS.find(p => p.gender === 'women');
+        if (femalePreset) setActivePreset(femalePreset);
+      } else if (gender === 'men') {
+        const malePreset = PRESET_MODELS.find(p => p.gender === 'men');
+        if (malePreset) setActivePreset(malePreset);
+      }
+    }
+
+    setOverlayPlacement(getInitialPlacement(product.category, product.name));
+
+    if (type === 'fullbody') {
+      // Full-body dress/saree replaces separate tops and pants completely
+      setEquippedFullBody(product);
+      setEquippedUpper(null);
+      setEquippedLower(null);
+      if (showToast) toast.success(`✨ Fitted ${product.name} seamlessly!`, { icon: '👗' });
+    } else if (type === 'lower') {
+      // Pants/cargos clear full body dress
+      setEquippedFullBody(null);
+      setEquippedLower(product);
+      if (showToast) toast.success(`👖 Fitted ${product.name} to Lower Body`, { icon: '👖' });
+    } else if (type === 'footwear') {
+      setEquippedFootwear(product);
+      if (showToast) toast.success(`👟 Fitted ${product.name}`, { icon: '👟' });
+    } else if (type === 'accessory') {
+      setEquippedAccessory(product);
+      if (showToast) toast.success(`💍 Equipped ${product.name}`, { icon: '✨' });
+    } else {
+      // Upper body shirts/tops clear full body dress
+      setEquippedFullBody(null);
+      setEquippedUpper(product);
+      if (showToast) toast.success(`👕 Fitted ${product.name} on Model!`, { icon: '👕' });
+    }
+
+    if (product.sizes && product.sizes.length > 0) {
+      setSelectedSize(product.sizes[0]);
+    }
+    if (product.colors && product.colors.length > 0) {
+      setSelectedColor(product.colors[0]);
+    }
+  };
 
   // Sync when product changes
   useEffect(() => {
     if (activeProduct) {
-      setOverlayPlacement(getInitialPlacement(activeProduct.category));
-      if (activeProduct.sizes && activeProduct.sizes.length > 0) {
-        setSelectedSize(activeProduct.sizes[0]);
-      }
-      if (activeProduct.colors && activeProduct.colors.length > 0) {
-        setSelectedColor(activeProduct.colors[0]);
-      }
+      equipProduct(activeProduct, false);
     }
-  }, [activeProduct]);
+  }, [activeProduct?._id || activeProduct?.id]);
 
   // Clean up camera on unmount
   useEffect(() => {
@@ -608,36 +747,117 @@ const VirtualTryOn = () => {
                     draggable={false}
                   />
 
-                  {/* MOVABLE, RESIZABLE, ROTATABLE PRODUCT OVERLAY */}
-                  {activeProduct && (
+                  {/* 1. FULL BODY GARMENT (Dresses, Sarees, Gowns, Anarkalis, Kurtis) */}
+                  {equippedFullBody && (
                     <div
-                      onMouseDown={handleOverlayMouseDown}
-                      onTouchStart={handleOverlayMouseDown}
                       style={{
                         position: 'absolute',
                         left: `${overlayPlacement.x}%`,
                         top: `${overlayPlacement.y}%`,
                         transform: `translate(-50%, -50%) scale(${overlayPlacement.scale}) rotate(${overlayPlacement.rotate}deg)`,
                         opacity: overlayPlacement.opacity,
-                        cursor: isDraggingOverlay ? 'grabbing' : 'grab',
                         zIndex: 20
                       }}
-                      className="group/overlay flex items-center justify-center"
+                      className="flex items-center justify-center pointer-events-none transition-all duration-300"
                     >
-                      {/* Active Bounding Box Highlight on Hover/Drag */}
-                      <div className="relative p-2 border-2 border-dashed border-rose-500/70 hover:border-rose-600 rounded-2xl bg-rose-500/5 group-hover/overlay:bg-rose-500/10 transition-colors shadow-2xl">
+                      <div className="relative w-56 sm:w-64 h-auto flex items-center justify-center">
                         <img
-                          src={activeProduct.images?.[0] || activeProduct.image}
-                          alt={activeProduct.name}
-                          className="w-48 sm:w-56 h-auto object-contain mix-blend-multiply filter drop-shadow-2xl pointer-events-none"
+                          src={equippedFullBody.images?.[0] || equippedFullBody.image}
+                          alt={equippedFullBody.name}
+                          className="w-full h-auto object-contain mix-blend-multiply filter drop-shadow-[0_20px_35px_rgba(0,0,0,0.38)]"
                           draggable={false}
                         />
-
-                        {/* Corner Drag Handle Badges */}
-                        <div className="absolute -top-3 -right-3 bg-rose-600 text-white rounded-full p-1.5 shadow-lg flex items-center justify-center text-[10px]">
-                          <FaArrowsAlt size={9} />
-                        </div>
+                        <span className="absolute top-2 left-2 bg-black/75 backdrop-blur-xs text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow">
+                          ✨ Full-Body Direct Fit
+                        </span>
                       </div>
+                    </div>
+                  )}
+
+                  {/* 2. UPPER BODY GARMENT (Shirts, Tops, Polos, Jackets) */}
+                  {!equippedFullBody && equippedUpper && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: `${overlayPlacement.x}%`,
+                        top: `${overlayPlacement.y}%`,
+                        transform: `translate(-50%, -50%) scale(${overlayPlacement.scale}) rotate(${overlayPlacement.rotate}deg)`,
+                        opacity: overlayPlacement.opacity,
+                        zIndex: 20
+                      }}
+                      className="flex items-center justify-center pointer-events-none transition-all duration-300"
+                    >
+                      <div className="relative w-52 sm:w-60 h-auto flex items-center justify-center">
+                        <img
+                          src={equippedUpper.images?.[0] || equippedUpper.image}
+                          alt={equippedUpper.name}
+                          className="w-full h-auto object-contain mix-blend-multiply filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.35)]"
+                          draggable={false}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 3. LOWER BODY GARMENT (Pants, Cargos, Jeans) */}
+                  {!equippedFullBody && equippedLower && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: `50%`,
+                        top: `62%`,
+                        transform: `translate(-50%, -50%) scale(1.05)`,
+                        opacity: 0.94,
+                        zIndex: 15
+                      }}
+                      className="flex items-center justify-center pointer-events-none transition-all duration-300"
+                    >
+                      <div className="relative w-48 sm:w-56 h-auto flex items-center justify-center">
+                        <img
+                          src={equippedLower.images?.[0] || equippedLower.image}
+                          alt={equippedLower.name}
+                          className="w-full h-auto object-contain mix-blend-multiply filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.3)]"
+                          draggable={false}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 4. FOOTWEAR (Shoes, Sneakers) */}
+                  {equippedFootwear && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: `50%`,
+                        top: `84%`,
+                        transform: `translate(-50%, -50%) scale(0.9)`,
+                        opacity: 0.96,
+                        zIndex: 25
+                      }}
+                      className="flex items-center justify-center pointer-events-none transition-all duration-300"
+                    >
+                      <div className="relative w-36 sm:w-44 h-auto flex items-center justify-center">
+                        <img
+                          src={equippedFootwear.images?.[0] || equippedFootwear.image}
+                          alt={equippedFootwear.name}
+                          className="w-full h-auto object-contain mix-blend-multiply filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]"
+                          draggable={false}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 5. ACCESSORIES (Watches, Rings, Jewelry) */}
+                  {equippedAccessory && (
+                    <div className="absolute bottom-4 right-4 z-30 bg-white/95 backdrop-blur-md rounded-2xl p-2.5 border border-gray-200 shadow-xl pointer-events-none flex flex-col items-center justify-center text-center space-y-1">
+                      <span className="text-[8px] font-extrabold text-rose-600 uppercase tracking-wider">Accessory</span>
+                      <img
+                        src={equippedAccessory.images?.[0] || equippedAccessory.image}
+                        alt={equippedAccessory.name}
+                        className="w-12 h-12 object-contain"
+                      />
+                      <span className="text-[8px] font-extrabold text-gray-800 truncate max-w-full">
+                        {equippedAccessory.name}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -666,7 +886,7 @@ const VirtualTryOn = () => {
                   onClick={() => {
                     setCanvasZoom(1.0);
                     setCanvasPan({ x: 0, y: 0 });
-                    if (activeProduct) setOverlayPlacement(getInitialPlacement(activeProduct.category));
+                    if (activeProduct) setOverlayPlacement(getInitialPlacement(activeProduct.category, activeProduct.name));
                   }}
                   className="w-7 h-7 rounded-xl hover:bg-gray-100 flex items-center justify-center text-gray-700 text-xs cursor-pointer"
                   title="Reset Alignment"
@@ -688,15 +908,20 @@ const VirtualTryOn = () => {
                 </button>
               )}
 
-              {/* Floating Instructions Banner */}
-              <div className="absolute bottom-3 inset-x-4 z-20 bg-black/70 backdrop-blur-md px-3.5 py-2 rounded-2xl text-white text-[10px] flex items-center justify-between gap-2 shadow-lg">
+              {/* Floating Status Banner */}
+              <div className="absolute bottom-3 inset-x-4 z-20 bg-black/75 backdrop-blur-md px-3.5 py-2 rounded-2xl text-white text-[10px] flex items-center justify-between gap-2 shadow-lg">
                 <span className="flex items-center gap-1.5 text-gray-200 truncate">
-                  <FaArrowsAlt className="text-rose-400" />
-                  <span>Drag garment to position anywhere on your body</span>
+                  <FaMagic className="text-rose-400" />
+                  <span>AI Auto-Fitted: <strong>{activeProduct?.name}</strong></span>
                 </span>
-                <span className="text-rose-300 font-mono font-bold shrink-0">
-                  Rot: {Math.round(overlayPlacement.rotate)}°
-                </span>
+                <button
+                  type="button"
+                  onClick={() => setShow360Modal(true)}
+                  className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] flex items-center gap-1 cursor-pointer transition-colors"
+                >
+                  <FaCube size={10} />
+                  <span>360° Studio</span>
+                </button>
               </div>
             </div>
 
