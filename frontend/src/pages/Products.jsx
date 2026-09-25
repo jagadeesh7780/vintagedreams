@@ -312,11 +312,11 @@ const Products = () => {
           </div>
         )}
 
-        {/* Main 3-Column Layout: Filters (Left), Products (Center), 360 Virtual Mirror (Right) */}
+        {/* Main 2-Column Layout: Filters (Left), Products (Center & Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Desktop Filter Sidebar */}
-          <aside className={`hidden lg:block ${isMirrorOpen ? 'lg:col-span-3' : 'lg:col-span-3'} bg-white p-5 rounded-2xl border border-gray-200 shadow-sm sticky top-32 max-h-[calc(100vh-9rem)] overflow-y-auto slim-scrollbar overscroll-contain space-y-6`}>
+          <aside className="hidden lg:block lg:col-span-3 bg-white p-5 rounded-2xl border border-gray-200 shadow-sm sticky top-32 max-h-[calc(100vh-9rem)] overflow-y-auto slim-scrollbar overscroll-contain space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100 sticky top-0 bg-white z-10">
               <span className="font-bold text-gray-900 text-sm flex items-center gap-2">
                 <FaFilter className="text-rose-600" size={13} />
