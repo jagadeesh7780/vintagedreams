@@ -50,7 +50,6 @@ app.use('/api/cart', require('./routes/cart'));
 app.use('/api/wishlist', require('./routes/wishlist'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/payment', require('./routes/payment'));
-app.use('/api/virtual-tryon', require('./routes/virtualTryOn'));
 
 // Serve Frontend Static Build in Production (if running as monorepo)
 const frontendDistPath = path.join(__dirname, '../frontend/dist');
