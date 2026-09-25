@@ -110,7 +110,16 @@ const BuyNow = () => {
     }
 
     // 5. Default initial fallback
-    return fallbackProducts[0] || null;
+    return fallbackProducts[0] || {
+      _id: 'default_item_1',
+      name: 'Vintage Dreams Signature Fashion Item',
+      price: 999,
+      originalPrice: 1499,
+      images: ['https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500'],
+      category: 'Fashion',
+      sizes: ['S', 'M', 'L', 'XL'],
+      colors: ['Classic Black', 'Ivory White']
+    };
   };
 
   const [product, setProduct] = useState(resolveInitialProduct);
