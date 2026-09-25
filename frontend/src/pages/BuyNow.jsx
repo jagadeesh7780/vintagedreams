@@ -6,14 +6,15 @@ import {
   FaMoneyBillWave, 
   FaMapMarkerAlt, 
   FaShoppingCart,
-  FaBolt,
-  FaTag,
-  FaTrashAlt,
-  FaCheck,
-  FaLock,
-  FaArrowRight,
-  FaExclamationTriangle,
-  FaBoxes
+  FaBolt, 
+  FaTag, 
+  FaTrashAlt, 
+  FaCheck, 
+  FaLock, 
+  FaArrowRight, 
+  FaArrowLeft,
+  FaBoxes,
+  FaTruck
 } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -46,7 +47,7 @@ const getCategorySizes = (category, productSizes) => {
   if (cat.includes('ring')) {
     return ['6', '7', '8', '9', '10', '11', '12'];
   }
-  if (cat.includes('watch') || cat.includes('jewelry') || cat.includes('jewel')) {
+  if (cat.includes('watch') || cat.includes('jewelry')) {
     return ['Free Size', 'Adjustable'];
   }
   return ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
@@ -56,7 +57,7 @@ const getCategoryColors = (productColors) => {
   if (productColors && Array.isArray(productColors) && productColors.length > 0) {
     return productColors;
   }
-  return ['Tan Brown', 'Classic Black', 'Ivory White', 'Navy Blue', 'Wine Red'];
+  return ['Classic Black', 'Ivory White', 'Navy Blue', 'Wine Red', 'Tan Brown'];
 };
 
 const BuyNow = () => {
@@ -64,55 +65,41 @@ const BuyNow = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { cartItems, clearCart } = useCart();
+  const { clearCart } = useCart();
 
   const productId = searchParams.get('productId') || location.state?.productId;
   const initialParamSize = searchParams.get('size') || location.state?.size;
   const initialParamColor = searchParams.get('color') || location.state?.color;
   const initialParamQty = Number(searchParams.get('quantity')) || Number(location.state?.quantity) || 1;
 
-  // Multi-tier Initial Product Resolver (State -> SearchParam -> SessionStorage -> Fallback -> Cart)
+  // Safe Multi-Tier Initial Product Resolution
   const resolveInitialProduct = () => {
-    // 1. Direct location state product
+    // 1. Check React Router location state
     if (location.state?.product) {
       return location.state.product;
     }
 
-    // 2. SearchParams in fallback products
+    // 2. Check URL search param in local catalog
     if (productId) {
-      const found = fallbackProducts.find(p => p._id === productId || p.name === productId);
+      const found = fallbackProducts.find(p => p._id === productId || p.id === productId || p.name === productId);
       if (found) return found;
     }
 
-    // 3. Saved sessionStorage from previous Buy Now click
+    // 3. Check sessionStorage from previous click
     try {
       const saved = sessionStorage.getItem('vintage_active_buynow');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed && (parsed._id || parsed.name)) {
+        if (parsed && (parsed._id || parsed.id || parsed.name)) {
           return parsed;
         }
       }
     } catch (e) {}
 
-    // 4. Cart Items if navigated from Cart
-    if (cartItems && cartItems.length > 0) {
-      const first = cartItems[0];
-      return {
-        _id: first.product?._id || first.product || first._id,
-        name: first.name,
-        price: first.price,
-        images: [first.image],
-        category: first.category || 'Fashion',
-        sizes: [first.size || 'M'],
-        colors: [first.color || 'Standard']
-      };
-    }
-
-    // 5. Default initial fallback
+    // 4. Default guaranteed fallback item
     return fallbackProducts[0] || {
-      _id: 'default_item_1',
-      name: 'Vintage Dreams Signature Fashion Item',
+      _id: 'prod_default',
+      name: 'Signature Vintage Luxury Fashion Item',
       price: 999,
       originalPrice: 1499,
       images: ['https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500'],
@@ -123,15 +110,15 @@ const BuyNow = () => {
   };
 
   const [product, setProduct] = useState(resolveInitialProduct);
-  const [size, setSize] = useState(() => initialParamSize || (product?.sizes?.[0] || getCategorySizes(product?.category, product?.sizes)[0]));
-  const [color, setColor] = useState(() => initialParamColor || (product?.colors?.[0] || getCategoryColors(product?.colors)[0]));
+  const [size, setSize] = useState(() => initialParamSize || (product?.sizes?.[0] || 'M'));
+  const [color, setColor] = useState(() => initialParamColor || (product?.colors?.[0] || 'Standard'));
   const [quantity, setQuantity] = useState(initialParamQty);
 
-  // Coupon state
+  // Promo code state
   const [couponCode, setCouponCode] = useState('VINTAGE10');
   const [couponApplied, setCouponApplied] = useState(true);
 
-  // Address State
+  // Delivery Address Form state
   const [formData, setFormData] = useState({
     fullName: user?.name || 'Jagadeesh Babu',
     phone: user?.phone || '7780597718',
@@ -144,11 +131,10 @@ const BuyNow = () => {
   const [paymentMethod, setPaymentMethod] = useState('Razorpay');
   const [processing, setProcessing] = useState(false);
 
-  // Sync and persist active product across page refreshes and fetch dynamic MongoDB products
+  // Sync and persist active product across page refreshes
   useEffect(() => {
     let active = true;
 
-    // Persist current product in sessionStorage
     if (product) {
       try {
         sessionStorage.setItem('vintage_active_buynow', JSON.stringify(product));
@@ -159,15 +145,13 @@ const BuyNow = () => {
       const targetId = productId || location.state?.productId;
       if (!targetId) return;
 
-      // Check fallback first
-      const local = fallbackProducts.find(p => p._id === targetId || p.name === targetId);
+      const local = fallbackProducts.find(p => p._id === targetId || p.id === targetId || p.name === targetId);
       if (local && active) {
         setProduct(local);
         if (!initialParamSize) setSize(getCategorySizes(local.category, local.sizes)[0]);
         if (!initialParamColor) setColor(getCategoryColors(local.colors)[0]);
       }
 
-      // Fetch from API for full live catalog
       try {
         const res = await api.get(`/products/${targetId}`);
         if (active && res.data.success && res.data.product) {
@@ -197,36 +181,10 @@ const BuyNow = () => {
     };
   }, [productId, location.state]);
 
-  // Safe fallback if product is null
-  if (!product) {
-    return (
-      <div className="min-h-[75vh] bg-[#f8f9fa] flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-8 sm:p-12 text-center max-w-md w-full space-y-4">
-          <div className="w-16 h-16 rounded-full bg-rose-50 text-rose-600 mx-auto flex items-center justify-center">
-            <FaBoxes size={28} />
-          </div>
-          <h2 className="font-serif-title text-xl font-bold text-gray-900">
-            No Product Selected
-          </h2>
-          <p className="text-xs text-gray-500 leading-relaxed">
-            Please pick a product from our fashion catalog to proceed with instant Buy Now checkout.
-          </p>
-          <Link
-            to="/products"
-            className="inline-flex items-center justify-center gap-2 w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md text-xs uppercase tracking-wider"
-          >
-            <span>Browse Fashion Catalog</span>
-            <FaArrowRight size={12} />
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   const availableSizes = getCategorySizes(product?.category, product?.sizes);
   const availableColors = getCategoryColors(product?.colors);
 
-  // Price calculations
+  // Pricing calculations
   const unitPrice = Number(product?.price) || 0;
   const unitOriginalPrice = Number(product?.originalPrice) || unitPrice;
   const rawSubtotal = unitPrice * (Number(quantity) || 1);
@@ -402,9 +360,10 @@ const BuyNow = () => {
           
           <Link
             to="/products"
-            className="text-xs font-semibold text-gray-500 hover:text-rose-600 transition-colors"
+            className="text-xs font-semibold text-gray-500 hover:text-rose-600 transition-colors flex items-center gap-1.5"
           >
-            ← Continue Shopping
+            <FaArrowLeft size={11} />
+            <span>Continue Shopping</span>
           </Link>
         </div>
 
@@ -472,7 +431,7 @@ const BuyNow = () => {
                     {/* Color Selector */}
                     <div>
                       <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wide block mb-1.5">
-                        Select Color: <span className="text-rose-600 font-extrabold">{color}</span>
+                        Select Color: <span className="text-gray-900 font-extrabold">{color}</span>
                       </label>
                       <div className="flex flex-wrap gap-1.5">
                         {availableColors.map((c) => (
@@ -494,49 +453,37 @@ const BuyNow = () => {
 
                   </div>
 
-                  {/* Price and Quantity Counter Bar */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-100">
-                    
-                    {/* Price Breakdown */}
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-lg sm:text-xl font-extrabold text-gray-900">
-                        ₹{unitPrice.toLocaleString()}
-                      </span>
-                      {quantity > 1 && (
-                        <span className="text-xs text-gray-500 font-medium">
-                          × {quantity} = <strong className="text-rose-600 text-sm font-extrabold">₹{(unitPrice * quantity).toLocaleString()}</strong>
-                        </span>
-                      )}
-                      {unitOriginalPrice > unitPrice && (
-                        <span className="text-xs text-gray-400 line-through">
-                          ₹{(unitOriginalPrice * quantity).toLocaleString()}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Quantity Selector Counter */}
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden bg-gray-50">
+                  {/* Quantity Stepper & Pricing Strip */}
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-gray-600">Quantity:</span>
+                      <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
                         <button
                           type="button"
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                          className="px-3.5 py-1.5 hover:bg-gray-200 text-gray-800 text-sm font-bold transition-colors cursor-pointer"
+                          className="px-2.5 py-1 text-xs font-bold text-gray-700 hover:bg-gray-200 transition-colors"
                         >
-                          -
+                          −
                         </button>
-                        <span className="px-4 py-1.5 text-xs font-bold bg-white text-gray-900 min-w-[28px] text-center">
+                        <span className="px-3 py-1 text-xs font-bold bg-white text-gray-900 min-w-[28px] text-center">
                           {quantity}
                         </span>
                         <button
                           type="button"
-                          onClick={() => setQuantity(quantity + 1)}
-                          className="px-3.5 py-1.5 hover:bg-gray-200 text-gray-800 text-sm font-bold transition-colors cursor-pointer"
+                          onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                          className="px-2.5 py-1 text-xs font-bold text-gray-700 hover:bg-gray-200 transition-colors"
                         >
                           +
                         </button>
                       </div>
                     </div>
 
+                    <div className="text-right">
+                      <span className="text-xs text-gray-400 block">Unit Price: ₹{unitPrice}</span>
+                      <span className="text-base font-extrabold text-gray-900">
+                        ₹{rawSubtotal}
+                      </span>
+                    </div>
                   </div>
 
                 </div>
@@ -549,62 +496,55 @@ const BuyNow = () => {
               <div className="relative flex-1 w-full">
                 <input
                   type="text"
-                  placeholder="Enter Coupon Code"
+                  placeholder="Enter Coupon Code (e.g. VINTAGE10)"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
-                  className="w-full uppercase text-xs font-bold bg-gray-50 rounded-xl px-4 py-3 border border-gray-300 outline-none focus:border-rose-500 pr-10"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-bold text-gray-900 placeholder-gray-400 outline-none uppercase focus:border-rose-500 focus:bg-white transition-all"
                 />
-                <FaTag className="absolute right-3.5 top-3.5 text-gray-400" />
+                <FaTag className="absolute right-3.5 top-3.5 text-rose-500 text-xs" />
               </div>
-              
+
               <button
                 type="button"
-                onClick={() => setCouponApplied(!couponApplied)}
-                className={`w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm ${
-                  couponApplied
-                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                    : 'bg-gray-900 hover:bg-black text-white'
-                }`}
+                onClick={handleApplyCoupon}
+                className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-sm transition-all cursor-pointer whitespace-nowrap"
               >
-                {couponApplied ? (
-                  <>
-                    <span>Applied</span>
-                    <FaCheck size={11} />
-                  </>
-                ) : (
-                  <span>Apply Coupon</span>
-                )}
+                {couponApplied ? 'Applied ✓' : 'Apply Coupon'}
               </button>
             </div>
 
             {/* 3. Delivery Address Form */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
-                <div className="w-7 h-7 rounded-full bg-rose-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
-                  1
-                </div>
-                <h3 className="font-bold text-base text-gray-900 flex items-center gap-2">
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-2 text-gray-900 font-bold text-sm">
                   <FaMapMarkerAlt className="text-rose-600" />
                   <span>Delivery Address</span>
-                </h3>
+                </div>
+                <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+                  <FaTruck /> Free Home Delivery
+                </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-gray-700 block mb-1">Full Name *</label>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
+                    Full Name *
+                  </label>
                   <input
                     type="text"
                     name="fullName"
                     required
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    placeholder="e.g. Jagadeesh"
-                    className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:border-rose-500"
+                    placeholder="Recipient's Name"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-rose-500 focus:bg-white"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-gray-700 block mb-1">Phone Number *</label>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
+                    Mobile Phone *
+                  </label>
                   <input
                     type="tel"
                     name="phone"
@@ -612,25 +552,29 @@ const BuyNow = () => {
                     value={formData.phone}
                     onChange={handleInputChange}
                     placeholder="10-digit mobile number"
-                    className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:border-rose-500"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-rose-500 focus:bg-white"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="text-xs font-semibold text-gray-700 block mb-1">Street Address / Landmark *</label>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
+                    Street Address / House No / Landmark *
+                  </label>
                   <input
                     type="text"
                     name="address"
                     required
                     value={formData.address}
                     onChange={handleInputChange}
-                    placeholder="Flat / House No., Street, Area"
-                    className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:border-rose-500"
+                    placeholder="Flat / Building / Street"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-rose-500 focus:bg-white"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-gray-700 block mb-1">City *</label>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
+                    City *
+                  </label>
                   <input
                     type="text"
                     name="city"
@@ -638,12 +582,14 @@ const BuyNow = () => {
                     value={formData.city}
                     onChange={handleInputChange}
                     placeholder="City"
-                    className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:border-rose-500"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-rose-500 focus:bg-white"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-gray-700 block mb-1">State *</label>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
+                    State *
+                  </label>
                   <input
                     type="text"
                     name="state"
@@ -651,85 +597,88 @@ const BuyNow = () => {
                     value={formData.state}
                     onChange={handleInputChange}
                     placeholder="State"
-                    className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:border-rose-500"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-rose-500 focus:bg-white"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-gray-700 block mb-1">Pincode *</label>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
+                    PIN Code *
+                  </label>
                   <input
                     type="text"
                     name="postalCode"
+                    maxLength={6}
                     required
                     value={formData.postalCode}
                     onChange={handleInputChange}
                     placeholder="6-digit PIN"
-                    className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:border-rose-500"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-rose-500 focus:bg-white"
                   />
                 </div>
               </div>
             </div>
 
-            {/* 4. Payment Method Selector */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
-                <div className="w-7 h-7 rounded-full bg-rose-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
-                  2
-                </div>
-                <h3 className="font-bold text-base text-gray-900 flex items-center gap-2">
+            {/* 4. Payment Method Selection */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-2 text-gray-900 font-bold text-sm">
                   <FaCreditCard className="text-rose-600" />
-                  <span>Choose Payment Mode</span>
-                </h3>
+                  <span>Select Payment Method</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                  <FaShieldAlt className="text-emerald-500" />
+                  <span>256-bit Secure</span>
+                </div>
               </div>
 
-              <div className="space-y-3">
-                {/* Razorpay Online Option */}
-                <label className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all ${
-                  paymentMethod === 'Razorpay'
-                    ? 'border-rose-600 bg-rose-50/40 ring-2 ring-rose-200'
-                    : 'border-gray-200 hover:bg-gray-50'
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Razorpay Online */}
+                <label className={`p-4 rounded-xl border-2 flex items-center gap-3 cursor-pointer transition-all ${
+                  paymentMethod === 'Razorpay' 
+                    ? 'border-rose-600 bg-rose-50/50 shadow-sm' 
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="Razorpay"
-                      checked={paymentMethod === 'Razorpay'}
-                      onChange={() => setPaymentMethod('Razorpay')}
-                      className="text-rose-600 focus:ring-rose-500"
-                    />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-gray-900">Razorpay Secure Online Payment</span>
-                        <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded">FAST & SECURE</span>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-0.5">UPI (Google Pay, PhonePe, Paytm), All Cards, NetBanking</p>
-                    </div>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="Razorpay"
+                    checked={paymentMethod === 'Razorpay'}
+                    onChange={() => setPaymentMethod('Razorpay')}
+                    className="accent-rose-600"
+                  />
+                  <div>
+                    <span className="font-bold text-xs text-gray-900 block">
+                      Online Payment (Razorpay)
+                    </span>
+                    <span className="text-[10px] text-gray-500 block">
+                      UPI, Cards, NetBanking, Wallets
+                    </span>
                   </div>
-                  <FaShieldAlt className="text-rose-600" size={20} />
                 </label>
 
-                {/* Cash on Delivery Option */}
-                <label className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all ${
-                  paymentMethod === 'COD'
-                    ? 'border-rose-600 bg-rose-50/40 ring-2 ring-rose-200'
-                    : 'border-gray-200 hover:bg-gray-50'
+                {/* Cash on Delivery */}
+                <label className={`p-4 rounded-xl border-2 flex items-center gap-3 cursor-pointer transition-all ${
+                  paymentMethod === 'COD' 
+                    ? 'border-rose-600 bg-rose-50/50 shadow-sm' 
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="COD"
-                      checked={paymentMethod === 'COD'}
-                      onChange={() => setPaymentMethod('COD')}
-                      className="text-rose-600 focus:ring-rose-500"
-                    />
-                    <div>
-                      <span className="font-bold text-sm text-gray-900">Cash on Delivery (COD)</span>
-                      <p className="text-xs text-gray-500 mt-0.5">Pay in cash or UPI when your order arrives at your door</p>
-                    </div>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="COD"
+                    checked={paymentMethod === 'COD'}
+                    onChange={() => setPaymentMethod('COD')}
+                    className="accent-rose-600"
+                  />
+                  <div>
+                    <span className="font-bold text-xs text-gray-900 block">
+                      Cash on Delivery (COD)
+                    </span>
+                    <span className="text-[10px] text-gray-500 block">
+                      Pay cash at your doorstep
+                    </span>
                   </div>
-                  <FaMoneyBillWave className="text-emerald-600" size={20} />
                 </label>
               </div>
             </div>
@@ -749,20 +698,20 @@ const BuyNow = () => {
                 
                 <div className="flex items-center justify-between text-gray-700">
                   <span>Price ({quantity} {quantity === 1 ? 'item' : 'items'})</span>
-                  <span className="font-semibold text-gray-900">₹{rawSubtotal.toLocaleString()}</span>
+                  <span className="font-semibold text-gray-900">₹{rawSubtotal}</span>
                 </div>
 
                 {specialDiscount > 0 && (
                   <div className="flex items-center justify-between text-emerald-600">
-                    <span>Special Discount</span>
-                    <span className="font-semibold">-₹{specialDiscount.toLocaleString()}</span>
+                    <span>Special Discount (10%)</span>
+                    <span className="font-semibold">−₹{specialDiscount}</span>
                   </div>
                 )}
 
                 {couponDiscount > 0 && (
                   <div className="flex items-center justify-between text-emerald-600">
-                    <span>Coupon ({couponCode})</span>
-                    <span className="font-semibold">-₹{couponDiscount.toLocaleString()}</span>
+                    <span>Coupon Discount (VINTAGE10)</span>
+                    <span className="font-semibold">−₹{couponDiscount}</span>
                   </div>
                 )}
 
@@ -774,7 +723,7 @@ const BuyNow = () => {
                 <div className="pt-3.5 border-t border-dashed border-gray-200 flex items-center justify-between text-base font-bold text-gray-900">
                   <span>Total Payable</span>
                   <span className="text-rose-600 text-xl font-extrabold">
-                    ₹{totalPayable.toLocaleString()}
+                    ₹{totalPayable}
                   </span>
                 </div>
 
@@ -783,16 +732,16 @@ const BuyNow = () => {
               {totalSavings > 0 && (
                 <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-semibold py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5">
                   <FaCheck className="text-emerald-600" />
-                  <span>You will save ₹{totalSavings.toLocaleString()} on this order!</span>
+                  <span>You will save ₹{totalSavings} on this order</span>
                 </div>
               )}
 
               <button
                 type="submit"
                 disabled={processing}
-                className="w-full bg-rose-600 hover:bg-rose-700 active:scale-98 disabled:bg-gray-400 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-rose-900/20 flex items-center justify-center gap-2 transition-all cursor-pointer text-sm uppercase tracking-wide"
+                className="w-full bg-rose-600 hover:bg-rose-700 active:scale-98 text-white font-extrabold py-4 px-6 rounded-xl shadow-lg shadow-rose-900/25 flex items-center justify-center gap-2 text-xs uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50"
               >
-                <span>{processing ? 'Processing Order...' : 'PROCEED TO CHECKOUT'}</span>
+                <span>{processing ? 'Processing Order...' : `Pay ₹${totalPayable} & Place Order`}</span>
                 <FaArrowRight size={13} />
               </button>
 

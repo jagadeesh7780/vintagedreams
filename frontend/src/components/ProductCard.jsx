@@ -13,6 +13,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import RatingStars from './RatingStars';
 import QuickViewModal from './QuickViewModal';
+import toast from 'react-hot-toast';
 
 const ProductCard = ({ product, onTryOn }) => {
   const { addToCart } = useCart();
@@ -46,7 +47,10 @@ const ProductCard = ({ product, onTryOn }) => {
     e.preventDefault();
     e.stopPropagation();
     const pId = product._id || product.id;
-    navigate(`/buy-now?productId=${pId}`);
+    try {
+      sessionStorage.setItem('vintage_active_buynow', JSON.stringify(product));
+    } catch (err) {}
+    navigate(`/buy-now?productId=${pId}`, { state: { product, productId: pId } });
   };
 
   const handleWishlist = (e) => {

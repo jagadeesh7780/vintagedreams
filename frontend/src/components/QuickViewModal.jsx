@@ -57,8 +57,13 @@ const QuickViewModal = ({ product, isOpen, onClose }) => {
 
   const handleBuyNow = () => {
     const pId = product._id || product.id;
+    try {
+      sessionStorage.setItem('vintage_active_buynow', JSON.stringify(product));
+    } catch (err) {}
     onClose();
-    navigate(`/buy-now?productId=${pId}&size=${encodeURIComponent(selectedSize)}&color=${encodeURIComponent(selectedColor)}&quantity=${quantity}`);
+    navigate(`/buy-now?productId=${pId}&size=${encodeURIComponent(selectedSize)}&color=${encodeURIComponent(selectedColor)}&quantity=${quantity}`, {
+      state: { product, productId: pId, size: selectedSize, color: selectedColor, quantity }
+    });
   };
 
   return (

@@ -125,7 +125,12 @@ const ProductDetails = () => {
 
   const handleBuyNow = () => {
     const pId = product._id || product.id;
-    navigate(`/buy-now?productId=${pId}&size=${encodeURIComponent(selectedSize || 'M')}&color=${encodeURIComponent(selectedColor || 'Standard')}&quantity=${quantity}`);
+    try {
+      sessionStorage.setItem('vintage_active_buynow', JSON.stringify(product));
+    } catch (err) {}
+    navigate(`/buy-now?productId=${pId}&size=${encodeURIComponent(selectedSize || 'M')}&color=${encodeURIComponent(selectedColor || 'Standard')}&quantity=${quantity}`, {
+      state: { product, productId: pId, size: selectedSize, color: selectedColor, quantity }
+    });
   };
 
   const handleCheckPincode = (e) => {
