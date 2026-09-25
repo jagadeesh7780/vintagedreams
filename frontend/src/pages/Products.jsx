@@ -85,6 +85,18 @@ const Products = () => {
   const [products, setProducts] = useState(computeFilteredProducts);
   const [loading, setLoading] = useState(false);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 24;
+
+  const totalPages = Math.ceil(products.length / itemsPerPage) || 1;
+  const paginatedProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  };
 
   const updateFilters = (newParams) => {
     const current = Object.fromEntries(searchParams.entries());
@@ -98,11 +110,13 @@ const Products = () => {
     });
 
     setSearchParams(updated);
+    setCurrentPage(1);
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
   const clearAllFilters = () => {
     setSearchParams({});
+    setCurrentPage(1);
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
@@ -115,6 +129,7 @@ const Products = () => {
   useEffect(() => {
     // Immediately display filtered local products for instant UI response
     setProducts(computeFilteredProducts());
+    setCurrentPage(1);
 
     const fetchProducts = async () => {
       try {
@@ -421,10 +436,63 @@ const Products = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                {products.map((product) => (
-                  <ProductCard key={product._id || product.id || product.name} product={product} />
-                ))}
+              <div className="space-y-8">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                  {paginatedProducts.map((product) => (
+                    <ProductCard key={product._id || product.id || product.name} product={product} />
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200 bg-white p-4 rounded-2xl shadow-sm">
+                    <span className="text-xs text-gray-500">
+                      Showing <strong className="text-gray-900 font-bold">{(currentPage - 1) * itemsPerPage + 1}</strong> - <strong className="text-gray-900 font-bold">{Math.min(currentPage * itemsPerPage, products.length)}</strong> of <strong className="text-gray-900 font-bold">{products.length}</strong> products
+                    </span>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      >
+                        Previous
+                      </button>
+
+                      {Array.from({ length: Math.min(totalPages, 7) }, (_, idx) => {
+                        let pageNum = idx + 1;
+                        if (totalPages > 7 && currentPage > 4) {
+                          pageNum = currentPage - 3 + idx;
+                          if (pageNum > totalPages) pageNum = totalPages - (6 - idx);
+                        }
+                        return (
+                          <button
+                            key={pageNum}
+                            type="button"
+                            onClick={() => handlePageChange(pageNum)}
+                            className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
+                              currentPage === pageNum
+                                ? 'bg-rose-600 text-white shadow-md'
+                                : 'text-gray-700 hover:bg-gray-100 border border-gray-200'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+
+                      <button
+                        type="button"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </main>

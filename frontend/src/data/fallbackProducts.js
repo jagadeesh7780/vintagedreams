@@ -1,94 +1,78 @@
 // Full 500+ Products Dataset for Vintage Dreams (50+ products per category)
 
 const shirtImages = [
-  'https://m.media-amazon.com/images/I/81dszCJ0etL._SY879_.jpg',
-  'https://m.media-amazon.com/images/I/71IU11W8asL._SY741_.jpg',
-  'https://m.media-amazon.com/images/I/611SbasaFRL._SY741_.jpg',
-  'https://m.media-amazon.com/images/I/61rRjFn9FJL._AC_UL480_QL65_.jpg',
-  'https://m.media-amazon.com/images/I/71V5gEc8YVL._SY879_.jpg',
-  'https://m.media-amazon.com/images/I/71x4rLhMkML._SY879_.jpg',
-  'https://m.media-amazon.com/images/I/617QdnlnfZL._SY879_.jpg',
-  'https://m.media-amazon.com/images/I/51Txwy6l6CL.jpg',
-  'https://m.media-amazon.com/images/I/71BwxuB0p-L._SY879_.jpg',
-  'https://m.media-amazon.com/images/I/71DQ6U-OVQL._SY879_.jpg',
-  'https://m.media-amazon.com/images/I/61uKUY6hQ7L._SY741_.jpg',
-  'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&q=80',
-  'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&q=80',
-  'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=800&q=80'
+  'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1620012253295-c15c429fcc71?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1603252109303-2751441ec157?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=450&q=75'
 ];
 
 const pantImages = [
-  'https://m.media-amazon.com/images/I/61wd080+AxL._SY741_.jpg',
-  'https://m.media-amazon.com/images/I/610IIi6wHuL._SY879_.jpg',
-  'https://m.media-amazon.com/images/I/61m5W8DEuLL._SY741_.jpg',
-  'https://m.media-amazon.com/images/I/61j9jJhrStL._SY879_.jpg',
-  'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&q=80',
-  'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800&q=80',
-  'https://images.unsplash.com/photo-1517445312882-bc9910d016b7?w=800&q=80'
+  'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1517445312882-bc9910d016b7?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1584865288642-42078afe6942?auto=format&fit=crop&w=450&q=75'
 ];
 
 const shoeImages = [
-  'https://m.media-amazon.com/images/I/71aFuiEntML._SY695_.jpg',
-  'https://m.media-amazon.com/images/I/61I0AJDKA0S._SY695_.jpg',
-  'https://m.media-amazon.com/images/I/71OPYKJ4nuL._SX695_.jpg',
-  'https://m.media-amazon.com/images/I/61u2GljumvL._SY695_.jpg',
-  'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&q=80',
-  'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=800&q=80',
-  'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800&q=80'
+  'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=450&q=75'
 ];
 
 const watchImages = [
-  'https://m.media-amazon.com/images/I/81kLhCWFSjL._SX679_.jpg',
-  'https://m.media-amazon.com/images/I/71AjeVD1bPL._SX679_.jpg',
-  'https://m.media-amazon.com/images/I/711NXCmUfbL._SX679_.jpg',
-  'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80',
-  'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=800&q=80',
-  'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&q=80'
+  'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1533139502658-0198f920d8e8?auto=format&fit=crop&w=450&q=75'
 ];
 
 const ringImages = [
-  'https://m.media-amazon.com/images/I/511QHTo6j3L._SY625_.jpg',
-  'https://m.media-amazon.com/images/I/519HMAUTrQL._SY625_.jpg',
-  'https://m.media-amazon.com/images/I/41UfkhGo3eL._SY695_.jpg',
-  'https://m.media-amazon.com/images/I/61ahdD6ANdL._SY625_.jpg',
-  'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80',
-  'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=800&q=80'
+  'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1598560917505-59a3ad559071?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=450&q=75'
 ];
 
 const dressImages = [
-  'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&q=80',
-  'https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800&q=80',
-  'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&q=80',
-  'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=800&q=80',
-  'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800&q=80'
+  'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=450&q=75'
 ];
 
 const topImages = [
-  'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80',
-  'https://images.unsplash.com/photo-1534126511673-b6899657816a?w=800&q=80',
-  'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800&q=80',
-  'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=800&q=80'
+  'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1534126511673-b6899657816a?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?auto=format&fit=crop&w=450&q=75'
 ];
 
 const jewelImages = [
-  'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&q=80',
-  'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80',
-  'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80',
-  'https://images.unsplash.com/photo-1611591475166-068305c48834?w=800&q=80'
+  'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1611591475166-068305c48834?auto=format&fit=crop&w=450&q=75'
 ];
 
 const sareeImages = [
-  'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800&q=80',
-  'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80',
-  'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=800&q=80',
-  'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&q=80'
+  'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=450&q=75'
 ];
 
 const wFootwearImages = [
-  'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80',
-  'https://images.unsplash.com/photo-1535043934128-cf0b28d52f95?w=800&q=80',
-  'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80',
-  'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=800&q=80'
+  'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1535043934128-cf0b28d52f95?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=450&q=75',
+  'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=450&q=75'
 ];
 
 const allSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
