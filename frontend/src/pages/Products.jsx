@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { 
   FaFilter, 
   FaTimes, 
   FaTh, 
   FaSortAmountDown, 
-  FaStar,
-  FaCheck,
-  FaMale,
-  FaFemale,
-  FaThLarge
+  FaStar, 
+  FaCheck, 
+  FaThLarge,
+  FaSearch,
+  FaUndoAlt,
+  FaBoxes
 } from 'react-icons/fa';
 import api from '../api/axios';
 import CategoryBar from '../components/CategoryBar';
 import ProductCard from '../components/ProductCard';
-import Loader from '../components/Loader';
 import { fallbackProducts } from '../data/fallbackProducts';
 
 const allCategoriesList = [
@@ -33,6 +33,17 @@ const allCategoriesList = [
   { id: 'women-footwear', label: 'Footwear & Handbags (52 items)', gender: 'women' },
 ];
 
+const availableFilterSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', 'UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10'];
+
+const availableFilterColors = [
+  { name: 'Black', hex: '#18181b' },
+  { name: 'White', hex: '#f4f4f5' },
+  { name: 'Navy Blue', hex: '#1e3a8a' },
+  { name: 'Wine Red', hex: '#881337' },
+  { name: 'Olive Green', hex: '#3f6212' },
+  { name: 'Tan Brown', hex: '#9a3412' }
+];
+
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -44,6 +55,9 @@ const Products = () => {
   const minPrice = searchParams.get('minPrice') || '';
   const maxPrice = searchParams.get('maxPrice') || '';
   const rating = searchParams.get('rating') || '';
+  const selectedSize = searchParams.get('size') || '';
+  const selectedColor = searchParams.get('color') || '';
+  const inStockOnly = searchParams.get('inStock') === 'true';
 
   const computeFilteredProducts = () => {
     let filtered = [...fallbackProducts];
@@ -57,7 +71,9 @@ const Products = () => {
     if (keyword) {
       filtered = filtered.filter(p => 
         p.name.toLowerCase().includes(keyword.toLowerCase()) || 
-        p.tags?.some(t => t.toLowerCase().includes(keyword.toLowerCase()))
+        p.tags?.some(t => t.toLowerCase().includes(keyword.toLowerCase())) ||
+        p.category?.toLowerCase().includes(keyword.toLowerCase()) ||
+        p.brand?.toLowerCase().includes(keyword.toLowerCase())
       );
     }
     if (minPrice) {
@@ -69,6 +85,15 @@ const Products = () => {
     if (rating) {
       filtered = filtered.filter(p => p.rating >= Number(rating));
     }
+    if (selectedSize) {
+      filtered = filtered.filter(p => p.sizes?.includes(selectedSize));
+    }
+    if (selectedColor) {
+      filtered = filtered.filter(p => p.colors?.some(c => c.toLowerCase().includes(selectedColor.toLowerCase())));
+    }
+    if (inStockOnly) {
+      filtered = filtered.filter(p => (p.stock || 25) > 0);
+    }
 
     // Sort
     if (sort === 'price-low') {
@@ -77,13 +102,14 @@ const Products = () => {
       filtered.sort((a, b) => b.price - a.price);
     } else if (sort === 'rating') {
       filtered.sort((a, b) => b.rating - a.rating);
+    } else if (sort === 'popular') {
+      filtered.sort((a, b) => (b.numReviews || 0) - (a.numReviews || 0));
     }
 
     return filtered;
   };
 
   const [products, setProducts] = useState(computeFilteredProducts);
-  const [loading, setLoading] = useState(false);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 24;
@@ -104,7 +130,7 @@ const Products = () => {
     
     // Clean empty values
     Object.keys(updated).forEach(key => {
-      if (!updated[key] || updated[key] === 'all') {
+      if (!updated[key] || updated[key] === 'all' || updated[key] === 'false') {
         delete updated[key];
       }
     });
@@ -158,7 +184,7 @@ const Products = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
             <div className="text-xs text-gray-500 mb-1 flex items-center gap-1.5 font-medium">
-              <span>Home</span>
+              <Link to="/" className="hover:text-rose-600">Home</Link>
               <span>/</span>
               <span className="text-rose-600 font-semibold uppercase">{category}</span>
               {gender !== 'all' && (
@@ -172,7 +198,7 @@ const Products = () => {
               {keyword 
                 ? `Search Results for "${keyword}"` 
                 : category === 'all' 
-                ? (gender === 'men' ? "Men's Complete Fashion Collection (260+ Items)" : gender === 'women' ? "Women's Complete Fashion Collection (260+ Items)" : "All Catalog (520+ Items)") 
+                ? (gender === 'men' ? "Men's Complete Collection (260+ Items)" : gender === 'women' ? "Women's Complete Collection (260+ Items)" : "All Catalog (520+ Items)") 
                 : category.replace('-', ' ')}
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 mt-1">
@@ -184,20 +210,20 @@ const Products = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileFilterOpen(true)}
-              className="lg:hidden flex items-center gap-2 bg-white border border-gray-300 text-gray-700 text-xs font-semibold px-4 py-2 rounded-lg shadow-sm"
+              className="lg:hidden flex items-center gap-2 bg-white border border-gray-300 text-gray-700 text-xs font-semibold px-4 py-2 rounded-xl shadow-sm cursor-pointer"
             >
               <FaFilter />
               <span>Filters</span>
             </button>
 
-            <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-1.5 shadow-sm text-xs">
+            <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-xl px-3.5 py-2 shadow-sm text-xs">
               <FaSortAmountDown className="text-gray-400" />
-              <label htmlFor="sort" className="font-medium text-gray-600">Sort by:</label>
+              <label htmlFor="sort" className="font-semibold text-gray-600">Sort by:</label>
               <select
                 id="sort"
                 value={sort}
                 onChange={(e) => updateFilters({ sort: e.target.value })}
-                className="bg-transparent font-semibold text-gray-900 outline-none cursor-pointer"
+                className="bg-transparent font-bold text-gray-900 outline-none cursor-pointer"
               >
                 <option value="newest">Newest Arrivals</option>
                 <option value="price-low">Price: Low to High</option>
@@ -210,7 +236,7 @@ const Products = () => {
         </div>
 
         {/* Active Filter Chips (if any filters applied) */}
-        {(category !== 'all' || gender !== 'all' || minPrice || maxPrice || rating || keyword) && (
+        {(category !== 'all' || gender !== 'all' || minPrice || maxPrice || rating || keyword || selectedSize || selectedColor || inStockOnly) && (
           <div className="flex flex-wrap items-center gap-2 mb-6 p-3 bg-white rounded-xl border border-gray-200">
             <span className="text-xs font-bold text-gray-500 mr-1 flex items-center gap-1">
               <FaFilter size={11} className="text-rose-600" /> Active Filters:
@@ -219,7 +245,7 @@ const Products = () => {
             {gender !== 'all' && (
               <span className="inline-flex items-center gap-1.5 bg-rose-50 text-rose-700 text-xs font-semibold px-2.5 py-1 rounded-lg border border-rose-200">
                 <span>{gender === 'men' ? "Men's Wear" : "Women's Wear"}</span>
-                <button type="button" onClick={() => updateFilters({ gender: 'all' })} className="hover:text-rose-900">
+                <button type="button" onClick={() => updateFilters({ gender: 'all' })} className="hover:text-rose-900 cursor-pointer">
                   <FaTimes size={10} />
                 </button>
               </span>
@@ -228,7 +254,25 @@ const Products = () => {
             {category !== 'all' && (
               <span className="inline-flex items-center gap-1.5 bg-rose-50 text-rose-700 text-xs font-semibold px-2.5 py-1 rounded-lg border border-rose-200">
                 <span className="capitalize">{category.replace('-', ' ')}</span>
-                <button type="button" onClick={() => updateFilters({ category: 'all' })} className="hover:text-rose-900">
+                <button type="button" onClick={() => updateFilters({ category: 'all' })} className="hover:text-rose-900 cursor-pointer">
+                  <FaTimes size={10} />
+                </button>
+              </span>
+            )}
+
+            {selectedSize && (
+              <span className="inline-flex items-center gap-1.5 bg-purple-50 text-purple-700 text-xs font-semibold px-2.5 py-1 rounded-lg border border-purple-200">
+                <span>Size: {selectedSize}</span>
+                <button type="button" onClick={() => updateFilters({ size: '' })} className="hover:text-purple-900 cursor-pointer">
+                  <FaTimes size={10} />
+                </button>
+              </span>
+            )}
+
+            {selectedColor && (
+              <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded-lg border border-amber-200">
+                <span>Color: {selectedColor}</span>
+                <button type="button" onClick={() => updateFilters({ color: '' })} className="hover:text-amber-900 cursor-pointer">
                   <FaTimes size={10} />
                 </button>
               </span>
@@ -237,16 +281,7 @@ const Products = () => {
             {(minPrice || maxPrice) && (
               <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-lg border border-blue-200">
                 <span>{minPrice && maxPrice ? `₹${minPrice} - ₹${maxPrice}` : minPrice ? `Above ₹${minPrice}` : `Under ₹${maxPrice}`}</span>
-                <button type="button" onClick={() => updateFilters({ minPrice: '', maxPrice: '' })} className="hover:text-blue-900">
-                  <FaTimes size={10} />
-                </button>
-              </span>
-            )}
-
-            {rating && (
-              <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded-lg border border-amber-200">
-                <span>{rating}★ & Above</span>
-                <button type="button" onClick={() => updateFilters({ rating: '' })} className="hover:text-amber-900">
+                <button type="button" onClick={() => updateFilters({ minPrice: '', maxPrice: '' })} className="hover:text-blue-900 cursor-pointer">
                   <FaTimes size={10} />
                 </button>
               </span>
@@ -255,7 +290,7 @@ const Products = () => {
             {keyword && (
               <span className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-800 text-xs font-semibold px-2.5 py-1 rounded-lg border border-gray-300">
                 <span>Keyword: "{keyword}"</span>
-                <button type="button" onClick={() => updateFilters({ keyword: '' })} className="hover:text-gray-950">
+                <button type="button" onClick={() => updateFilters({ keyword: '' })} className="hover:text-gray-950 cursor-pointer">
                   <FaTimes size={10} />
                 </button>
               </span>
@@ -264,7 +299,7 @@ const Products = () => {
             <button
               type="button"
               onClick={clearAllFilters}
-              className="text-xs text-rose-600 hover:text-rose-800 font-bold ml-auto hover:underline"
+              className="text-xs text-rose-600 hover:text-rose-800 font-bold ml-auto hover:underline cursor-pointer"
             >
               Clear All
             </button>
@@ -274,7 +309,7 @@ const Products = () => {
         {/* Filter Drawer / Sidebar Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
           
-          {/* Desktop Filter Sidebar (Smooth Scrollable Container) */}
+          {/* Desktop Filter Sidebar */}
           <aside className="hidden lg:block lg:col-span-1 bg-white p-5 rounded-2xl border border-gray-200 shadow-sm sticky top-32 max-h-[calc(100vh-9rem)] overflow-y-auto slim-scrollbar overscroll-contain space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100 sticky top-0 bg-white z-10">
               <span className="font-bold text-gray-900 text-sm flex items-center gap-2">
@@ -284,13 +319,13 @@ const Products = () => {
               <button
                 type="button"
                 onClick={clearAllFilters}
-                className="text-xs text-rose-600 hover:text-rose-700 font-bold hover:underline"
+                className="text-xs text-rose-600 hover:text-rose-700 font-bold hover:underline cursor-pointer"
               >
                 Reset
               </button>
             </div>
 
-            {/* Gender Selection */}
+            {/* Department */}
             <div>
               <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2.5">
                 Target Department
@@ -305,7 +340,7 @@ const Products = () => {
                     key={g.id}
                     type="button"
                     onClick={() => updateFilters({ gender: g.id })}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-between ${
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${
                       gender === g.id
                         ? 'bg-rose-600 text-white shadow-sm font-bold'
                         : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
@@ -318,7 +353,7 @@ const Products = () => {
               </div>
             </div>
 
-            {/* Gender-Aware Categories List (Scrollable Sub-list) */}
+            {/* Categories */}
             <div>
               <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2.5 flex items-center justify-between">
                 <span>{gender === 'men' ? "Men's Categories" : gender === 'women' ? "Women's Categories" : "Categories"}</span>
@@ -329,7 +364,7 @@ const Products = () => {
                 <button
                   type="button"
                   onClick={() => updateFilters({ category: 'all' })}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors ${
+                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
                     category === 'all'
                       ? 'bg-rose-50 text-rose-600 font-bold'
                       : 'text-gray-600 hover:bg-gray-50'
@@ -344,7 +379,7 @@ const Products = () => {
                     key={cat.id}
                     type="button"
                     onClick={() => updateFilters({ category: cat.id, gender: cat.gender })}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors ${
+                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
                       category === cat.id
                         ? 'bg-rose-50 text-rose-600 font-bold'
                         : 'text-gray-600 hover:bg-gray-50'
@@ -352,6 +387,53 @@ const Products = () => {
                   >
                     <span>{cat.label}</span>
                     {category === cat.id && <FaCheck size={10} />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Size Filter */}
+            <div>
+              <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2.5">
+                Filter by Size
+              </h4>
+              <div className="flex flex-wrap gap-1.5">
+                {availableFilterSizes.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => updateFilters({ size: selectedSize === s ? '' : s })}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
+                      selectedSize === s
+                        ? 'border-rose-600 bg-rose-600 text-white shadow-sm'
+                        : 'border-gray-200 text-gray-700 bg-white hover:border-gray-400'
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Color Filter */}
+            <div>
+              <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2.5">
+                Filter by Color
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {availableFilterColors.map((c) => (
+                  <button
+                    key={c.name}
+                    type="button"
+                    onClick={() => updateFilters({ color: selectedColor === c.name ? '' : c.name })}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+                      selectedColor === c.name
+                        ? 'border-gray-900 bg-gray-900 text-white shadow-sm'
+                        : 'border-gray-200 text-gray-700 bg-white hover:border-gray-400'
+                    }`}
+                  >
+                    <span className="w-2.5 h-2.5 rounded-full border border-gray-300" style={{ backgroundColor: c.hex }}></span>
+                    <span>{c.name}</span>
                   </button>
                 ))}
               </div>
@@ -374,8 +456,8 @@ const Products = () => {
                     <button
                       key={idx}
                       type="button"
-                      onClick={() => updateFilters({ minPrice: p.min, maxPrice: p.max })}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors ${
+                      onClick={() => updateFilters({ minPrice: isSelected ? '' : p.min, maxPrice: isSelected ? '' : p.max })}
+                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
                         isSelected
                           ? 'bg-rose-50 text-rose-600 font-bold'
                           : 'text-gray-600 hover:bg-gray-50'
@@ -399,8 +481,8 @@ const Products = () => {
                   <button
                     key={r}
                     type="button"
-                    onClick={() => updateFilters({ rating: r })}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors ${
+                    onClick={() => updateFilters({ rating: rating === r ? '' : r })}
+                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
                       rating === r
                         ? 'bg-amber-50 text-amber-800 font-bold'
                         : 'text-gray-600 hover:bg-gray-50'
@@ -417,21 +499,44 @@ const Products = () => {
           {/* Product Grid */}
           <main className="lg:col-span-3">
             {products.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center shadow-sm">
-                <div className="w-16 h-16 rounded-full bg-rose-50 text-rose-500 mx-auto flex items-center justify-center mb-4">
-                  <FaTh size={24} />
+              <div className="bg-white rounded-3xl border border-gray-200 p-12 text-center shadow-sm space-y-4">
+                <div className="w-20 h-20 rounded-full bg-rose-50 text-rose-500 mx-auto flex items-center justify-center">
+                  <FaBoxes size={32} />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-1">No products found</h3>
-                <p className="text-xs text-gray-500 max-w-sm mx-auto mb-6">
-                  No products matched the active criteria. Try resetting filters to explore all 520+ products.
+                <h3 className="text-xl font-bold font-serif-title text-gray-900">
+                  No products matched your criteria
+                </h3>
+                <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
+                  We couldn't find items matching your exact filters. Try resetting filters or exploring popular fashion categories below.
                 </p>
-                <button
-                  type="button"
-                  onClick={clearAllFilters}
-                  className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-sm"
-                >
-                  Reset All Filters
-                </button>
+
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={clearAllFilters}
+                    className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-md transition-all cursor-pointer"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+
+                <div className="pt-6 border-t border-gray-100">
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-3">
+                    Recommended Categories
+                  </span>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {['shirts', 'watches', 'rings', 'women-dresses', 'women-sarees'].map(catId => (
+                      <button
+                        key={catId}
+                        type="button"
+                        onClick={() => updateFilters({ category: catId })}
+                        className="bg-gray-100 hover:bg-rose-50 hover:text-rose-600 text-xs font-semibold px-4 py-1.5 rounded-full capitalize transition-colors cursor-pointer"
+                      >
+                        {catId.replace('-', ' ')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="space-y-8">
@@ -453,38 +558,44 @@ const Products = () => {
                         type="button"
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        className="px-3 py-1.5 rounded-lg border border-gray-300 text-xs font-semibold text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors cursor-pointer"
                       >
                         Previous
                       </button>
 
-                      {Array.from({ length: Math.min(totalPages, 7) }, (_, idx) => {
-                        let pageNum = idx + 1;
-                        if (totalPages > 7 && currentPage > 4) {
-                          pageNum = currentPage - 3 + idx;
-                          if (pageNum > totalPages) pageNum = totalPages - (6 - idx);
+                      {[...Array(totalPages)].map((_, idx) => {
+                        const pageNum = idx + 1;
+                        if (
+                          pageNum === 1 || 
+                          pageNum === totalPages || 
+                          (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                        ) {
+                          return (
+                            <button
+                              key={pageNum}
+                              type="button"
+                              onClick={() => handlePageChange(pageNum)}
+                              className={`w-8 h-8 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                                currentPage === pageNum
+                                  ? 'bg-rose-600 text-white shadow-sm'
+                                  : 'border border-gray-200 text-gray-700 hover:bg-gray-100'
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
                         }
-                        return (
-                          <button
-                            key={pageNum}
-                            type="button"
-                            onClick={() => handlePageChange(pageNum)}
-                            className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
-                              currentPage === pageNum
-                                ? 'bg-rose-600 text-white shadow-md'
-                                : 'text-gray-700 hover:bg-gray-100 border border-gray-200'
-                            }`}
-                          >
-                            {pageNum}
-                          </button>
-                        );
+                        if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                          return <span key={pageNum} className="px-1 text-gray-400">...</span>;
+                        }
+                        return null;
                       })}
 
                       <button
                         type="button"
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        className="px-3 py-1.5 rounded-lg border border-gray-300 text-xs font-semibold text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors cursor-pointer"
                       >
                         Next
                       </button>
@@ -499,174 +610,84 @@ const Products = () => {
 
       </div>
 
-      {/* Mobile & Tablet Filter Drawer Modal */}
+      {/* Mobile Filter Drawer */}
       {mobileFilterOpen && (
-        <div className="fixed inset-0 z-50 flex lg:hidden">
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-            onClick={() => setMobileFilterOpen(false)}
-          />
-
-          {/* Drawer Content */}
-          <div className="relative ml-auto w-full max-w-xs sm:max-w-sm bg-white h-full shadow-2xl flex flex-col z-10 animate-in slide-in-from-right duration-200">
-            {/* Drawer Header */}
-            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
-              <div className="flex items-center gap-2">
-                <FaFilter className="text-rose-600" size={14} />
-                <h3 className="font-bold text-sm text-gray-900 uppercase">Filters & Refinements</h3>
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex lg:hidden animate-in fade-in duration-200">
+          <div className="bg-white w-4/5 max-w-sm h-full p-5 overflow-y-auto flex flex-col justify-between shadow-2xl ml-auto animate-in slide-in-from-right duration-200">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <span className="font-bold text-sm text-gray-900">Filter Products</span>
+                <button
+                  type="button"
+                  onClick={() => setMobileFilterOpen(false)}
+                  className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 cursor-pointer"
+                >
+                  <FaTimes size={14} />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setMobileFilterOpen(false)}
-                className="w-8 h-8 rounded-full bg-white hover:bg-rose-50 hover:text-rose-600 flex items-center justify-center text-gray-500 shadow-sm"
-              >
-                <FaTimes size={14} />
-              </button>
-            </div>
 
-            {/* Scrollable Filters List */}
-            <div className="p-5 overflow-y-auto slim-scrollbar flex-1 space-y-6">
-              {/* Gender Selection */}
+              {/* Department */}
               <div>
-                <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">
-                  Target Department
-                </h4>
+                <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Department</h4>
                 <div className="flex flex-col gap-1.5">
-                  {[
-                    { id: 'all', label: 'All Catalog (520+ Items)' },
-                    { id: 'men', label: "Men's Fashion (260+ Items)" },
-                    { id: 'women', label: "Women's Fashion (260+ Items)" }
-                  ].map((g) => (
+                  {['all', 'men', 'women'].map((g) => (
                     <button
-                      key={g.id}
+                      key={g}
                       type="button"
-                      onClick={() => updateFilters({ gender: g.id })}
-                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between ${
-                        gender === g.id
-                          ? 'bg-rose-600 text-white font-bold'
-                          : 'bg-gray-50 text-gray-700'
+                      onClick={() => {
+                        updateFilters({ gender: g });
+                        setMobileFilterOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold capitalize ${
+                        gender === g ? 'bg-rose-600 text-white font-bold' : 'bg-gray-50 text-gray-700'
                       }`}
                     >
-                      <span>{g.label}</span>
-                      {gender === g.id && <FaCheck size={11} />}
+                      {g === 'all' ? 'All Catalog (520+ Items)' : `${g}'s Fashion (260+ Items)`}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Categories */}
+              {/* Sizes */}
               <div>
-                <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">
-                  Categories ({visibleCategories.length})
-                </h4>
-                <div className="space-y-1.5 max-h-52 overflow-y-auto slim-scrollbar pr-1">
-                  <button
-                    type="button"
-                    onClick={() => updateFilters({ category: 'all' })}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between ${
-                      category === 'all'
-                        ? 'bg-rose-50 text-rose-600 font-bold'
-                        : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    <span>All Products</span>
-                    {category === 'all' && <FaCheck size={10} />}
-                  </button>
-
-                  {visibleCategories.map((cat) => (
+                <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Size</h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {availableFilterSizes.map((s) => (
                     <button
-                      key={cat.id}
+                      key={s}
                       type="button"
-                      onClick={() => updateFilters({ category: cat.id, gender: cat.gender })}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between ${
-                        category === cat.id
-                          ? 'bg-rose-50 text-rose-600 font-bold'
-                          : 'text-gray-600 hover:bg-gray-50'
+                      onClick={() => {
+                        updateFilters({ size: selectedSize === s ? '' : s });
+                        setMobileFilterOpen(false);
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${
+                        selectedSize === s ? 'border-rose-600 bg-rose-600 text-white' : 'border-gray-200 text-gray-700'
                       }`}
                     >
-                      <span>{cat.label}</span>
-                      {category === cat.id && <FaCheck size={10} />}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price Range */}
-              <div>
-                <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">
-                  Price Range
-                </h4>
-                <div className="space-y-1.5">
-                  {[
-                    { label: 'Under ₹500', min: '', max: '500' },
-                    { label: '₹500 - ₹1,000', min: '500', max: '1000' },
-                    { label: '₹1,000 - ₹2,000', min: '1000', max: '2000' },
-                    { label: 'Above ₹2,000', min: '2000', max: '' }
-                  ].map((p, idx) => {
-                    const isSelected = minPrice === p.min && maxPrice === p.max;
-                    return (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => updateFilters({ minPrice: p.min, maxPrice: p.max })}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between ${
-                          isSelected
-                            ? 'bg-rose-50 text-rose-600 font-bold'
-                            : 'text-gray-600 hover:bg-gray-50'
-                        }`}
-                      >
-                        <span>{p.label}</span>
-                        {isSelected && <FaCheck size={10} />}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Rating */}
-              <div>
-                <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">
-                  Customer Rating
-                </h4>
-                <div className="space-y-1.5">
-                  {['4', '3'].map((r) => (
-                    <button
-                      key={r}
-                      type="button"
-                      onClick={() => updateFilters({ rating: r })}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between ${
-                        rating === r
-                          ? 'bg-amber-50 text-amber-800 font-bold'
-                          : 'text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      <span>{r}★ & above</span>
-                      {rating === r && <FaCheck size={10} />}
+                      {s}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Drawer Actions */}
-            <div className="p-4 border-t border-gray-100 bg-white grid grid-cols-2 gap-2">
+            <div className="pt-4 border-t border-gray-100 flex gap-2">
               <button
                 type="button"
                 onClick={() => {
                   clearAllFilters();
                   setMobileFilterOpen(false);
                 }}
-                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 px-3 rounded-xl text-xs"
+                className="flex-1 bg-gray-100 text-gray-800 font-bold py-2.5 rounded-xl text-xs"
               >
-                Clear All
+                Reset
               </button>
               <button
                 type="button"
                 onClick={() => setMobileFilterOpen(false)}
-                className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs shadow-md"
+                className="flex-1 bg-rose-600 text-white font-bold py-2.5 rounded-xl text-xs"
               >
-                Apply Filters
+                Apply
               </button>
             </div>
           </div>
@@ -678,4 +699,3 @@ const Products = () => {
 };
 
 export default Products;
-
