@@ -196,7 +196,7 @@ const Checkout = () => {
   }, [directProductId, directSize, directColor, directQuantity, contextCartItems]);
 
   // Calculate prices
-  const subtotal = items.reduce((acc, item) => acc + (item.price * (item.quantity || 1)), 0);
+  const subtotal = items.reduce((acc, item) => acc + ((Number(item.price) || 0) * (Number(item.quantity) || 1)), 0);
   const discount = Math.round(subtotal > 999 ? subtotal * 0.1 : 0);
   const deliveryCharge = subtotal > 499 || subtotal === 0 ? 0 : 49;
   const totalPrice = Math.max(0, subtotal - discount + deliveryCharge);
@@ -578,9 +578,9 @@ const Checkout = () => {
                       <div className="flex-1 min-w-0">
                         <p className="font-bold text-xs text-gray-900 line-clamp-2 leading-tight">{item.name}</p>
                         <div className="flex items-baseline gap-1.5 mt-1">
-                          <span className="font-extrabold text-sm text-gray-900">₹{(item.price * (item.quantity || 1)).toLocaleString()}</span>
+                          <span className="font-extrabold text-sm text-gray-900">₹{((Number(item.price) || 0) * (Number(item.quantity) || 1)).toLocaleString()}</span>
                           {item.originalPrice && (
-                            <span className="text-[10px] text-gray-400 line-through">₹{(item.originalPrice * (item.quantity || 1)).toLocaleString()}</span>
+                            <span className="text-[10px] text-gray-400 line-through">₹{((Number(item.originalPrice) || 0) * (Number(item.quantity) || 1)).toLocaleString()}</span>
                           )}
                         </div>
                       </div>
