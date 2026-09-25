@@ -77,6 +77,7 @@ function App() {
                   <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/checkout" element={<BuyNow />} />
                   <Route path="/buy-now" element={<BuyNow />} />
+                  <Route path="/buynow" element={<BuyNow />} />
                   <Route path="/virtual-try-on" element={<VirtualTryOn />} />
                   <Route path="/try-on" element={<VirtualTryOn />} />
                   <Route path="/showroom" element={<VirtualTryOn />} />
