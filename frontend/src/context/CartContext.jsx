@@ -8,8 +8,13 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const { isAuthenticated, token } = useAuth();
   const [cartItems, setCartItems] = useState(() => {
-    const localCart = localStorage.getItem('vintage_guest_cart');
-    return localCart ? JSON.parse(localCart) : [];
+    try {
+      const localCart = localStorage.getItem('vintage_guest_cart');
+      const parsed = localCart ? JSON.parse(localCart) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
   });
   const [loading, setLoading] = useState(false);
 
@@ -18,15 +23,20 @@ export const CartProvider = ({ children }) => {
     if (isAuthenticated) {
       fetchBackendCart();
     } else {
-      const localCart = localStorage.getItem('vintage_guest_cart');
-      setCartItems(localCart ? JSON.parse(localCart) : []);
+      try {
+        const localCart = localStorage.getItem('vintage_guest_cart');
+        const parsed = localCart ? JSON.parse(localCart) : [];
+        setCartItems(Array.isArray(parsed) ? parsed : []);
+      } catch (e) {
+        setCartItems([]);
+      }
     }
   }, [isAuthenticated, token]);
 
   // Save guest cart in localStorage
   useEffect(() => {
     if (!isAuthenticated) {
-      localStorage.setItem('vintage_guest_cart', JSON.stringify(cartItems));
+      localStorage.setItem('vintage_guest_cart', JSON.stringify(cartItems || []));
     }
   }, [cartItems, isAuthenticated]);
 
@@ -46,14 +56,18 @@ export const CartProvider = ({ children }) => {
 
   // Add Item to Cart (Optimistic & Instant)
   const addToCart = (product, quantity = 1, size = 'M', color = 'Standard') => {
+    if (!product) return;
+    const pId = product._id || product.id || product.productId;
+    if (!pId) return;
+
     const itemToAdd = {
-      product: product._id || product.id,
-      name: product.name,
-      price: product.price,
+      product: pId,
+      name: product.name || 'Fashion Product',
+      price: Number(product.price) || 499,
       image: product.images?.[0] || product.image || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500',
       size: size || 'M',
       color: color || 'Standard',
-      quantity: Number(quantity)
+      quantity: Number(quantity) || 1
     };
 
     // Instant local UI state update

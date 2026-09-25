@@ -11,6 +11,7 @@ import { WishlistProvider } from './context/WishlistContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Pages
 import Home from './pages/Home';
@@ -28,9 +29,10 @@ import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <WishlistProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <CartProvider>
+          <WishlistProvider>
           <Router>
             <ScrollToTop />
             <Toaster
@@ -85,6 +87,7 @@ function App() {
         </WishlistProvider>
       </CartProvider>
     </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
