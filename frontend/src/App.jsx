@@ -69,17 +69,23 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/products" element={<Products />} />
+                  <Route path="/shop" element={<Products />} />
+                  <Route path="/category/:category" element={<Products />} />
                   <Route path="/product/:id" element={<ProductDetails />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/checkout" element={<BuyNow />} />
                   <Route path="/buy-now" element={<BuyNow />} />
                   <Route path="/order-success" element={<OrderSuccess />} />
+                  <Route path="/order-success/:orderId" element={<OrderSuccess />} />
                   <Route path="/orders" element={<MyOrders />} />
+                  <Route path="/my-orders" element={<MyOrders />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/admin" element={<AdminDashboard />} />
+                  {/* Catch-all wildcard route */}
+                  <Route path="*" element={<Products />} />
                 </Routes>
               </main>
 
