@@ -6,19 +6,9 @@ import {
   FaShoppingCart, 
   FaBolt, 
   FaTruck, 
-  FaShieldAlt, 
-  FaUndoAlt, 
-  FaStar,
-  FaCheck,
-  FaShareAlt,
-  FaWhatsapp,
-  FaRuler,
-  FaMapMarkerAlt,
-  FaCheckCircle,
-  FaExclamationCircle,
-  FaCube,
-  FaMagic,
-  FaTimes
+  FaShareAlt, 
+  FaRuler, 
+  FaCheckCircle
 } from 'react-icons/fa';
 import api from '../api/axios';
 import { useCart } from '../context/CartContext';
