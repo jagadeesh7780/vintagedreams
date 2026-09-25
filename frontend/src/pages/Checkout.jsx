@@ -42,14 +42,14 @@ const Checkout = () => {
   const directProductId = searchParams.get('productId');
   const directSize = searchParams.get('size') || 'M';
   const directColor = searchParams.get('color') || 'Standard';
+  const directQuantity = Number(searchParams.get('quantity')) || 1;
 
   // Find direct product if passed via URL
   const directProduct = directProductId 
     ? fallbackProducts.find(p => p._id === directProductId || p.name === directProductId)
     : null;
 
-  // Active items for this checkout session
-  const [items, setItems] = useState(() => {
+  const resolveInitialItems = () => {
     if (directProduct) {
       return [{
         product: directProduct._id,
@@ -59,7 +59,7 @@ const Checkout = () => {
         image: directProduct.images?.[0] || directProduct.image,
         size: directSize,
         color: directColor,
-        quantity: 1,
+        quantity: directQuantity,
         sizes: directProduct.sizes || ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
         colors: directProduct.colors || ['Black', 'White', 'Navy Blue', 'Wine Red']
       }];
@@ -71,8 +71,46 @@ const Checkout = () => {
         colors: item.colors || ['Black', 'White', 'Navy Blue', 'Wine Red']
       }));
     }
+    try {
+      const saved = localStorage.getItem('vintage_guest_cart');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map(item => ({
+            ...item,
+            sizes: item.sizes || ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+            colors: item.colors || ['Black', 'White', 'Navy Blue', 'Wine Red']
+          }));
+        }
+      }
+    } catch (e) {}
+
+    // Fallback default featured product if opened directly
+    if (fallbackProducts.length > 0) {
+      const def = fallbackProducts[0];
+      return [{
+        product: def._id,
+        name: def.name,
+        price: def.price,
+        originalPrice: def.originalPrice,
+        image: def.images?.[0] || def.image,
+        size: 'M',
+        color: 'Standard',
+        quantity: 1,
+        sizes: def.sizes || ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+        colors: def.colors || ['Black', 'White', 'Navy Blue', 'Wine Red']
+      }];
+    }
     return [];
-  });
+  };
+
+  // Active items for this checkout session
+  const [items, setItems] = useState(resolveInitialItems);
+
+  useEffect(() => {
+    setItems(resolveInitialItems());
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [directProductId, directSize, directColor, directQuantity, contextCartItems]);
 
   // Calculate prices
   const subtotal = items.reduce((acc, item) => acc + (item.price * (item.quantity || 1)), 0);

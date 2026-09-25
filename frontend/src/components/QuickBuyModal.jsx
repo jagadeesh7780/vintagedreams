@@ -38,9 +38,10 @@ const QuickBuyModal = ({ product, isOpen, onClose }) => {
   };
 
   const handleProceedToCheckout = () => {
+    const pId = product._id || product.id;
     addToCart(product, quantity, selectedSize, selectedColor);
     onClose();
-    navigate('/checkout');
+    navigate(`/checkout?productId=${pId}&size=${encodeURIComponent(selectedSize)}&color=${encodeURIComponent(selectedColor)}&quantity=${quantity}`);
   };
 
   return (

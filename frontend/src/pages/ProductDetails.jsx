@@ -102,8 +102,9 @@ const ProductDetails = () => {
   };
 
   const handleBuyNow = () => {
+    const pId = product._id || product.id;
     addToCart(product, quantity, selectedSize, selectedColor);
-    navigate('/checkout');
+    navigate(`/checkout?productId=${pId}&size=${encodeURIComponent(selectedSize || 'M')}&color=${encodeURIComponent(selectedColor || 'Standard')}&quantity=${quantity}`);
   };
 
   const handleReviewSubmit = async (e) => {
