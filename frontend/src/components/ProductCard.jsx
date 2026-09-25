@@ -14,7 +14,7 @@ import { useWishlist } from '../context/WishlistContext';
 import RatingStars from './RatingStars';
 import QuickViewModal from './QuickViewModal';
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onTryOn }) => {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [quickViewOpen, setQuickViewOpen] = useState(false);
@@ -61,9 +61,26 @@ const ProductCard = ({ product }) => {
     setQuickViewOpen(true);
   };
 
+  const handleTryOn = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.dispatchEvent(new CustomEvent('vintage_equip_item', { detail: product }));
+    if (onTryOn) onTryOn(product);
+    toast.success(`Sent ${product.name} to 360° Try-On Room!`, { icon: '✨' });
+  };
+
+  const handleDragStart = (e) => {
+    e.dataTransfer.setData('application/json', JSON.stringify(product));
+    e.dataTransfer.setData('text/plain', product._id || product.id);
+  };
+
   return (
     <>
-      <div className="group relative bg-white rounded-2xl border border-gray-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden">
+      <div 
+        draggable={true}
+        onDragStart={handleDragStart}
+        className="group relative bg-white rounded-2xl border border-gray-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-grab active:cursor-grabbing"
+      >
         
         {/* Product Image Link Container */}
         <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 block">
@@ -91,7 +108,7 @@ const ProductCard = ({ product }) => {
             )}
           </div>
 
-          {/* Action Overlay Buttons (Wishlist & QuickView) */}
+          {/* Action Overlay Buttons (Wishlist & QuickView & 360 Try-On) */}
           <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 z-10">
             {/* Wishlist Heart */}
             <button
@@ -104,6 +121,16 @@ const ProductCard = ({ product }) => {
               }`}
             >
               {isLiked ? <FaHeart className="text-rose-600 animate-pulse" size={15} /> : <FaRegHeart size={15} />}
+            </button>
+
+            {/* 360 Try On Icon Button */}
+            <button
+              onClick={handleTryOn}
+              aria-label="Try On in 360 Mirror"
+              title="✨ Try On in 360° Mirror"
+              className="w-8 h-8 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center transition-all duration-200 shadow-md cursor-pointer group-hover:scale-110 active:scale-95"
+            >
+              <span className="text-[10px] font-black">360°</span>
             </button>
 
             {/* Quick View */}

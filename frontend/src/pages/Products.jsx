@@ -10,11 +10,14 @@ import {
   FaThLarge,
   FaSearch,
   FaUndoAlt,
-  FaBoxes
+  FaBoxes,
+  FaMagic,
+  FaTshirt
 } from 'react-icons/fa';
 import api from '../api/axios';
 import CategoryBar from '../components/CategoryBar';
 import ProductCard from '../components/ProductCard';
+import VirtualMirror360 from '../components/VirtualMirror360';
 import { fallbackProducts } from '../data/fallbackProducts';
 
 const allCategoriesList = [
@@ -112,6 +115,20 @@ const Products = () => {
   const [products, setProducts] = useState(computeFilteredProducts);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMirrorOpen, setIsMirrorOpen] = useState(true);
+  const [equippedProduct, setEquippedProduct] = useState(null);
+
+  useEffect(() => {
+    const handleEquipEvent = (e) => {
+      if (e.detail) {
+        setEquippedProduct(e.detail);
+        setIsMirrorOpen(true);
+      }
+    };
+    window.addEventListener('vintage_equip_item', handleEquipEvent);
+    return () => window.removeEventListener('vintage_equip_item', handleEquipEvent);
+  }, []);
+
   const itemsPerPage = 24;
 
   const totalPages = Math.ceil(products.length / itemsPerPage) || 1;
@@ -206,8 +223,18 @@ const Products = () => {
             </p>
           </div>
 
-          {/* Sort & Mobile filter button */}
-          <div className="flex items-center gap-3">
+          {/* Sort & Mobile filter & Try-On button */}
+          <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+            <button
+              type="button"
+              onClick={() => setIsMirrorOpen(!isMirrorOpen)}
+              className="flex items-center gap-2 bg-gradient-to-r from-gray-950 via-gray-900 to-rose-950 hover:from-black hover:to-rose-900 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-md cursor-pointer transition-all active:scale-95 border border-white/10"
+              title="Toggle 360 Virtual Try-On Fitting Room"
+            >
+              <FaMagic className="text-rose-400" />
+              <span>{isMirrorOpen ? 'Close 360° Mirror' : '✨ 360° Try-On Room'}</span>
+            </button>
+
             <button
               onClick={() => setMobileFilterOpen(true)}
               className="lg:hidden flex items-center gap-2 bg-white border border-gray-300 text-gray-700 text-xs font-semibold px-4 py-2 rounded-xl shadow-sm cursor-pointer"
@@ -306,11 +333,11 @@ const Products = () => {
           </div>
         )}
 
-        {/* Filter Drawer / Sidebar Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+        {/* Main 3-Column Layout: Filters (Left), Products (Center), 360 Virtual Mirror (Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Desktop Filter Sidebar */}
-          <aside className="hidden lg:block lg:col-span-1 bg-white p-5 rounded-2xl border border-gray-200 shadow-sm sticky top-32 max-h-[calc(100vh-9rem)] overflow-y-auto slim-scrollbar overscroll-contain space-y-6">
+          <aside className={`hidden lg:block ${isMirrorOpen ? 'lg:col-span-3' : 'lg:col-span-3'} bg-white p-5 rounded-2xl border border-gray-200 shadow-sm sticky top-32 max-h-[calc(100vh-9rem)] overflow-y-auto slim-scrollbar overscroll-contain space-y-6`}>
             <div className="flex items-center justify-between pb-3 border-b border-gray-100 sticky top-0 bg-white z-10">
               <span className="font-bold text-gray-900 text-sm flex items-center gap-2">
                 <FaFilter className="text-rose-600" size={13} />
@@ -496,8 +523,8 @@ const Products = () => {
             </div>
           </aside>
 
-          {/* Product Grid */}
-          <main className="lg:col-span-3">
+          {/* Product Grid Main Area */}
+          <main className={`${isMirrorOpen ? 'lg:col-span-5' : 'lg:col-span-9'}`}>
             {products.length === 0 ? (
               <div className="bg-white rounded-3xl border border-gray-200 p-12 text-center shadow-sm space-y-4">
                 <div className="w-20 h-20 rounded-full bg-rose-50 text-rose-500 mx-auto flex items-center justify-center">
@@ -540,9 +567,16 @@ const Products = () => {
               </div>
             ) : (
               <div className="space-y-8">
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                <div className={`grid ${isMirrorOpen ? 'grid-cols-2 gap-3.5 sm:gap-4' : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6'}`}>
                   {paginatedProducts.map((product) => (
-                    <ProductCard key={product._id || product.id || product.name} product={product} />
+                    <ProductCard 
+                      key={product._id || product.id || product.name} 
+                      product={product} 
+                      onTryOn={(p) => {
+                        setEquippedProduct(p);
+                        setIsMirrorOpen(true);
+                      }}
+                    />
                   ))}
                 </div>
 
@@ -606,6 +640,31 @@ const Products = () => {
             )}
           </main>
 
+          {/* 3. Right-Side 360° AI Virtual Try-On Fitting Room (Matching user screenshot) */}
+          {isMirrorOpen && (
+            <div className="lg:col-span-4 sticky top-28 space-y-4">
+              <VirtualMirror360 
+                isOpen={isMirrorOpen}
+                onClose={() => setIsMirrorOpen(false)}
+                activeEquippedProduct={equippedProduct}
+                onProductEquip={(p) => setEquippedProduct(p)}
+              />
+            </div>
+          )}
+
+        </div>
+
+        {/* Floating 360 Try-On Mirror FAB */}
+        <div className="fixed bottom-6 right-6 z-40">
+          <button
+            type="button"
+            onClick={() => setIsMirrorOpen(!isMirrorOpen)}
+            className="bg-gradient-to-r from-gray-950 via-gray-900 to-rose-900 hover:from-black hover:to-rose-800 text-white font-bold py-3 px-5 rounded-full shadow-2xl flex items-center gap-2.5 text-xs uppercase tracking-wider border border-white/20 active:scale-95 transition-all cursor-pointer group"
+          >
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+            <FaMagic className="text-rose-400 group-hover:rotate-12 transition-transform" />
+            <span>{isMirrorOpen ? 'Docked 360° Mirror' : '✨ Open 360° Try-On'}</span>
+          </button>
         </div>
 
       </div>
