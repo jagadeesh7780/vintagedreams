@@ -27,6 +27,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import About from './pages/About';
 import AdminDashboard from './pages/AdminDashboard';
+import VirtualTryOn from './pages/VirtualTryOn';
 
 function App() {
   return (
@@ -76,6 +77,9 @@ function App() {
                   <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/checkout" element={<BuyNow />} />
                   <Route path="/buy-now" element={<BuyNow />} />
+                  <Route path="/virtual-try-on" element={<VirtualTryOn />} />
+                  <Route path="/try-on" element={<VirtualTryOn />} />
+                  <Route path="/showroom" element={<VirtualTryOn />} />
                   <Route path="/order-success" element={<OrderSuccess />} />
                   <Route path="/order-success/:orderId" element={<OrderSuccess />} />
                   <Route path="/orders" element={<MyOrders />} />

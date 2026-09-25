@@ -182,6 +182,17 @@ const ProductCard = ({ product, onTryOn }) => {
             </div>
           </div>
 
+          {/* Virtual Try-On Studio Gateway */}
+          <Link
+            to={`/virtual-try-on?productId=${product._id || product.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full mb-2 bg-gradient-to-r from-gray-950 via-gray-900 to-rose-950 hover:from-black hover:to-rose-900 text-white font-bold py-1.5 px-2 rounded-xl text-[10px] flex items-center justify-center gap-1.5 transition-all shadow-xs border border-white/10 active:scale-98"
+            title="Open Virtual Try-On & 360° View"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
+            <span className="truncate uppercase tracking-wider font-extrabold">✨ TRY IT ON (360° STUDIO)</span>
+          </Link>
+
           {/* TWO PROMINENT ACTION BUTTONS */}
           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100">
             <button

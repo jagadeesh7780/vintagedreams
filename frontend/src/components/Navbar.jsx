@@ -142,7 +142,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-gray-700">
+          <nav className="hidden lg:flex items-center gap-5 text-xs font-bold uppercase tracking-wider text-gray-700">
             <Link to="/" className="hover:text-rose-600 transition-colors">
               Home
             </Link>
@@ -155,6 +155,10 @@ const Navbar = () => {
             <Link to="/products?sort=newest" className="hover:text-rose-600 transition-colors flex items-center gap-1 text-rose-600">
               <FaFire size={11} />
               <span>New Arrivals</span>
+            </Link>
+            <Link to="/virtual-try-on" className="hover:text-rose-600 transition-colors flex items-center gap-1.5 bg-rose-50 text-rose-700 px-3 py-1.5 rounded-full border border-rose-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping"></span>
+              <span>✨ 360° Try-On</span>
             </Link>
             <Link to="/products" className="hover:text-rose-600 transition-colors">
               Catalog (520+)
@@ -444,6 +448,12 @@ const Navbar = () => {
                   className="block px-3 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 text-rose-600 transition-colors font-bold"
                 >
                   🔥 New Arrivals 2026
+                </Link>
+                <Link
+                  to="/virtual-try-on"
+                  className="block px-3 py-2.5 rounded-xl bg-gradient-to-r from-gray-900 to-rose-950 text-white font-bold transition-all shadow-xs"
+                >
+                  ✨ 360° Virtual Try-On Studio
                 </Link>
                 <Link
                   to="/products"

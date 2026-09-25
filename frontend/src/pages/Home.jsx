@@ -14,7 +14,8 @@ import {
   FaQuoteLeft,
   FaPaperPlane,
   FaCheckCircle,
-  FaTag
+  FaTag,
+  FaMagic
 } from 'react-icons/fa';
 import api from '../api/axios';
 import CategoryBar from '../components/CategoryBar';
@@ -126,21 +127,29 @@ const Home = () => {
                 Elevate your wardrobe with premium utility shirts, rugged cargo pants, genuine leather watches, pure silk sarees, and 925 sterling silver jewelry.
               </p>
 
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-2">
+                <Link
+                  to="/virtual-try-on"
+                  className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-950 font-bold px-6 py-3.5 rounded-xl shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5"
+                >
+                  <FaMagic />
+                  <span>✨ 360° Try-On Studio</span>
+                </Link>
+
                 <Link
                   to="/products?gender=men"
-                  className="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-7 py-3.5 rounded-xl shadow-lg shadow-rose-900/40 flex items-center gap-2 transition-all transform hover:-translate-y-0.5"
+                  className="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-6 py-3.5 rounded-xl shadow-lg shadow-rose-900/40 flex items-center gap-2 transition-all transform hover:-translate-y-0.5"
                 >
                   <FaShoppingBag />
-                  <span>Shop Men's Wear</span>
+                  <span>Men's Wear</span>
                 </Link>
 
                 <Link
                   to="/products?gender=women"
-                  className="bg-white/10 hover:bg-white/20 text-white font-semibold px-7 py-3.5 rounded-xl border border-white/20 backdrop-blur-md flex items-center gap-2 transition-all"
+                  className="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3.5 rounded-xl border border-white/20 backdrop-blur-md flex items-center gap-2 transition-all"
                 >
-                  <span>Explore Women's</span>
-                  <FaArrowRight size={14} />
+                  <span>Women's Wear</span>
+                  <FaArrowRight size={13} />
                 </Link>
               </div>
 
