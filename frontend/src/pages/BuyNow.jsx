@@ -69,9 +69,10 @@ const BuyNow = () => {
   const { clearCart } = useCart();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    const savedUser = localStorage.getItem('vintage_user');
+    if (!isAuthenticated && !savedUser) {
       toast.error('Please log in to purchase products', { id: 'buynow-auth-req' });
-      navigate('/login', { state: { from: location.pathname + location.search } });
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`, { state: { from: location.pathname + location.search } });
     }
   }, [isAuthenticated, navigate, location]);
 

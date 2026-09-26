@@ -49,7 +49,8 @@ const QuickViewModal = ({ product, isOpen, onClose }) => {
     : 0;
 
   const handleAddToCart = () => {
-    if (!isAuthenticated) {
+    const savedUser = localStorage.getItem('vintage_user');
+    if (!isAuthenticated && !savedUser) {
       toast.error('Please login to add items to your cart! 🔒');
       onClose();
       navigate('/login');
@@ -64,18 +65,22 @@ const QuickViewModal = ({ product, isOpen, onClose }) => {
   };
 
   const handleBuyNow = () => {
-    if (!isAuthenticated) {
-      toast.error('Please login to buy products! 🔒');
-      onClose();
-      navigate('/login');
-      return;
-    }
     const pId = product._id || product.id;
     try {
       sessionStorage.setItem('vintage_active_buynow', JSON.stringify(product));
     } catch (err) {}
     onClose();
-    navigate(`/buy-now?productId=${pId}&size=${encodeURIComponent(selectedSize)}&color=${encodeURIComponent(selectedColor)}&quantity=${quantity}`, {
+
+    const buyNowUrl = `/buy-now?productId=${pId}&size=${encodeURIComponent(selectedSize)}&color=${encodeURIComponent(selectedColor)}&quantity=${quantity}`;
+
+    const savedUser = localStorage.getItem('vintage_user');
+    if (!isAuthenticated && !savedUser) {
+      toast.error('Please login to buy products! 🔒');
+      navigate(`/login?redirect=${encodeURIComponent(buyNowUrl)}`);
+      return;
+    }
+
+    navigate(buyNowUrl, {
       state: { product, productId: pId, size: selectedSize, color: selectedColor, quantity }
     });
   };

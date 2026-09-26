@@ -22,15 +22,17 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         try {
           const res = await api.get('/auth/me');
-          if (res.data.success) {
+          if (res.data.success && res.data.user) {
             setUser(res.data.user);
             localStorage.setItem('vintage_user', JSON.stringify(res.data.user));
           }
         } catch (error) {
-          console.warn('Session check:', error?.response?.data?.message || error.message);
-          // If token fails, keep cached user for offline testing or logout if explicit 401
-          if (error?.response?.status === 401) {
-            logout();
+          // Keep cached user active even if backend is slow/cold starting or offline
+          const savedUser = localStorage.getItem('vintage_user');
+          if (savedUser) {
+            try {
+              setUser(JSON.parse(savedUser));
+            } catch (e) {}
           }
         }
       }

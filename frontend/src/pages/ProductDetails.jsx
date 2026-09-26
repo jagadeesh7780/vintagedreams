@@ -103,7 +103,8 @@ const ProductDetails = () => {
 
   const discountPercent = product.originalPrice && product.originalPrice > product.price
   const handleAddToCart = () => {
-    if (!isAuthenticated) {
+    const savedUser = localStorage.getItem('vintage_user');
+    if (!isAuthenticated && !savedUser) {
       toast.error('Please login to add items to your cart! 🔒');
       navigate('/login');
       return;
@@ -114,22 +115,28 @@ const ProductDetails = () => {
   };
 
   const handleBuyNow = () => {
-    if (!isAuthenticated) {
-      toast.error('Please login to buy products! 🔒');
-      navigate('/login');
-      return;
-    }
     const pId = product._id || product.id;
     try {
       sessionStorage.setItem('vintage_active_buynow', JSON.stringify(product));
     } catch (err) {}
-    navigate(`/buy-now?productId=${pId}&size=${encodeURIComponent(selectedSize || 'M')}&color=${encodeURIComponent(selectedColor || 'Standard')}&quantity=${quantity}`, {
+
+    const buyNowUrl = `/buy-now?productId=${pId}&size=${encodeURIComponent(selectedSize || 'M')}&color=${encodeURIComponent(selectedColor || 'Standard')}&quantity=${quantity}`;
+
+    const savedUser = localStorage.getItem('vintage_user');
+    if (!isAuthenticated && !savedUser) {
+      toast.error('Please login to buy products! 🔒');
+      navigate(`/login?redirect=${encodeURIComponent(buyNowUrl)}`);
+      return;
+    }
+
+    navigate(buyNowUrl, {
       state: { product, productId: pId, size: selectedSize, color: selectedColor, quantity }
     });
   };
 
   const handleToggleWishlist = () => {
-    if (!isAuthenticated) {
+    const savedUser = localStorage.getItem('vintage_user');
+    if (!isAuthenticated && !savedUser) {
       toast.error('Please login to save items to your wishlist! 🔒');
       navigate('/login');
       return;

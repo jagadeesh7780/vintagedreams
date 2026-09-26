@@ -39,7 +39,8 @@ const ProductCard = ({ product }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!isAuthenticated) {
+    const savedUser = localStorage.getItem('vintage_user');
+    if (!isAuthenticated && !savedUser) {
       toast.error('Please login to add items to your cart! 🔒');
       navigate('/login');
       return;
@@ -56,16 +57,18 @@ const ProductCard = ({ product }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!isAuthenticated) {
-      toast.error('Please login to buy products! 🔒');
-      navigate('/login');
-      return;
-    }
-
     const pId = product._id || product.id;
     try {
       sessionStorage.setItem('vintage_active_buynow', JSON.stringify(product));
     } catch (err) {}
+
+    const savedUser = localStorage.getItem('vintage_user');
+    if (!isAuthenticated && !savedUser) {
+      toast.error('Please login to buy products! 🔒');
+      navigate(`/login?redirect=${encodeURIComponent(`/buy-now?productId=${pId}`)}`);
+      return;
+    }
+
     navigate(`/buy-now?productId=${pId}`, { state: { product, productId: pId } });
   };
 
@@ -73,7 +76,8 @@ const ProductCard = ({ product }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!isAuthenticated) {
+    const savedUser = localStorage.getItem('vintage_user');
+    if (!isAuthenticated && !savedUser) {
       toast.error('Please login to save items to your wishlist! 🔒');
       navigate('/login');
       return;
@@ -167,7 +171,7 @@ const ProductCard = ({ product }) => {
         </div>
 
         {/* Product Details Area */}
-        <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-between">
+        <div className="p-3 sm:p-4 flex flex-col flex-1 justify-between">
           <div>
             {/* Brand & Category */}
             <div className="flex items-center justify-between text-[10px] text-gray-500 uppercase tracking-wider mb-1 font-bold">
@@ -188,7 +192,7 @@ const ProductCard = ({ product }) => {
             </div>
 
             {/* Price Section */}
-            <div className="flex items-baseline gap-2 mb-3">
+            <div className="flex items-baseline gap-2 mb-2 sm:mb-3">
               <span className="text-base sm:text-lg font-extrabold text-gray-900">₹{product.price}</span>
               {product.originalPrice && product.originalPrice > product.price && (
                 <span className="text-xs text-gray-400 line-through">₹{product.originalPrice}</span>
@@ -197,26 +201,26 @@ const ProductCard = ({ product }) => {
           </div>
 
           {/* TWO PROMINENT ACTION BUTTONS */}
-          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100">
+          <div className="flex flex-col xs:grid xs:grid-cols-2 gap-1.5 pt-2 border-t border-gray-100">
             <button
               onClick={handleQuickAdd}
               type="button"
               disabled={adding}
-              className="w-full bg-amber-400 hover:bg-amber-500 active:scale-95 text-gray-950 font-bold py-2.5 px-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
+              className="w-full bg-amber-400 hover:bg-amber-500 active:scale-95 text-gray-950 font-bold py-2 sm:py-2.5 px-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
               title="Add item to shopping cart"
             >
-              {adding ? <FaCheck size={11} className="text-emerald-950 animate-bounce" /> : <FaShoppingCart size={12} className="shrink-0" />}
-              <span className="truncate">{adding ? 'Added ✓' : 'Add to Cart'}</span>
+              {adding ? <FaCheck size={11} className="text-emerald-950 animate-bounce" /> : <FaShoppingCart size={11} className="shrink-0" />}
+              <span className="font-extrabold whitespace-nowrap">{adding ? 'Added ✓' : 'Add to Cart'}</span>
             </button>
 
             <button
               onClick={handleOpenBuyNow}
               type="button"
-              className="w-full bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-bold py-2.5 px-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-rose-900/20 cursor-pointer"
+              className="w-full bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-bold py-2 sm:py-2.5 px-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-rose-900/20 cursor-pointer"
               title="Instant Purchase"
             >
-              <FaBolt size={12} className="shrink-0" />
-              <span className="truncate">Buy Now</span>
+              <FaBolt size={11} className="shrink-0" />
+              <span className="font-extrabold whitespace-nowrap">Buy Now</span>
             </button>
           </div>
 
