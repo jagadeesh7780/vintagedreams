@@ -209,14 +209,14 @@ const Checkout = () => {
   const deliveryCharge = subtotal > 499 || subtotal === 0 ? 0 : 49;
   const totalPrice = Math.max(0, subtotal - discount + deliveryCharge);
 
-  // Address State
+  // Address State (starts empty for manual entry)
   const [formData, setFormData] = useState({
-    fullName: user?.name || 'Jagadeesh Babu',
-    phone: user?.phone || '7780597718',
-    address: user?.addresses?.[0]?.street || '123 Vintage Boulevard, Jubilee Hills',
-    city: user?.addresses?.[0]?.city || 'Hyderabad',
-    state: user?.addresses?.[0]?.state || 'Telangana',
-    postalCode: user?.addresses?.[0]?.pincode || '500033'
+    fullName: user?.name || '',
+    phone: user?.phone || '',
+    address: '',
+    city: '',
+    state: '',
+    postalCode: ''
   });
 
   const [paymentMethod, setPaymentMethod] = useState('Razorpay');
@@ -444,7 +444,7 @@ const Checkout = () => {
                     required
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    placeholder="e.g. Jagadeesh"
+                    placeholder="Enter recipient's full name"
                     className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:border-rose-500"
                   />
                 </div>
@@ -457,7 +457,7 @@ const Checkout = () => {
                     required
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="10-digit mobile number"
+                    placeholder="Enter 10-digit mobile number"
                     className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:border-rose-500"
                   />
                 </div>
@@ -470,7 +470,7 @@ const Checkout = () => {
                     required
                     value={formData.address}
                     onChange={handleInputChange}
-                    placeholder="Flat / House No., Street, Area"
+                    placeholder="House/Flat No, Building, Street, Area, Landmark"
                     className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:border-rose-500"
                   />
                 </div>
@@ -483,7 +483,7 @@ const Checkout = () => {
                     required
                     value={formData.city}
                     onChange={handleInputChange}
-                    placeholder="City"
+                    placeholder="Enter city / town"
                     className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:border-rose-500"
                   />
                 </div>
@@ -496,7 +496,7 @@ const Checkout = () => {
                     required
                     value={formData.state}
                     onChange={handleInputChange}
-                    placeholder="State"
+                    placeholder="Enter state"
                     className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:border-rose-500"
                   />
                 </div>
@@ -506,10 +506,11 @@ const Checkout = () => {
                   <input
                     type="text"
                     name="postalCode"
+                    maxLength={6}
                     required
                     value={formData.postalCode}
                     onChange={handleInputChange}
-                    placeholder="6-digit PIN"
+                    placeholder="Enter 6-digit PIN code"
                     className="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5 text-xs outline-none focus:border-rose-500"
                   />
                 </div>

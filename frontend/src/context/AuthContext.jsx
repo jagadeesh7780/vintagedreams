@@ -124,7 +124,7 @@ export const AuthProvider = ({ children }) => {
       email: email.trim().toLowerCase(),
       phone: phone.trim(),
       role: 'user',
-      addresses: [{ street: 'Main Road', city: 'Hyderabad', state: 'Telangana', pincode: '500033', isDefault: true }]
+      addresses: []
     };
 
     try {

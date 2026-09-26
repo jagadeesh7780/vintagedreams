@@ -122,18 +122,18 @@ const BuyNow = () => {
   const [color, setColor] = useState(() => initialParamColor || (product?.colors?.[0] || 'Standard'));
   const [quantity, setQuantity] = useState(initialParamQty);
 
-  // Promo code state
-  const [couponCode, setCouponCode] = useState('VINTAGE10');
-  const [couponApplied, setCouponApplied] = useState(true);
+  // Promo code state (manual user entry)
+  const [couponCode, setCouponCode] = useState('');
+  const [couponApplied, setCouponApplied] = useState(false);
 
-  // Delivery Address Form state
+  // Delivery Address Form state (starts empty for manual user entry)
   const [formData, setFormData] = useState({
-    fullName: user?.name || 'Jagadeesh Babu',
-    phone: user?.phone || '7780597718',
-    address: user?.addresses?.[0]?.street || '123 Vintage Boulevard, Jubilee Hills',
-    city: user?.addresses?.[0]?.city || 'Hyderabad',
-    state: user?.addresses?.[0]?.state || 'Telangana',
-    postalCode: user?.addresses?.[0]?.pincode || '500033'
+    fullName: user?.name || '',
+    phone: user?.phone || '',
+    address: '',
+    city: '',
+    state: '',
+    postalCode: ''
   });
 
   const [paymentMethod, setPaymentMethod] = useState('Razorpay');
@@ -211,12 +211,22 @@ const BuyNow = () => {
 
   const handleApplyCoupon = (e) => {
     e.preventDefault();
+    if (!couponCode.trim()) {
+      toast.error('Please enter or paste a coupon code');
+      return;
+    }
     if (couponCode.trim().toUpperCase() === 'VINTAGE10') {
       setCouponApplied(true);
       toast.success('🎉 10% Coupon Applied!');
     } else {
-      toast.error('Invalid coupon code. Use VINTAGE10');
+      toast.error('Invalid coupon code. Try VINTAGE10');
     }
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponApplied(false);
+    setCouponCode('');
+    toast('Coupon removed');
   };
 
   const handleInputChange = (e) => {
@@ -537,21 +547,34 @@ const BuyNow = () => {
               <div className="relative flex-1 w-full">
                 <input
                   type="text"
-                  placeholder="Enter Coupon Code (e.g. VINTAGE10)"
+                  placeholder="Enter or paste coupon code (e.g. VINTAGE10)"
                   value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
+                  onChange={(e) => {
+                    setCouponCode(e.target.value);
+                    if (couponApplied) setCouponApplied(false);
+                  }}
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-bold text-gray-900 placeholder-gray-400 outline-none uppercase focus:border-rose-500 focus:bg-white transition-all"
                 />
                 <FaTag className="absolute right-3.5 top-3.5 text-rose-500 text-xs" />
               </div>
 
-              <button
-                type="button"
-                onClick={handleApplyCoupon}
-                className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-sm transition-all cursor-pointer whitespace-nowrap"
-              >
-                {couponApplied ? 'Applied ✓' : 'Apply Coupon'}
-              </button>
+              {couponApplied ? (
+                <button
+                  type="button"
+                  onClick={handleRemoveCoupon}
+                  className="w-full sm:w-auto bg-emerald-600 hover:bg-rose-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition-all cursor-pointer whitespace-nowrap"
+                >
+                  Applied ✓ (Remove)
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleApplyCoupon}
+                  className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-sm transition-all cursor-pointer whitespace-nowrap"
+                >
+                  Apply Coupon
+                </button>
+              )}
             </div>
 
             {/* 3. Delivery Address Form */}
@@ -577,7 +600,7 @@ const BuyNow = () => {
                     required
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    placeholder="Recipient's Name"
+                    placeholder="Enter recipient's full name"
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-rose-500 focus:bg-white"
                   />
                 </div>
@@ -592,7 +615,7 @@ const BuyNow = () => {
                     required
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="10-digit mobile number"
+                    placeholder="Enter 10-digit mobile number"
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-rose-500 focus:bg-white"
                   />
                 </div>
@@ -607,7 +630,7 @@ const BuyNow = () => {
                     required
                     value={formData.address}
                     onChange={handleInputChange}
-                    placeholder="Flat / Building / Street"
+                    placeholder="House/Flat No, Building, Street, Area, Landmark"
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-rose-500 focus:bg-white"
                   />
                 </div>
@@ -622,7 +645,7 @@ const BuyNow = () => {
                     required
                     value={formData.city}
                     onChange={handleInputChange}
-                    placeholder="City"
+                    placeholder="Enter city / town"
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-rose-500 focus:bg-white"
                   />
                 </div>
@@ -637,7 +660,7 @@ const BuyNow = () => {
                     required
                     value={formData.state}
                     onChange={handleInputChange}
-                    placeholder="State"
+                    placeholder="Enter state"
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-rose-500 focus:bg-white"
                   />
                 </div>
@@ -653,7 +676,7 @@ const BuyNow = () => {
                     required
                     value={formData.postalCode}
                     onChange={handleInputChange}
-                    placeholder="6-digit PIN"
+                    placeholder="6-digit PIN code"
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:border-rose-500 focus:bg-white"
                   />
                 </div>
