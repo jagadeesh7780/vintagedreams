@@ -420,7 +420,263 @@ const generateProducts = () => {
     ['Vintage 90s Atelier', 'Heritage 1974', 'Retro Royale', 'Vintage Dreams']
   );
 
-  return list;
+  // Individual Curated Showroom Vintage Products (1930s-1970s Boutique Collection)
+  const curatedShowroomItems = [
+    {
+      name: '1930s Floral Tea Dress with Lace Trim',
+      description: 'Authentic 1930s inspired floral cream tea dress crafted in lightweight rayon-silk blend with delicate antique lace collar, puff short sleeves, and tailored waist silhouette.',
+      price: 2499,
+      originalPrice: 3899,
+      category: 'vintage-collection',
+      gender: 'women',
+      images: [
+        'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
+      colors: ['Cream Rose Floral', 'Sage Garden Floral', 'Blush Vintage'],
+      brand: 'Vintage 1930s Archive',
+      stock: 18,
+      rating: 4.9,
+      numReviews: 124,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['1930s', 'tea dress', 'floral', 'lace', 'vintage-collection', 'women', 'dress', 'vintage', 'heritage']
+    },
+    {
+      name: '1950s Rockabilly Polka Dot Swing Dress',
+      description: 'Iconic 1950s rockabilly swing midi dress in midnight navy with crisp white polka dots, contrast Peter Pan collar, and full circle flare skirt.',
+      price: 2199,
+      originalPrice: 3499,
+      category: 'vintage-collection',
+      gender: 'women',
+      images: [
+        'https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+      colors: ['Midnight Navy Polka', 'Cherry Red Polka', 'Classic Black Polka'],
+      brand: 'Retro 1950s Royale',
+      stock: 24,
+      rating: 4.8,
+      numReviews: 96,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['1950s', 'polka dot', 'rockabilly', 'swing dress', 'vintage-collection', 'women', 'retro']
+    },
+    {
+      name: '1960s Camel Wool Tailored Trench Overcoat',
+      description: 'Structured 1960s tailored overcoat tailored from heavy camel wool blend featuring oversized retro tortoiseshell buttons, wide lapels, and deep flap pockets.',
+      price: 4299,
+      originalPrice: 6499,
+      category: 'vintage-collection',
+      gender: 'all',
+      images: [
+        'https://images.unsplash.com/photo-1544923246-77307dd654cb?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+      colors: ['Warm Camel', 'Chestnut Tan', 'Charcoal Grey'],
+      brand: 'Atelier 1960',
+      stock: 12,
+      rating: 5.0,
+      numReviews: 88,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['1960s', 'camel coat', 'wool overcoat', 'trench', 'vintage-collection', 'outerwear', 'jacket']
+    },
+    {
+      name: '1970s Boho Paisley Tapestry Maxi Gown',
+      description: 'Free-spirited 1970s Bohemian maxi dress featuring rich earthy floral paisley print, tiered empire waist, and romantic blouson sleeves.',
+      price: 2799,
+      originalPrice: 4199,
+      category: 'vintage-collection',
+      gender: 'women',
+      images: [
+        'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['S', 'M', 'L', 'XL'],
+      colors: ['Earthy Terracotta', 'Forest Green Paisley', 'Ochre Gold'],
+      brand: 'Boho 1970 Heritage',
+      stock: 15,
+      rating: 4.8,
+      numReviews: 112,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['1970s', 'boho', 'paisley', 'maxi dress', 'vintage-collection', 'women']
+    },
+    {
+      name: '1920s Scottish Tweed Tailored Blazer & Skirt Suit',
+      description: 'Two-piece heirloom tailored British tweed blazer and matching A-line skirt suit, featuring herringbone weave, horn buttons, and satin lining.',
+      price: 4899,
+      originalPrice: 7499,
+      category: 'vintage-collection',
+      gender: 'women',
+      images: [
+        'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1544923246-77307dd654cb?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
+      colors: ['Heather Grey Tweed', 'Oatmeal Tweed', 'Olive Herringbone'],
+      brand: 'Scottish Heritage Tweed',
+      stock: 10,
+      rating: 4.9,
+      numReviews: 74,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['1920s', 'tweed suit', 'blazer', 'skirt', 'vintage-collection', 'formal']
+    },
+    {
+      name: 'Vintage British Saddle Leather Top-Handle Handbag',
+      description: 'Hand-burnished rich chestnut vegetable-tanned full-grain leather handbag with vintage brass twist-lock clasp and structured silhouette.',
+      price: 3299,
+      originalPrice: 4999,
+      category: 'vintage-collection',
+      gender: 'women',
+      images: [
+        'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1548883354-7622d03aca27?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['Structured 12" x 9" (Free Size)'],
+      colors: ['Chestnut Brown', 'Espresso Black', 'Cognac Tan'],
+      brand: 'Heritage Leatherworks',
+      stock: 20,
+      rating: 4.9,
+      numReviews: 140,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['handbag', 'leather satchel', 'bag', 'vintage-collection', 'vintage leather']
+    },
+    {
+      name: 'Artisanal Cognac Leather Horseshoe Crossbody Bag',
+      description: 'Classic equestrian-inspired horseshoe saddle bag handcrafted in soft oiled pull-up leather with adjustable strap and antiqued buckle.',
+      price: 2599,
+      originalPrice: 3999,
+      category: 'vintage-collection',
+      gender: 'all',
+      images: [
+        'https://images.unsplash.com/photo-1548883354-7622d03aca27?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['Medium 10" x 8" (Free Size)'],
+      colors: ['Cognac Tan', 'Distressed Saddle', 'Walnut Brown'],
+      brand: 'Heritage Leatherworks',
+      stock: 22,
+      rating: 4.8,
+      numReviews: 89,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['crossbody', 'leather bag', 'saddle bag', 'vintage-collection']
+    },
+    {
+      name: 'Victorian Lace-Up Leather Ankle Oxford Boots',
+      description: 'Heritage Victorian style lace-up boots in distressed burnished leather with stacked wooden cuban heels and speed-lace brass eyelets.',
+      price: 3499,
+      originalPrice: 5299,
+      category: 'vintage-collection',
+      gender: 'all',
+      images: [
+        'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['UK 5', 'UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10'],
+      colors: ['Burnished Dark Brown', 'Antique Tan', 'Ebony Black'],
+      brand: 'Victorian Cobblers',
+      stock: 16,
+      rating: 4.9,
+      numReviews: 135,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['boots', 'victorian', 'oxford', 'leather boots', 'vintage-collection', 'shoes']
+    },
+    {
+      name: 'Vintage 1920s Cloche Wool Felt Hat with Ribbon',
+      description: '1920s Roaring Twenties inspired cloche hat crafted from 100% Australian wool felt with tailored side ribbon and bow detail.',
+      price: 1199,
+      originalPrice: 1899,
+      category: 'vintage-collection',
+      gender: 'women',
+      images: [
+        'https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1534126511673-b6899657816a?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['One Size (Adjustable Inner Band)'],
+      colors: ['Camel Sand', 'Mocha Brown', 'Midnight Black'],
+      brand: 'Roaring Twenties Millinery',
+      stock: 30,
+      rating: 4.7,
+      numReviews: 68,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['cloche hat', 'hat', 'felt hat', '1920s', 'vintage-collection', 'accessories']
+    },
+    {
+      name: 'Antique Baroque Pearl & Filigree Emerald Brooch Set',
+      description: 'Vintage Victorian heirloom brooch and pendant set with baroque faux pearls, carved emerald crystal cabochons, and antique gold filigree.',
+      price: 1499,
+      originalPrice: 2299,
+      category: 'vintage-collection',
+      gender: 'women',
+      images: [
+        'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['Free Size'],
+      colors: ['Antique Gold & Emerald', 'Vintage Pearl & Ruby', 'Platinum Sapphire'],
+      brand: 'Victorian Heirloom Jewels',
+      stock: 25,
+      rating: 5.0,
+      numReviews: 104,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['brooch', 'pearl', 'emerald', 'jewelry', 'vintage-collection', 'antique']
+    },
+    {
+      name: 'Silk Brocade Botanical Vintage Pocket Scarf',
+      description: 'Luxurious 100% pure silk twill square scarf featuring vintage botanical baroque motifs and hand-rolled edges.',
+      price: 799,
+      originalPrice: 1299,
+      category: 'vintage-collection',
+      gender: 'all',
+      images: [
+        'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['70cm x 70cm (Free Size)'],
+      colors: ['Crimson Baroque', 'Royal Gold Botanical', 'Emerald Flora'],
+      brand: 'Silk Atelier 1940',
+      stock: 40,
+      rating: 4.8,
+      numReviews: 83,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['scarf', 'silk scarf', 'brocade', 'pocket scarf', 'vintage-collection']
+    },
+    {
+      name: 'Hand-Knit Chunky Wool Throw & Fringed Shawl',
+      description: 'Cozy heirloom knit wrap shawl with artisanal tassel fringe crafted from soft merino blend yarn.',
+      price: 1699,
+      originalPrice: 2599,
+      category: 'vintage-collection',
+      gender: 'all',
+      images: [
+        'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['Oversized Wrap (Free Size)'],
+      colors: ['Oatmeal Cream', 'Dusty Rose', 'Sage Grey'],
+      brand: 'Heirloom Knitwear',
+      stock: 28,
+      rating: 4.9,
+      numReviews: 92,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['shawl', 'knit throw', 'wool shawl', 'fringe', 'vintage-collection']
+    }
+  ];
+
+  return [...curatedShowroomItems, ...list];
 };
 
 const all500Products = generateProducts();
