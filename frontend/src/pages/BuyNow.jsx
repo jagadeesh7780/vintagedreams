@@ -64,8 +64,15 @@ const BuyNow = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { clearCart } = useCart();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast.error('Please log in to purchase products', { id: 'buynow-auth-req' });
+      navigate('/login', { state: { from: location.pathname + location.search } });
+    }
+  }, [isAuthenticated, navigate, location]);
 
   const productId = searchParams.get('productId') || location.state?.productId;
   const initialParamSize = searchParams.get('size') || location.state?.size;

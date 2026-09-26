@@ -102,16 +102,23 @@ const ProductDetails = () => {
   const colors = product.colors && product.colors.length > 0 ? product.colors : ['Black', 'White', 'Navy Blue', 'Wine Red'];
 
   const discountPercent = product.originalPrice && product.originalPrice > product.price
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : 0;
-
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast.error('Please login to add items to your cart! 🔒');
+      navigate('/login');
+      return;
+    }
     setAddingToCart(true);
     addToCart(product, quantity, selectedSize, selectedColor);
     setTimeout(() => setAddingToCart(false), 500);
   };
 
   const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      toast.error('Please login to buy products! 🔒');
+      navigate('/login');
+      return;
+    }
     const pId = product._id || product.id;
     try {
       sessionStorage.setItem('vintage_active_buynow', JSON.stringify(product));
@@ -119,6 +126,15 @@ const ProductDetails = () => {
     navigate(`/buy-now?productId=${pId}&size=${encodeURIComponent(selectedSize || 'M')}&color=${encodeURIComponent(selectedColor || 'Standard')}&quantity=${quantity}`, {
       state: { product, productId: pId, size: selectedSize, color: selectedColor, quantity }
     });
+  };
+
+  const handleToggleWishlist = () => {
+    if (!isAuthenticated) {
+      toast.error('Please login to save items to your wishlist! 🔒');
+      navigate('/login');
+      return;
+    }
+    toggleWishlist(product);
   };
 
   const handleCheckPincode = (e) => {
@@ -220,7 +236,7 @@ const ProductDetails = () => {
               {/* Wishlist Heart */}
               <button
                 type="button"
-                onClick={() => toggleWishlist(product)}
+                onClick={handleToggleWishlist}
                 aria-label="Toggle Wishlist"
                 className={`absolute top-4 right-4 w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer ${
                   isLiked ? 'bg-rose-50 text-rose-600' : 'bg-white/95 text-gray-700 hover:text-rose-600 hover:bg-white'

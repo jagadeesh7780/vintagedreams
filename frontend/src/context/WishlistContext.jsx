@@ -61,6 +61,11 @@ export const WishlistProvider = ({ children }) => {
   };
 
   const toggleWishlist = async (product) => {
+    if (!isAuthenticated) {
+      toast.error('Please login to save items to your wishlist! 🔒');
+      return false;
+    }
+
     const pId = product._id || product.id;
     const exists = isInWishlist(pId);
 
@@ -74,6 +79,11 @@ export const WishlistProvider = ({ children }) => {
   };
 
   const addToWishlist = (product) => {
+    if (!isAuthenticated) {
+      toast.error('Please login to save items to your wishlist! 🔒');
+      return false;
+    }
+
     const pId = product._id || product.id;
     const newItem = {
       _id: Date.now().toString(),

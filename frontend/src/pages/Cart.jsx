@@ -12,6 +12,7 @@ import {
 } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const Cart = () => {
@@ -27,7 +28,15 @@ const Cart = () => {
     clearCart 
   } = useCart();
   const { addToWishlist } = useWishlist();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast.error('Please log in to view or manage your shopping cart', { id: 'cart-auth-req' });
+      navigate('/login', { state: { from: '/cart' } });
+    }
+  }, [isAuthenticated, navigate]);
 
   const [couponCode, setCouponCode] = useState('VINTAGE10');
   const [couponApplied, setCouponApplied] = useState(true);

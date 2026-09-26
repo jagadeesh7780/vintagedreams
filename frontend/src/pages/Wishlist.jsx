@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   FaHeart, 
   FaTrashAlt, 
@@ -18,6 +18,14 @@ const Wishlist = () => {
   const { wishlistItems, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      toast.error('Please log in to view or manage your wishlist', { id: 'wishlist-auth-req' });
+      navigate('/login', { state: { from: '/wishlist' } });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleMoveToCart = (item) => {
     const productData = item.product && typeof item.product === 'object' ? item.product : item;

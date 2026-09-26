@@ -54,11 +54,16 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Add Item to Cart (Optimistic & Instant)
+  // Add Item to Cart (Strictly requires authentication)
   const addToCart = (product, quantity = 1, size = 'M', color = 'Standard') => {
-    if (!product) return;
+    if (!isAuthenticated) {
+      toast.error('Please login to add items to your cart! 🔒');
+      return false;
+    }
+
+    if (!product) return false;
     const pId = product._id || product.id || product.productId;
-    if (!pId) return;
+    if (!pId) return false;
 
     const itemToAdd = {
       product: pId,

@@ -8,12 +8,13 @@ import {
   FaEye, 
   FaCheck
 } from 'react-icons/fa';
-import { useCart } from '../context/CartContext';
-import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 import RatingStars from './RatingStars';
 import QuickViewModal from './QuickViewModal';
 
 const ProductCard = ({ product }) => {
+  const { isAuthenticated } = useAuth();
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [quickViewOpen, setQuickViewOpen] = useState(false);
@@ -35,6 +36,13 @@ const ProductCard = ({ product }) => {
   const handleQuickAdd = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!isAuthenticated) {
+      toast.error('Please login to add items to your cart! 🔒');
+      navigate('/login');
+      return;
+    }
+
     setAdding(true);
     addToCart(product, 1, product.sizes?.[0] || 'M', product.colors?.[0] || 'Standard');
     setTimeout(() => {
@@ -45,6 +53,13 @@ const ProductCard = ({ product }) => {
   const handleOpenBuyNow = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!isAuthenticated) {
+      toast.error('Please login to buy products! 🔒');
+      navigate('/login');
+      return;
+    }
+
     const pId = product._id || product.id;
     try {
       sessionStorage.setItem('vintage_active_buynow', JSON.stringify(product));
@@ -55,6 +70,13 @@ const ProductCard = ({ product }) => {
   const handleWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!isAuthenticated) {
+      toast.error('Please login to save items to your wishlist! 🔒');
+      navigate('/login');
+      return;
+    }
+
     toggleWishlist(product);
   };
 

@@ -108,6 +108,13 @@ const Checkout = () => {
   const [items, setItems] = useState(resolveInitialItems);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      toast.error('Please log in to proceed to checkout', { id: 'checkout-auth-req' });
+      navigate('/login', { state: { from: '/checkout' } });
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
     let active = true;
 
     const syncItems = async () => {

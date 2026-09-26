@@ -67,25 +67,25 @@ const Home = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // Curate balanced selections across Men's wear, Women's wear, and Vintage
+  // Curate balanced selections across Men's wear, Women's wear, and Vintage Vault
   const getCuratedFeatured = (list = fallbackProducts) => {
-    const shirt = list.find(p => p.category === 'shirts') || list[0];
-    const vintageDress = list.find(p => p._id === 'prod_vintage_1930s_tea_dress') || list[1];
-    const watch = list.find(p => p.category === 'watches') || list[2];
-    const saree = list.find(p => p.category === 'women-sarees') || list[3];
-    const cargo = list.find(p => p.category === 'pants') || list[4];
-    const vintageCoat = list.find(p => p._id === 'prod_vintage_1960s_camel_coat') || list[5];
-    const ring = list.find(p => p.category === 'rings') || list[6];
-    const shoe = list.find(p => p.category === 'shoes') || list[7];
-    return [shirt, vintageDress, watch, saree, cargo, vintageCoat, ring, shoe].filter(Boolean);
+    const nikeSneaker = list.find(p => p._id === 'prod_vintage_nike_sacai_sneaker') || list[0];
+    const frenchJacket = list.find(p => p._id === 'prod_vintage_french_indigo_workwear') || list[1];
+    const y2kJorts = list.find(p => p._id === 'prod_vintage_y2k_denim_jorts') || list[2];
+    const modDress = list.find(p => p._id === 'prod_vintage_mod_wardrobe_collection') || list[3];
+    const heirloomBags = list.find(p => p._id === 'prod_vintage_heirloom_leather_vanity_bags') || list[4];
+    const menShirt = list.find(p => p.category === 'shirts') || list[5];
+    const silverRing = list.find(p => p.category === 'rings') || list[6];
+    const saree = list.find(p => p.category === 'women-sarees') || list[7];
+    return [nikeSneaker, frenchJacket, y2kJorts, modDress, heirloomBags, menShirt, silverRing, saree].filter(Boolean);
   };
 
   const getCuratedTrending = (list = fallbackProducts) => {
-    const cargo = list.find(p => p.name?.includes('Solids Heavyweight Cotton Cargos')) || list.find(p => p.category === 'pants');
-    const vintageSuit = list.find(p => p._id === 'prod_vintage_1920s_tweed_suit') || list.find(p => p.category === 'vintage-collection');
-    const sneaker = list.find(p => p.category === 'shoes') || list[0];
-    const swingDress = list.find(p => p._id === 'prod_vintage_1950s_polka_dress') || list.find(p => p.category === 'women-dresses');
-    return [cargo, vintageSuit, sneaker, swingDress].filter(Boolean);
+    const frenchJacket = list.find(p => p._id === 'prod_vintage_french_indigo_workwear') || list.find(p => p.category === 'shirts');
+    const y2kJorts = list.find(p => p._id === 'prod_vintage_y2k_denim_jorts') || list.find(p => p.category === 'pants');
+    const modDress = list.find(p => p._id === 'prod_vintage_mod_wardrobe_collection') || list.find(p => p.category === 'women-dresses');
+    const nikeSneaker = list.find(p => p._id === 'prod_vintage_nike_sacai_sneaker') || list.find(p => p.category === 'shoes');
+    return [frenchJacket, y2kJorts, modDress, nikeSneaker].filter(Boolean);
   };
 
   const vintageShowroomProducts = fallbackProducts.filter(p => p.category === 'vintage-collection').slice(0, 8);

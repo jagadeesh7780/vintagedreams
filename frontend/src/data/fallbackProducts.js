@@ -238,8 +238,118 @@ const buildCatalog = () => {
     'Caprese Chic Multi-Pocket Shoulder Tote Bag'
   ], wFootwearImages, ['UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8', 'Standard Bag Size'], ['Tan Brown', 'Blush Nude', 'Classic Black', 'Metallic Gold'], 999, ['Vintage Dreams', 'Lavie', 'Caprese', 'Mochi']);
 
-  // 11. Individual Curated Showroom Vintage Products (1930s-1970s Boutique Collection)
+  // 11. Individual Curated Showroom Vintage Products (1930s-1990s Authentic Vault Collection)
   const curatedShowroomItems = [
+    {
+      _id: 'prod_vintage_nike_sacai_sneaker',
+      name: 'Nike x Sacai Blazer Retro High-Top Deconstructed Sneakers',
+      description: 'Authentic retro collaboration high-top sneaker featuring double tongue, stacked swoosh overlay, exposed vintage foam collar, and distressed vulcanized cupsole.',
+      price: 4999,
+      originalPrice: 8999,
+      category: 'vintage-collection',
+      gender: 'all',
+      images: [
+        '/images/products/vintage-nike-sacai-sneaker.jpg',
+        'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
+      colors: ['Black / Wolf Grey', 'Classic White / Navy', 'Vintage Monotone'],
+      brand: 'Nike x Sacai Archive',
+      stock: 14,
+      rating: 5.0,
+      numReviews: 189,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['nike', 'sacai', 'sneaker', 'high-top', 'retro shoes', 'vintage-collection', 'men', 'shoes']
+    },
+    {
+      _id: 'prod_vintage_y2k_denim_jorts',
+      name: '1990s Y2K Distressed Washed Skater Denim Jorts',
+      description: 'Original 1990s-2000s Y2K relaxed skater denim knee-length shorts featuring heavy stone enzyme wash, contrast cross-stitching, cargo utility seams, and brass branded button fly.',
+      price: 1699,
+      originalPrice: 2899,
+      category: 'vintage-collection',
+      gender: 'men',
+      images: [
+        '/images/products/y2k-distressed-denim-shorts.jpg',
+        'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['30', '32', '34', '36', '38'],
+      colors: ['Distressed Acid Blue', 'Vintage Faded Indigo', 'Raw Stonewash'],
+      brand: 'Y2K Private Archive Denim',
+      stock: 22,
+      rating: 4.8,
+      numReviews: 142,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['y2k', 'jorts', 'denim shorts', 'skater', 'vintage-collection', 'men', 'pants']
+    },
+    {
+      _id: 'prod_vintage_french_indigo_workwear',
+      name: 'French Atelier Indigo Heavy Workwear Painter Chore Jacket',
+      description: 'Heritage French cotton moleskin painter chore jacket with authentic artisanal white paint spatters, pointed club collar, triple reinforced patch pockets, and enamel buttons.',
+      price: 3499,
+      originalPrice: 5499,
+      category: 'vintage-collection',
+      gender: 'all',
+      images: [
+        '/images/products/french-indigo-workwear-jacket.png',
+        'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+      colors: ['French Indigo Splatter', 'Bleu de Travail', 'Aged Cobalt'],
+      brand: 'French Heritage Workwear',
+      stock: 12,
+      rating: 4.9,
+      numReviews: 167,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['french jacket', 'workwear', 'chore jacket', 'painter coat', 'vintage-collection', 'outerwear', 'men', 'shirts']
+    },
+    {
+      _id: 'prod_vintage_mod_wardrobe_collection',
+      name: '1960s Royal Blue Mod Shift Dress & Tapestry Vest Capsule',
+      description: 'Curated 1960s-1970s boutique collection including cobalt royal blue mod sleeveless shift dress, graphic floral tapestry silk vest, pearl collar blouse, and jewel-tone silhouettes.',
+      price: 2999,
+      originalPrice: 4699,
+      category: 'vintage-collection',
+      gender: 'women',
+      images: [
+        '/images/products/vintage-curated-wardrobe-collection.png',
+        'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
+      colors: ['Royal Mod Blue', 'Tapestry Ruby & Navy', 'Emerald Vintage'],
+      brand: 'Mod 1960s Couture',
+      stock: 15,
+      rating: 4.9,
+      numReviews: 98,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['1960s', 'mod dress', 'tapestry vest', 'shift dress', 'vintage-collection', 'women', 'women-dresses']
+    },
+    {
+      _id: 'prod_vintage_heirloom_leather_vanity_bags',
+      name: 'Victorian Artisan Saddle Leather Doctor Satchel & Beaded Clutch',
+      description: 'Antique dressing table heirloom collection with hand-patinated Italian saddle leather doctor satchel, vintage brass twist-lock clasp, embroidered kiss-lock purse, and crystal minaudière.',
+      price: 3899,
+      originalPrice: 5999,
+      category: 'vintage-collection',
+      gender: 'women',
+      images: [
+        '/images/products/victorian-artisan-leather-handbags.png',
+        'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80'
+      ],
+      sizes: ['Doctor Satchel (13" x 9")', 'Evening Kiss-Lock (9" x 5")', 'Pearl Minaudière (7" x 4")'],
+      colors: ['Aged Cognac & Tan', 'Dusty Rose Leather', 'Pearl Ivory Brocade'],
+      brand: 'Victorian Vanity Vault',
+      stock: 10,
+      rating: 5.0,
+      numReviews: 110,
+      isFeatured: true,
+      isTrending: true,
+      tags: ['doctor bag', 'satchel', 'clutch', 'vanity', 'vintage-collection', 'women']
+    },
     {
       _id: 'prod_vintage_1930s_tea_dress',
       name: '1930s Floral Tea Dress with Lace Trim',

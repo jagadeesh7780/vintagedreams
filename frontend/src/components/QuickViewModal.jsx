@@ -12,6 +12,7 @@ import {
   FaArrowRight, 
   FaRuler 
 } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import RatingStars from './RatingStars';
@@ -21,6 +22,7 @@ import toast from 'react-hot-toast';
 const defaultSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
 
 const QuickViewModal = ({ product, isOpen, onClose }) => {
+  const { isAuthenticated } = useAuth();
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const navigate = useNavigate();
@@ -47,6 +49,12 @@ const QuickViewModal = ({ product, isOpen, onClose }) => {
     : 0;
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast.error('Please login to add items to your cart! 🔒');
+      onClose();
+      navigate('/login');
+      return;
+    }
     setAddingToCart(true);
     addToCart(product, quantity, selectedSize, selectedColor);
     setTimeout(() => {
@@ -56,6 +64,12 @@ const QuickViewModal = ({ product, isOpen, onClose }) => {
   };
 
   const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      toast.error('Please login to buy products! 🔒');
+      onClose();
+      navigate('/login');
+      return;
+    }
     const pId = product._id || product.id;
     try {
       sessionStorage.setItem('vintage_active_buynow', JSON.stringify(product));
