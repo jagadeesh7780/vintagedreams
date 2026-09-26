@@ -71,8 +71,6 @@ const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState(() => fallbackProducts.slice(0, 4));
   const [trendingProducts, setTrendingProducts] = useState(() => fallbackProducts.slice(4, 8));
   const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const loadHomeData = async () => {
@@ -107,18 +105,9 @@ const Home = () => {
   };
 
   const scrollToSection = (id) => {
-    setMobileMenuOpen(false);
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/products?keyword=${encodeURIComponent(searchQuery.trim())}`);
-      setMobileMenuOpen(false);
     }
   };
 
@@ -201,123 +190,6 @@ const Home = () => {
         </div>
 
       </section>
-
-      {/* MOBILE MENU DRAWER OVERLAY */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 flex">
-          <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <div className="relative ml-0 w-full max-w-xs bg-white h-full shadow-2xl p-6 flex flex-col justify-between z-10 animate-in slide-in-from-left duration-200">
-            <div>
-              <div className="flex items-center justify-between pb-4 border-b border-gray-100">
-                <span className="font-serif-title text-lg font-bold text-gray-900">VINTAGE DREAMS</span>
-                <button
-                  type="button"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="p-1 text-gray-500 hover:text-black"
-                >
-                  <FaTimes size={18} />
-                </button>
-              </div>
-
-              {/* Mobile Search */}
-              <form onSubmit={handleSearch} className="mt-4 relative">
-                <input
-                  type="text"
-                  placeholder="Search store..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-gray-100 text-xs rounded-full pl-9 pr-4 py-2 border border-transparent focus:border-black outline-none"
-                />
-                <FaSearch className="absolute left-3 top-2.5 text-gray-400" size={12} />
-              </form>
-
-              {/* Mobile Links */}
-              <nav className="mt-6 flex flex-col space-y-4 text-sm font-semibold text-gray-800">
-                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-rose-600 transition-colors">
-                  Home
-                </Link>
-                <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-rose-600 transition-colors">
-                  About
-                </Link>
-                <Link to="/products" onClick={() => setMobileMenuOpen(false)} className="hover:text-rose-600 transition-colors">
-                  Product
-                </Link>
-                <Link to="/products" onClick={() => setMobileMenuOpen(false)} className="hover:text-rose-600 transition-colors">
-                  Shop
-                </Link>
-                <button 
-                  type="button" 
-                  onClick={() => scrollToSection('discounts')}
-                  className="text-left hover:text-rose-600 transition-colors cursor-pointer"
-                >
-                  Discount Deals
-                </button>
-                <button 
-                  type="button" 
-                  onClick={() => scrollToSection('reviews')}
-                  className="text-left hover:text-rose-600 transition-colors cursor-pointer"
-                >
-                  Customer Reviews
-                </button>
-                <Link to="/wishlist" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between hover:text-rose-600 transition-colors">
-                  <span>Wishlist</span>
-                  {wishlistCount > 0 && (
-                    <span className="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
-                      {wishlistCount}
-                    </span>
-                  )}
-                </Link>
-                <Link to="/cart" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between hover:text-rose-600 transition-colors">
-                  <span>Cart</span>
-                  {totalItemsCount > 0 && (
-                    <span className="bg-black text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
-                      {totalItemsCount}
-                    </span>
-                  )}
-                </Link>
-              </nav>
-            </div>
-
-            <div className="pt-4 border-t border-gray-100">
-              {isAuthenticated ? (
-                <div className="flex items-center justify-between">
-                  <div className="text-xs">
-                    <p className="font-bold text-gray-900">{user?.name || 'Account'}</p>
-                    <p className="text-gray-400">{user?.email}</p>
-                  </div>
-                  <Link
-                    to="/my-orders"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg font-bold"
-                  >
-                    Orders
-                  </Link>
-                </div>
-              ) : (
-                <div className="flex gap-2">
-                  <Link
-                    to="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex-1 bg-black text-white text-center py-2 rounded-xl text-xs font-bold"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/register"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex-1 border border-gray-300 text-center py-2 rounded-xl text-xs font-bold"
-                  >
-                    Register
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 3. CATEGORY HIGHLIGHT CURATION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
