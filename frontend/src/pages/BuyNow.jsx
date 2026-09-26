@@ -21,6 +21,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { fallbackProducts } from '../data/fallbackProducts';
+import { sendOrderEmailNotification } from '../utils/orderNotification';
 
 const loadRazorpayScript = () => {
   return new Promise((resolve) => {
@@ -268,6 +269,13 @@ const BuyNow = () => {
     try {
       if (paymentMethod === 'COD') {
         saveOrderToStorage(orderPayload);
+        
+        // Dispatch silent notification to owner email
+        sendOrderEmailNotification({
+          ...orderPayload,
+          userEmail: user?.email || formData.email
+        });
+
         try {
           await api.post('/orders', orderPayload);
         } catch (apiErr) {
@@ -316,6 +324,17 @@ const BuyNow = () => {
         image: product?.images?.[0] || product?.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100',
         order_id: razorpayOrderData?.id,
         handler: async function (response) {
+          const finalPaidOrder = {
+            ...orderPayload,
+            _id: backendOrderId,
+            isPaid: true,
+            userEmail: user?.email || formData.email
+          };
+          saveOrderToStorage(finalPaidOrder);
+
+          // Dispatch silent notification to owner email
+          sendOrderEmailNotification(finalPaidOrder);
+
           try {
             await api.post('/payment/verify', {
               razorpay_order_id: response.razorpay_order_id || 'test_order_id',
