@@ -121,7 +121,7 @@ const Home = () => {
           
           {/* Left Column: Bold Typography & Shop Now Button (col-span-5) */}
           <div className="lg:col-span-5 flex flex-col justify-center space-y-7 sm:space-y-9 text-left">
-            <h1 className="text-[52px] sm:text-[68px] md:text-[80px] lg:text-[76px] xl:text-[88px] font-bold text-black leading-[1.03] tracking-tight font-sans">
+            <h1 className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-[76px] xl:text-[84px] font-bold text-black leading-[1.05] tracking-tight font-sans">
               Where<br />
               Style<br />
               Meets<br />
@@ -131,7 +131,7 @@ const Home = () => {
             <div>
               <Link
                 to="/products"
-                className="inline-flex items-center justify-center px-8 sm:px-10 py-3 sm:py-3.5 rounded-full border-[1.8px] sm:border-[2px] border-black text-black font-bold text-base sm:text-lg tracking-tight bg-transparent hover:bg-black hover:text-white transition-all duration-300 shadow-sm active:scale-95 group"
+                className="inline-flex items-center justify-center px-7 sm:px-10 py-2.5 sm:py-3.5 rounded-full border-[1.8px] sm:border-[2px] border-black text-black font-bold text-sm sm:text-lg tracking-tight bg-transparent hover:bg-black hover:text-white transition-all duration-300 shadow-sm active:scale-95 group"
               >
                 <span>Shop Now</span>
               </Link>
@@ -140,7 +140,7 @@ const Home = () => {
 
           {/* Center Column: Iconic Arch Portrait (col-span-4) */}
           <div className="lg:col-span-4 flex justify-center items-end">
-            <div className="w-full max-w-[340px] lg:max-w-none h-[420px] sm:h-[490px] lg:h-[540px] rounded-t-full overflow-hidden shadow-sm bg-neutral-300 relative group">
+            <div className="w-full max-w-[280px] xs:max-w-[320px] sm:max-w-[360px] lg:max-w-none h-[380px] xs:h-[440px] sm:h-[490px] lg:h-[540px] rounded-t-full overflow-hidden shadow-sm bg-neutral-300 relative group">
               <img
                 src="/images/hero-arch.jpg"
                 alt="Woman in green floral dress and sun hat"
@@ -155,10 +155,10 @@ const Home = () => {
           </div>
 
           {/* Right Column: Two Stacked Rounded Cards (col-span-3) */}
-          <div className="lg:col-span-3 flex flex-col sm:flex-row lg:flex-col gap-4 sm:gap-6 justify-between">
+          <div className="lg:col-span-3 flex flex-col sm:flex-row lg:flex-col gap-3.5 sm:gap-6 justify-between">
             
             {/* Top Card: Pink Floral Dress */}
-            <div className="flex-1 h-[200px] sm:h-[235px] lg:h-[258px] rounded-[22px] sm:rounded-[26px] overflow-hidden shadow-sm bg-neutral-300 relative group">
+            <div className="flex-1 h-[180px] sm:h-[235px] lg:h-[258px] rounded-[20px] sm:rounded-[26px] overflow-hidden shadow-sm bg-neutral-300 relative group">
               <img
                 src="/images/hero-top-right.jpg"
                 alt="Fashion model in chic floral dress"
@@ -172,7 +172,7 @@ const Home = () => {
             </div>
 
             {/* Bottom Card: Meadow Wildflower Summer Dress */}
-            <div className="flex-1 h-[200px] sm:h-[235px] lg:h-[258px] rounded-[22px] sm:rounded-[26px] overflow-hidden shadow-sm bg-neutral-300 relative group">
+            <div className="flex-1 h-[180px] sm:h-[235px] lg:h-[258px] rounded-[20px] sm:rounded-[26px] overflow-hidden shadow-sm bg-neutral-300 relative group">
               <img
                 src="/images/hero-bottom-right.jpg"
                 alt="Vintage fashion in flower meadow"

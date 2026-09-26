@@ -114,29 +114,29 @@ const Navbar = () => {
       </div>
 
       {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           
           {/* Mobile Hamburger Button */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(true)}
             aria-label="Open Navigation Menu"
-            className="md:hidden p-2 rounded-lg text-gray-700 hover:text-rose-600 hover:bg-gray-100 transition-colors"
+            className="md:hidden p-1.5 sm:p-2 rounded-lg text-gray-700 hover:text-rose-600 hover:bg-gray-100 transition-colors shrink-0"
           >
-            <FaBars size={20} />
+            <FaBars size={19} />
           </button>
 
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
-              <FaGem size={20} />
+          <Link to="/" className="flex items-center gap-2 sm:gap-2.5 shrink-0 group">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform shrink-0">
+              <FaGem size={17} className="sm:text-[20px]" />
             </div>
             <div className="flex flex-col">
-              <span className="font-serif-title text-xl font-bold tracking-tight bg-gradient-to-r from-gray-950 via-rose-900 to-amber-900 bg-clip-text text-transparent">
+              <span className="font-serif-title text-sm xs:text-base sm:text-xl font-bold tracking-tight bg-gradient-to-r from-gray-950 via-rose-900 to-amber-900 bg-clip-text text-transparent whitespace-nowrap">
                 VINTAGE DREAMS
               </span>
-              <span className="text-[10px] tracking-widest text-gray-500 uppercase -mt-1 font-semibold">
+              <span className="text-[8px] sm:text-[10px] tracking-widest text-gray-500 uppercase -mt-0.5 sm:-mt-1 font-semibold hidden sm:block">
                 Fashion & Heritage
               </span>
             </div>
@@ -269,18 +269,18 @@ const Navbar = () => {
           </div>
 
           {/* Action Icons (Wishlist, Cart, Account) */}
-          <div className="flex items-center gap-2.5 sm:gap-4">
+          <div className="flex items-center gap-1 sm:gap-2.5 md:gap-4 shrink-0">
             
             {/* Wishlist Icon */}
             <Link
               to="/wishlist"
-              className="relative p-2 text-gray-700 hover:text-rose-600 transition-colors flex flex-col items-center group"
+              className="relative p-1.5 sm:p-2 text-gray-700 hover:text-rose-600 transition-colors flex flex-col items-center group"
               title="Wishlist"
               aria-label="Wishlist"
             >
-              <FaHeart size={18} className="group-hover:scale-110 transition-transform" />
+              <FaHeart size={17} className="sm:text-[18px] group-hover:scale-110 transition-transform" />
               {wishlistCount > 0 && (
-                <span className="absolute top-0.5 right-0.5 bg-rose-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse shadow">
+                <span className="absolute -top-0.5 -right-0.5 sm:top-0.5 sm:right-0.5 bg-rose-600 text-white text-[9px] sm:text-[10px] font-bold w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center animate-pulse shadow">
                   {wishlistCount}
                 </span>
               )}
@@ -290,13 +290,13 @@ const Navbar = () => {
             {/* Cart Icon */}
             <Link
               to="/cart"
-              className="relative p-2 text-gray-700 hover:text-rose-600 transition-colors flex flex-col items-center group"
+              className="relative p-1.5 sm:p-2 text-gray-700 hover:text-rose-600 transition-colors flex flex-col items-center group"
               title="Shopping Cart"
               aria-label="Shopping Cart"
             >
-              <FaShoppingCart size={18} className="group-hover:scale-110 transition-transform" />
+              <FaShoppingCart size={17} className="sm:text-[18px] group-hover:scale-110 transition-transform" />
               {totalItemsCount > 0 && (
-                <span className="absolute top-0.5 right-0.5 bg-rose-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow">
+                <span className="absolute -top-0.5 -right-0.5 sm:top-0.5 sm:right-0.5 bg-rose-600 text-white text-[9px] sm:text-[10px] font-bold w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center shadow">
                   {totalItemsCount}
                 </span>
               )}
@@ -309,13 +309,13 @@ const Navbar = () => {
                 <div>
                   <button
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                    className="flex items-center gap-2 py-1.5 px-3 rounded-full hover:bg-gray-100 transition-colors text-xs font-bold text-gray-800 cursor-pointer"
+                    className="flex items-center gap-1.5 sm:gap-2 py-1 sm:py-1.5 px-2 sm:px-3 rounded-full hover:bg-gray-100 transition-colors text-xs font-bold text-gray-800 cursor-pointer"
                   >
-                    <div className="w-7 h-7 rounded-full bg-rose-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-rose-600 text-white flex items-center justify-center font-bold text-[11px] sm:text-xs shadow-sm">
                       {user.name?.charAt(0).toUpperCase()}
                     </div>
                     <span className="hidden lg:inline">{user.name?.split(' ')[0]}</span>
-                    <FaChevronDown size={9} className="text-gray-400" />
+                    <FaChevronDown size={9} className="text-gray-400 hidden sm:inline" />
                   </button>
 
                   {userDropdownOpen && (
@@ -375,9 +375,9 @@ const Navbar = () => {
               ) : (
                 <Link
                   to="/login"
-                  className="bg-gray-900 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2 rounded-full transition-all shadow-sm flex items-center gap-1.5"
+                  className="bg-gray-900 hover:bg-rose-600 text-white text-[11px] sm:text-xs font-bold px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all shadow-sm flex items-center gap-1 sm:gap-1.5"
                 >
-                  <FaUser size={11} />
+                  <FaUser size={10} />
                   <span>Login</span>
                 </Link>
               )}
