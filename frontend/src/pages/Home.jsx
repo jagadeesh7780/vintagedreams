@@ -1,26 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   FaArrowRight, 
   FaBolt, 
   FaStar, 
-  FaShoppingBag, 
   FaCrown, 
   FaFire,
-  FaShieldAlt,
-  FaTruck,
-  FaUndoAlt,
-  FaAward,
-  FaQuoteLeft,
-  FaPaperPlane,
-  FaCheckCircle,
+  FaShieldAlt, 
+  FaTruck, 
+  FaUndoAlt, 
+  FaAward, 
+  FaPaperPlane, 
+  FaCheckCircle, 
   FaTag,
-  FaMagic
+  FaBars,
+  FaTimes,
+  FaHeart,
+  FaUser,
+  FaSearch,
+  FaShoppingBag
 } from 'react-icons/fa';
 import api from '../api/axios';
-import CategoryBar from '../components/CategoryBar';
 import ProductCard from '../components/ProductCard';
 import { fallbackProducts } from '../data/fallbackProducts';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const customerReviews = [
@@ -57,12 +62,17 @@ const customerReviews = [
 ];
 
 const Home = () => {
+  const { totalItemsCount } = useCart();
+  const { wishlistCount } = useWishlist();
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
   const vintageProducts = fallbackProducts.filter(p => p.category === 'vintage-collection' || p.tags?.includes('vintage')).slice(0, 8);
   const [featuredProducts, setFeaturedProducts] = useState(() => fallbackProducts.slice(0, 4));
   const [trendingProducts, setTrendingProducts] = useState(() => fallbackProducts.slice(4, 8));
-  const [bestSellers, setBestSellers] = useState(() => fallbackProducts.slice(8, 12));
   const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const loadHomeData = async () => {
@@ -77,7 +87,6 @@ const Home = () => {
 
           setFeaturedProducts(finalFeat);
           setTrendingProducts(allProds.slice(4, 8).length >= 4 ? allProds.slice(4, 8) : allProds.slice(0, 4));
-          setBestSellers(allProds.slice(8, 12).length >= 4 ? allProds.slice(8, 12) : allProds.slice(0, 4));
         }
       } catch (error) {
         // Keeps instant offline fallback
@@ -90,7 +99,6 @@ const Home = () => {
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
     if (newsletterEmail.includes('@')) {
-      setSubscribed(true);
       toast.success('🎉 Thank you for subscribing to VIP discounts!');
       setNewsletterEmail('');
     } else {
@@ -98,230 +106,408 @@ const Home = () => {
     }
   };
 
+  const scrollToSection = (id) => {
+    setMobileMenuOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?keyword=${encodeURIComponent(searchQuery.trim())}`);
+      setMobileMenuOpen(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
+    <div className="min-h-screen bg-[#f8f9fa] text-neutral-900">
       
-      {/* Category Strip */}
-      <CategoryBar />
-
-      {/* 1. Hero Banner Carousel Section */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-gray-950 via-slate-900 to-rose-950 text-white py-16 sm:py-24">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#d35c73_1px,transparent_1px)] [background-size:16px_16px]"></div>
+      {/* 1. TOP HERO CANVAS MATCHING REFERENCE DESIGN */}
+      <section className="bg-[#D4D4D6] pt-5 sm:pt-7 pb-10 sm:pb-16 px-4 sm:px-6 lg:px-12 transition-all">
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        {/* Floating Capsule / Pill Navbar */}
+        <div className="w-full max-w-6xl mx-auto mb-8 sm:mb-12">
+          <div className="bg-white rounded-full px-6 sm:px-10 py-3 sm:py-3.5 shadow-[0_4px_25px_rgba(0,0,0,0.06)] border border-neutral-200/70 flex items-center justify-between">
             
-            <div className="space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-rose-500/20 border border-rose-500/30 text-rose-300 text-xs font-semibold px-3.5 py-1.5 rounded-full backdrop-blur-md">
-                <FaCrown className="text-amber-400" />
-                <span>NEW ARRIVALS 2026 EDITION</span>
-              </div>
+            {/* Desktop Navigation Links */}
+            <nav className="hidden md:flex items-center gap-7 lg:gap-11 text-[15px] lg:text-[17px] font-medium text-neutral-800 tracking-normal">
+              <Link to="/" className="text-neutral-900 font-semibold hover:text-black transition-colors">
+                Home
+              </Link>
+              <Link to="/about" className="text-neutral-700 hover:text-black transition-colors">
+                About
+              </Link>
+              <Link to="/products" className="text-neutral-700 hover:text-black transition-colors">
+                Product
+              </Link>
+              <Link to="/products" className="text-neutral-700 hover:text-black transition-colors">
+                Shop
+              </Link>
+              <button 
+                type="button" 
+                onClick={() => scrollToSection('discounts')} 
+                className="text-neutral-700 hover:text-black transition-colors cursor-pointer"
+              >
+                Discount
+              </button>
+              <button 
+                type="button" 
+                onClick={() => scrollToSection('reviews')} 
+                className="text-neutral-700 hover:text-black transition-colors cursor-pointer"
+              >
+                Reviews
+              </button>
+            </nav>
 
-              <h1 className="font-serif-title text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
-                Discover Your <br />
-                <span className="bg-gradient-to-r from-rose-400 via-amber-300 to-rose-200 bg-clip-text text-transparent">
-                  Perfect Vintage Style
-                </span>
-              </h1>
-
-              <p className="text-gray-300 text-base sm:text-lg max-w-xl font-normal leading-relaxed">
-                Elevate your wardrobe with premium utility shirts, rugged cargo pants, genuine leather watches, pure silk sarees, and 925 sterling silver jewelry.
-              </p>
-
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-2">
-                <Link
-                  to="/products?category=vintage-collection"
-                  className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-950 font-bold px-6 py-3.5 rounded-xl shadow-lg flex items-center gap-2 transition-all transform hover:-translate-y-0.5"
-                >
-                  <FaCrown />
-                  <span>✨ Explore Vintage Collection</span>
-                </Link>
-
-                <Link
-                  to="/products?gender=men"
-                  className="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-6 py-3.5 rounded-xl shadow-lg shadow-rose-900/40 flex items-center gap-2 transition-all transform hover:-translate-y-0.5"
-                >
-                  <FaShoppingBag />
-                  <span>Men's Wear</span>
-                </Link>
-
-                <Link
-                  to="/products?gender=women"
-                  className="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3.5 rounded-xl border border-white/20 backdrop-blur-md flex items-center gap-2 transition-all"
-                >
-                  <span>Women's Wear</span>
-                  <FaArrowRight size={13} />
-                </Link>
-              </div>
-
-              {/* Stats badges */}
-              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 max-w-md mx-auto lg:mx-0 text-center">
-                <div>
-                  <p className="text-2xl font-bold text-amber-400">100%</p>
-                  <p className="text-xs text-gray-400">Pure Fabric</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-rose-400">4.8 ★</p>
-                  <p className="text-xs text-gray-400">10k+ Reviews</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-emerald-400">FREE</p>
-                  <p className="text-xs text-gray-400">Delivery ₹499+</p>
-                </div>
-              </div>
+            {/* Mobile Header elements */}
+            <div className="flex md:hidden items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(true)}
+                className="p-1.5 text-neutral-800 hover:text-black rounded-lg focus:outline-none"
+                aria-label="Open Mobile Menu"
+              >
+                <FaBars size={19} />
+              </button>
+              <Link to="/" className="font-bold text-sm sm:text-base tracking-tight text-neutral-900 font-serif-title">
+                VINTAGE DREAMS
+              </Link>
             </div>
 
-            {/* Hero Image Showcase */}
-            <div className="relative flex items-center justify-center">
-              <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10">
-                <img
-                  src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=800&q=80"
-                  alt="Vintage Dreams Hero Fashion"
-                  className="w-full h-full object-cover"
+            {/* Right Action: Cart Icon */}
+            <div className="flex items-center gap-3 sm:gap-4">
+              <Link
+                to="/cart"
+                className="relative p-1.5 text-neutral-900 hover:opacity-75 transition-all group flex items-center justify-center"
+                aria-label="Shopping Cart"
+                title="View Shopping Cart"
+              >
+                {/* Outline shopping cart matching reference image */}
+                <svg
+                  className="w-6 h-6 stroke-[1.8] group-hover:scale-105 transition-transform"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.7 2.682-7.15H6.182m1.318 7.15L5.105 5.272M7.5 14.25a3 3 0 01-3 3m12.75-3a3 3 0 00-3 3m0 0a3 3 0 100-6 3 3 0 000 6zm-9 0a3 3 0 100-6 3 3 0 000 6z"
+                  />
+                </svg>
+                {totalItemsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-black text-white text-[10px] font-bold w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full flex items-center justify-center shadow">
+                    {totalItemsCount}
+                  </span>
+                )}
+              </Link>
+            </div>
+
+          </div>
+        </div>
+
+        {/* 2. Hero Content: 3-Column / Asymmetric Layout */}
+        <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
+          
+          {/* Left Column: Bold Typography & Shop Now Button (col-span-5) */}
+          <div className="lg:col-span-5 flex flex-col justify-center space-y-7 sm:space-y-9 text-left">
+            <h1 className="text-[52px] sm:text-[68px] md:text-[80px] lg:text-[76px] xl:text-[88px] font-bold text-black leading-[1.03] tracking-tight font-sans">
+              Where<br />
+              Style<br />
+              Meets<br />
+              Elegance
+            </h1>
+
+            <div>
+              <Link
+                to="/products"
+                className="inline-flex items-center justify-center px-8 sm:px-10 py-3 sm:py-3.5 rounded-full border-[1.8px] sm:border-[2px] border-black text-black font-bold text-base sm:text-lg tracking-tight bg-transparent hover:bg-black hover:text-white transition-all duration-300 shadow-sm active:scale-95 group"
+              >
+                <span>Shop Now</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Center Column: Iconic Arch Portrait (col-span-4) */}
+          <div className="lg:col-span-4 flex justify-center items-end">
+            <div className="w-full max-w-[340px] lg:max-w-none h-[420px] sm:h-[490px] lg:h-[540px] rounded-t-full overflow-hidden shadow-sm bg-neutral-300 relative group">
+              <img
+                src="/images/hero-arch.jpg"
+                alt="Woman in green floral dress and sun hat"
+                className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+              />
+              <Link 
+                to="/products?category=women-dresses" 
+                className="absolute inset-0"
+                aria-label="Shop Summer Dresses"
+              />
+            </div>
+          </div>
+
+          {/* Right Column: Two Stacked Rounded Cards (col-span-3) */}
+          <div className="lg:col-span-3 flex flex-col sm:flex-row lg:flex-col gap-4 sm:gap-6 justify-between">
+            
+            {/* Top Card: Pink Floral Dress */}
+            <div className="flex-1 h-[200px] sm:h-[235px] lg:h-[258px] rounded-[22px] sm:rounded-[26px] overflow-hidden shadow-sm bg-neutral-300 relative group">
+              <img
+                src="/images/hero-top-right.jpg"
+                alt="Fashion model in chic floral dress"
+                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+              />
+              <Link 
+                to="/products?category=women-dresses" 
+                className="absolute inset-0"
+                aria-label="Shop New Arrivals"
+              />
+            </div>
+
+            {/* Bottom Card: Meadow Wildflower Summer Dress */}
+            <div className="flex-1 h-[200px] sm:h-[235px] lg:h-[258px] rounded-[22px] sm:rounded-[26px] overflow-hidden shadow-sm bg-neutral-300 relative group">
+              <img
+                src="/images/hero-bottom-right.jpg"
+                alt="Vintage fashion in flower meadow"
+                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+              />
+              <Link 
+                to="/products?category=vintage-collection" 
+                className="absolute inset-0"
+                aria-label="Shop Vintage Archive"
+              />
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* MOBILE MENU DRAWER OVERLAY */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="relative ml-0 w-full max-w-xs bg-white h-full shadow-2xl p-6 flex flex-col justify-between z-10 animate-in slide-in-from-left duration-200">
+            <div>
+              <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+                <span className="font-serif-title text-lg font-bold text-gray-900">VINTAGE DREAMS</span>
+                <button
+                  type="button"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-1 text-gray-500 hover:text-black"
+                >
+                  <FaTimes size={18} />
+                </button>
+              </div>
+
+              {/* Mobile Search */}
+              <form onSubmit={handleSearch} className="mt-4 relative">
+                <input
+                  type="text"
+                  placeholder="Search store..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-gray-100 text-xs rounded-full pl-9 pr-4 py-2 border border-transparent focus:border-black outline-none"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent"></div>
-                
-                {/* Floating promo badge */}
-                <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-md rounded-xl p-4 shadow-xl text-gray-900 flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] font-bold text-rose-600 uppercase tracking-wider">Limited Offer</span>
-                    <h4 className="font-bold text-sm">Plaid Utility Shirts & Cargos</h4>
-                    <p className="text-xs text-gray-600">Starting from ₹349 only</p>
+                <FaSearch className="absolute left-3 top-2.5 text-gray-400" size={12} />
+              </form>
+
+              {/* Mobile Links */}
+              <nav className="mt-6 flex flex-col space-y-4 text-sm font-semibold text-gray-800">
+                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-rose-600 transition-colors">
+                  Home
+                </Link>
+                <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-rose-600 transition-colors">
+                  About
+                </Link>
+                <Link to="/products" onClick={() => setMobileMenuOpen(false)} className="hover:text-rose-600 transition-colors">
+                  Product
+                </Link>
+                <Link to="/products" onClick={() => setMobileMenuOpen(false)} className="hover:text-rose-600 transition-colors">
+                  Shop
+                </Link>
+                <button 
+                  type="button" 
+                  onClick={() => scrollToSection('discounts')}
+                  className="text-left hover:text-rose-600 transition-colors cursor-pointer"
+                >
+                  Discount Deals
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => scrollToSection('reviews')}
+                  className="text-left hover:text-rose-600 transition-colors cursor-pointer"
+                >
+                  Customer Reviews
+                </button>
+                <Link to="/wishlist" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between hover:text-rose-600 transition-colors">
+                  <span>Wishlist</span>
+                  {wishlistCount > 0 && (
+                    <span className="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                      {wishlistCount}
+                    </span>
+                  )}
+                </Link>
+                <Link to="/cart" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between hover:text-rose-600 transition-colors">
+                  <span>Cart</span>
+                  {totalItemsCount > 0 && (
+                    <span className="bg-black text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                      {totalItemsCount}
+                    </span>
+                  )}
+                </Link>
+              </nav>
+            </div>
+
+            <div className="pt-4 border-t border-gray-100">
+              {isAuthenticated ? (
+                <div className="flex items-center justify-between">
+                  <div className="text-xs">
+                    <p className="font-bold text-gray-900">{user?.name || 'Account'}</p>
+                    <p className="text-gray-400">{user?.email}</p>
                   </div>
                   <Link
-                    to="/products?category=shirts"
-                    className="bg-gray-900 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-rose-600 transition-colors"
+                    to="/my-orders"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg font-bold"
                   >
-                    View
+                    Orders
                   </Link>
                 </div>
-              </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 bg-black text-white text-center py-2 rounded-xl text-xs font-bold"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 border border-gray-300 text-center py-2 rounded-xl text-xs font-bold"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
             </div>
-
           </div>
         </div>
-      </section>
+      )}
 
-      {/* 2. Featured Collections Split Banners (Men & Women) */}
+      {/* 3. CATEGORY HIGHLIGHT CURATION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           
-          {/* Men's Promo */}
-          <div className="relative rounded-2xl overflow-hidden shadow-md group h-72 bg-gray-900">
+          <Link
+            to="/products?category=vintage-collection"
+            className="group relative h-48 sm:h-56 rounded-2xl overflow-hidden shadow-sm bg-stone-900 p-5 flex flex-col justify-between"
+          >
             <img
-              src="https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=800&q=80"
-              alt="Men Fashion"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-75"
+              src="https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&w=600&q=80"
+              alt="Vintage Archive"
+              className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-950/90 via-gray-950/50 to-transparent p-8 flex flex-col justify-between">
-              <div>
-                <span className="bg-amber-500 text-gray-950 text-[11px] font-extrabold px-2.5 py-1 rounded-md uppercase">
-                  Men's Edit
-                </span>
-                <h3 className="font-serif-title text-2xl sm:text-3xl font-bold text-white mt-2">
-                  Urban Vintage & <br />Classics
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-300 mt-1 max-w-xs">
-                  Premium utility shirts, sneakers, leather watches & cargo pants.
-                </p>
-              </div>
-
-              <Link
-                to="/products?gender=men"
-                className="inline-flex items-center gap-2 bg-white text-gray-900 hover:bg-amber-400 text-xs font-bold px-4 py-2.5 rounded-lg w-max transition-colors"
-              >
-                <span>EXPLORE MEN</span>
-                <FaArrowRight size={12} />
-              </Link>
+            <div className="relative z-10 flex items-center justify-between">
+              <span className="bg-amber-400 text-black text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                Archive
+              </span>
+              <FaArrowRight className="text-white transform group-hover:translate-x-1 transition-transform" size={12} />
             </div>
-          </div>
+            <div className="relative z-10">
+              <h3 className="text-white font-bold text-lg sm:text-xl font-serif-title">Vintage Archive</h3>
+              <p className="text-stone-300 text-xs">Distressed jackets & rare corduroy</p>
+            </div>
+          </Link>
 
-          {/* Women's Promo */}
-          <div className="relative rounded-2xl overflow-hidden shadow-md group h-72 bg-gray-900">
+          <Link
+            to="/products?gender=women"
+            className="group relative h-48 sm:h-56 rounded-2xl overflow-hidden shadow-sm bg-rose-950 p-5 flex flex-col justify-between"
+          >
             <img
-              src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80"
-              alt="Women Fashion"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-75"
+              src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80"
+              alt="Women Collection"
+              className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-rose-950/90 via-rose-950/50 to-transparent p-8 flex flex-col justify-between">
-              <div>
-                <span className="bg-rose-500 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-md uppercase">
-                  Women's Edit
-                </span>
-                <h3 className="font-serif-title text-2xl sm:text-3xl font-bold text-white mt-2">
-                  Elegance & Silk <br />Heritage
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-300 mt-1 max-w-xs">
-                  A-line midi dresses, Chikankari kurtis, Kanjivaram sarees & fine jewelry.
-                </p>
-              </div>
-
-              <Link
-                to="/products?gender=women"
-                className="inline-flex items-center gap-2 bg-white text-gray-900 hover:bg-rose-500 hover:text-white text-xs font-bold px-4 py-2.5 rounded-lg w-max transition-colors"
-              >
-                <span>EXPLORE WOMEN</span>
-                <FaArrowRight size={12} />
-              </Link>
+            <div className="relative z-10 flex items-center justify-between">
+              <span className="bg-rose-500 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                Women's
+              </span>
+              <FaArrowRight className="text-white transform group-hover:translate-x-1 transition-transform" size={12} />
             </div>
-          </div>
+            <div className="relative z-10">
+              <h3 className="text-white font-bold text-lg sm:text-xl font-serif-title">Elegance Dresses</h3>
+              <p className="text-rose-200 text-xs">Silk sarees & midi gowns</p>
+            </div>
+          </Link>
+
+          <Link
+            to="/products?gender=men"
+            className="group relative h-48 sm:h-56 rounded-2xl overflow-hidden shadow-sm bg-slate-900 p-5 flex flex-col justify-between"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=600&q=80"
+              alt="Men's Utility Wear"
+              className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="relative z-10 flex items-center justify-between">
+              <span className="bg-white text-black text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                Men's
+              </span>
+              <FaArrowRight className="text-white transform group-hover:translate-x-1 transition-transform" size={12} />
+            </div>
+            <div className="relative z-10">
+              <h3 className="text-white font-bold text-lg sm:text-xl font-serif-title">Utility & Cargos</h3>
+              <p className="text-slate-300 text-xs">Plaid shirts & heavy cotton pants</p>
+            </div>
+          </Link>
+
+          <Link
+            to="/products?category=watches"
+            className="group relative h-48 sm:h-56 rounded-2xl overflow-hidden shadow-sm bg-neutral-900 p-5 flex flex-col justify-between"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=600&q=80"
+              alt="Luxury Watches & Jewelry"
+              className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="relative z-10 flex items-center justify-between">
+              <span className="bg-amber-300 text-black text-[10px] font-black uppercase px-2.5 py-1 rounded-full">
+                Luxury
+              </span>
+              <FaArrowRight className="text-white transform group-hover:translate-x-1 transition-transform" size={12} />
+            </div>
+            <div className="relative z-10">
+              <h3 className="text-white font-bold text-lg sm:text-xl font-serif-title">Watches & Rings</h3>
+              <p className="text-amber-200 text-xs">925 sterling silver & leather bands</p>
+            </div>
+          </Link>
 
         </div>
       </section>
 
-      {/* VINTAGE HERITAGE ARCHIVE & COLLECTION SPOTLIGHT */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="bg-gradient-to-br from-[#1c1917] via-[#292524] to-[#0c0a09] rounded-3xl p-6 sm:p-10 border border-amber-500/20 shadow-2xl relative overflow-hidden">
-          {/* Subtle Vintage Gold Glow */}
-          <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-6 border-b border-white/10 gap-4">
-            <div>
-              <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 text-xs font-black tracking-widest uppercase px-3 py-1 rounded-full mb-2 border border-amber-500/30">
-                <FaCrown className="text-amber-400" />
-                <span>AUTHENTIC VINTAGE ARCHIVE 1950s–1990s</span>
-              </div>
-              <h2 className="font-serif-title text-2xl sm:text-4xl font-extrabold text-white">
-                The Vintage Dreams Heritage Collection
-              </h2>
-              <p className="text-stone-300 text-xs sm:text-sm mt-1 max-w-2xl">
-                Rare distressed leather jackets, handcrafted corduroy overshirts, Scottish wool blazers, antique Roman pocket watches, and heirloom jewellery.
-              </p>
-            </div>
-
-            <Link
-              to="/products?category=vintage-collection"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-950 text-xs sm:text-sm font-extrabold px-6 py-3.5 rounded-xl shadow-lg transition-all shrink-0 hover:scale-105"
-            >
-              <span>Explore Full Archive</span>
-              <FaArrowRight size={12} />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            {vintageProducts.slice(0, 4).map((product) => (
-              <ProductCard key={product._id || product.id || product.name} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Featured Products Section (4 Clean Cards) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* 4. FEATURED PRODUCTS SECTION */}
+      <section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex items-end justify-between mb-8 pb-4 border-b border-gray-200">
           <div>
-            <div className="flex items-center gap-2 text-rose-600 text-xs font-bold uppercase tracking-wider mb-1">
-              <FaStar />
+            <div className="flex items-center gap-2 text-neutral-500 text-xs font-bold uppercase tracking-wider mb-1">
+              <FaStar className="text-amber-400" />
               <span>HANDPICKED FAVORITES</span>
             </div>
-            <h2 className="font-serif-title text-2xl sm:text-3xl font-bold text-gray-900">
+            <h2 className="font-serif-title text-2xl sm:text-3xl font-bold text-neutral-900">
               Featured Products
             </h2>
           </div>
 
           <Link
             to="/products"
-            className="text-xs sm:text-sm font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1.5"
+            className="text-xs sm:text-sm font-bold text-neutral-900 hover:text-rose-600 flex items-center gap-1.5 transition-colors"
           >
             <span>View All</span>
             <FaArrowRight size={12} />
@@ -335,37 +521,37 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 4. Flash Sale Banner / Deal of the Day */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="bg-gradient-to-r from-amber-500 via-rose-600 to-rose-700 rounded-2xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
-          <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
+      {/* 5. DISCOUNT & FLASH SALE SECTION (Anchor: #discounts) */}
+      <section id="discounts" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="bg-gradient-to-r from-neutral-900 via-stone-900 to-black rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
+          <div className="absolute -right-10 -bottom-10 w-72 h-72 bg-rose-500/10 rounded-full blur-3xl"></div>
           
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
             <div>
-              <div className="inline-flex items-center gap-2 bg-black/20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2 bg-white/10 text-amber-300 text-xs font-bold px-3.5 py-1.5 rounded-full mb-3 backdrop-blur-sm border border-white/10">
                 <FaBolt className="text-amber-300" />
-                <span>SPECIAL FESTIVE OFFER — USE CODE VINTAGE10</span>
+                <span>SPECIAL FESTIVE DISCOUNT — USE CODE VINTAGE10</span>
               </div>
               <h2 className="font-serif-title text-3xl sm:text-4xl font-bold mb-2">
-                Up to 60% OFF on Luxury Watches & 925 Silver Rings
+                Up to 60% OFF On Curated Luxury & Vintage Drops
               </h2>
-              <p className="text-rose-100 text-sm sm:text-base max-w-lg">
-                Exclusive hallmarked pure silver rings and genuine leather strap timepieces. Grab yours before stocks run out!
+              <p className="text-stone-300 text-sm sm:text-base max-w-xl leading-relaxed">
+                Handcrafted cotton utility shirts, genuine leather watches, pure silk sarees, and hallmarked 925 sterling silver jewelry.
               </p>
             </div>
 
             <Link
-              to="/products?category=watches"
-              className="bg-gray-950 hover:bg-black text-white font-bold text-sm px-8 py-4 rounded-xl shadow-lg transition-transform transform hover:scale-105 shrink-0"
+              to="/products"
+              className="bg-white hover:bg-amber-400 text-black font-bold text-sm px-8 py-4 rounded-full shadow-lg transition-transform transform hover:scale-105 shrink-0"
             >
-              SHOP FLASH DEALS
+              SHOP DISCOUNTED DROPS
             </Link>
           </div>
         </div>
       </section>
 
-      {/* 5. Trending Picks Section (4 Clean Cards) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* 6. TRENDING BEST SELLERS */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex items-end justify-between mb-8 pb-4 border-b border-gray-200">
           <div>
             <div className="flex items-center gap-2 text-rose-600 text-xs font-bold uppercase tracking-wider mb-1">
@@ -379,7 +565,7 @@ const Home = () => {
 
           <Link
             to="/products?sort=popular"
-            className="text-xs sm:text-sm font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1.5"
+            className="text-xs sm:text-sm font-bold text-neutral-900 hover:text-rose-600 flex items-center gap-1.5 transition-colors"
           >
             <span>Explore Trending</span>
             <FaArrowRight size={12} />
@@ -393,17 +579,56 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 6. Why Choose Vintage Dreams */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-200">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <span className="text-rose-600 text-xs font-bold uppercase tracking-widest block mb-1">
-            THE VINTAGE DREAMS PROMISE
-          </span>
-          <h2 className="font-serif-title text-2xl sm:text-3xl font-bold text-gray-900">
-            Crafted for Distinction & Longevity
-          </h2>
-        </div>
+      {/* 7. CUSTOMER REVIEWS / TESTIMONIALS (Anchor: #reviews) */}
+      <section id="reviews" className="bg-neutral-100 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-neutral-500 text-xs font-bold uppercase tracking-widest block mb-1">
+              CUSTOMER SATISFACTION
+            </span>
+            <h2 className="font-serif-title text-2xl sm:text-3xl font-bold text-gray-900">
+              Loved by Over 10,000+ Fashion Lovers
+            </h2>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {customerReviews.map((rev) => (
+              <div key={rev.id} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex text-amber-400 text-xs">
+                      {[...Array(rev.rating)].map((_, i) => (
+                        <FaStar key={i} />
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <FaCheckCircle size={9} /> Verified Buyer
+                    </span>
+                  </div>
+
+                  <h4 className="font-bold text-sm text-gray-900">"{rev.title}"</h4>
+                  <p className="text-xs text-gray-600 leading-relaxed italic">
+                    "{rev.comment}"
+                  </p>
+                </div>
+
+                <div className="pt-4 mt-4 border-t border-gray-100 flex items-center justify-between text-xs">
+                  <div>
+                    <p className="font-bold text-gray-900">{rev.name}</p>
+                    <p className="text-[10px] text-gray-400">{rev.location}</p>
+                  </div>
+                  <span className="text-[10px] text-rose-600 font-semibold max-w-[120px] truncate text-right">
+                    {rev.item}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 8. WHY CHOOSE VINTAGE DREAMS */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 border-t border-gray-200">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           
           <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm text-center space-y-3">
@@ -449,66 +674,18 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 7. Real Customer Testimonials */}
-      <section className="bg-gray-100/70 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-rose-600 text-xs font-bold uppercase tracking-widest block mb-1">
-              CUSTOMER SATISFACTION
-            </span>
-            <h2 className="font-serif-title text-2xl sm:text-3xl font-bold text-gray-900">
-              Loved by Over 10,000+ Fashion Enthusiasts
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {customerReviews.map((rev) => (
-              <div key={rev.id} className="bg-white rounded-2xl p-6 border border-gray-200/90 shadow-sm flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex text-amber-400 text-xs">
-                      {[...Array(rev.rating)].map((_, i) => (
-                        <FaStar key={i} />
-                      ))}
-                    </div>
-                    <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <FaCheckCircle size={9} /> Verified Buyer
-                    </span>
-                  </div>
-
-                  <h4 className="font-bold text-sm text-gray-900">"{rev.title}"</h4>
-                  <p className="text-xs text-gray-600 leading-relaxed italic">
-                    "{rev.comment}"
-                  </p>
-                </div>
-
-                <div className="pt-4 mt-4 border-t border-gray-100 flex items-center justify-between text-xs">
-                  <div>
-                    <p className="font-bold text-gray-900">{rev.name}</p>
-                    <p className="text-[10px] text-gray-400">{rev.location}</p>
-                  </div>
-                  <span className="text-[10px] text-rose-600 font-semibold max-w-[120px] truncate text-right">
-                    {rev.item}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 8. Newsletter Subscription */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-gray-950 rounded-3xl p-8 sm:p-14 text-white text-center relative overflow-hidden">
+      {/* 9. NEWSLETTER SUBSCRIPTION */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="bg-neutral-900 rounded-3xl p-8 sm:p-14 text-white text-center relative overflow-hidden">
           <div className="max-w-xl mx-auto space-y-4 relative z-10">
-            <span className="text-rose-400 text-xs font-bold uppercase tracking-widest">
+            <span className="text-neutral-400 text-xs font-bold uppercase tracking-widest">
               JOIN THE VINTAGE DREAMS CLUB
             </span>
             <h2 className="font-serif-title text-3xl sm:text-4xl font-bold">
               Receive 15% OFF On Your Next Order
             </h2>
-            <p className="text-gray-400 text-xs sm:text-sm">
-              Subscribe to get exclusive early access to limited edition drops, secret holiday sales, and curated fashion looks.
+            <p className="text-neutral-300 text-xs sm:text-sm">
+              Subscribe to get exclusive early access to limited edition drops, secret discount sales, and curated fashion looks.
             </p>
 
             <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto pt-2">
@@ -518,11 +695,11 @@ const Home = () => {
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
                 required
-                className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-xs text-white placeholder-gray-400 outline-none focus:border-rose-500 flex-1"
+                className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-xs text-white placeholder-gray-400 outline-none focus:border-white flex-1"
               />
               <button
                 type="submit"
-                className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-6 py-3 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                className="bg-white hover:bg-neutral-200 text-black font-bold text-xs px-6 py-3 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Subscribe</span>
                 <FaPaperPlane size={11} />
