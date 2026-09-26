@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   FaGem, 
@@ -46,6 +47,18 @@ const Navbar = () => {
   const searchRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Prevent background scrolling when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
 
   // Close menus on page route change
   useEffect(() => {
@@ -388,25 +401,35 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Slide-in Navigation Drawer */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex md:hidden animate-in fade-in duration-200">
-          <div className="bg-white w-4/5 max-w-sm h-full p-5 overflow-y-auto flex flex-col justify-between shadow-2xl animate-in slide-in-from-left duration-200">
-            
+      {/* Mobile Slide-in Navigation Drawer rendered via Portal to prevent sticky header clipping */}
+      {mobileMenuOpen && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex md:hidden animate-in fade-in duration-200"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div 
+            className="bg-white w-[85%] max-w-sm h-full h-[100dvh] min-h-[100vh] p-5 overflow-y-auto flex flex-col justify-between shadow-2xl animate-in slide-in-from-left duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="space-y-6">
               <div className="flex items-center justify-between pb-4 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-rose-600 text-white flex items-center justify-center font-bold">
+                <Link 
+                  to="/" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-rose-600 text-white flex items-center justify-center font-bold shadow-sm">
                     <FaGem size={14} />
                   </div>
                   <span className="font-serif-title font-bold text-base text-gray-900">
                     VINTAGE DREAMS
                   </span>
-                </div>
+                </Link>
                 <button
                   type="button"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"
+                  className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-colors cursor-pointer"
+                  aria-label="Close menu"
                 >
                   <FaTimes size={14} />
                 </button>
@@ -419,7 +442,7 @@ const Navbar = () => {
                   placeholder="Search 520+ fashion items..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-gray-100 text-xs rounded-xl pl-9 pr-4 py-2.5 outline-none border border-transparent focus:border-rose-500"
+                  className="w-full bg-gray-100 focus:bg-white text-xs rounded-xl pl-9 pr-4 py-2.5 outline-none border border-transparent focus:border-rose-500 transition-all"
                 />
                 <FaSearch className="absolute left-3 top-3 text-gray-400" size={12} />
               </form>
@@ -428,49 +451,74 @@ const Navbar = () => {
               <nav className="space-y-1 text-sm font-semibold text-gray-800">
                 <Link
                   to="/"
-                  className="block px-3 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3.5 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
                 >
                   Home
                 </Link>
                 <Link
                   to="/products?gender=men"
-                  className="block px-3 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3.5 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
                 >
                   Men's Fashion (260+ items)
                 </Link>
                 <Link
                   to="/products?gender=women"
-                  className="block px-3 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3.5 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
                 >
                   Women's Fashion (260+ items)
                 </Link>
                 <Link
                   to="/products?sort=newest"
-                  className="block px-3 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 text-rose-600 transition-colors font-bold"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3.5 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 text-rose-600 transition-colors font-bold"
                 >
                   🔥 New Arrivals 2026
                 </Link>
                 <Link
                   to="/products?category=vintage-collection"
-                  className="block px-3 py-2.5 rounded-xl bg-gradient-to-r from-amber-900 to-amber-700 text-amber-50 font-bold transition-all shadow-xs"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-amber-900 to-amber-700 text-amber-50 font-bold transition-all shadow-xs"
                 >
                   ✨ Vintage Heritage Collection
                 </Link>
                 <Link
                   to="/products"
-                  className="block px-3 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3.5 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
                 >
                   All Products Catalog (500+)
                 </Link>
                 <Link
                   to="/wishlist"
-                  className="block px-3 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
                 >
-                  Wishlist ({wishlistCount})
+                  <span>Wishlist</span>
+                  {wishlistCount > 0 && (
+                    <span className="bg-rose-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      {wishlistCount}
+                    </span>
+                  )}
+                </Link>
+                <Link
+                  to="/cart"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                >
+                  <span>Cart</span>
+                  {totalItemsCount > 0 && (
+                    <span className="bg-rose-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      {totalItemsCount}
+                    </span>
+                  )}
                 </Link>
                 <Link
                   to="/orders"
-                  className="block px-3 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3.5 py-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
                 >
                   My Orders
                 </Link>
@@ -478,20 +526,24 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Footer Auth & Support */}
-            <div className="pt-4 border-t border-gray-100 space-y-3">
+            <div className="pt-4 border-t border-gray-100 space-y-3 mt-4">
               {isAuthenticated ? (
                 <button
                   type="button"
-                  onClick={logout}
-                  className="w-full bg-rose-50 text-rose-600 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2"
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors"
                 >
                   <FaSignOutAlt />
-                  <span>Logout ({user.name})</span>
+                  <span>Logout ({user?.name ? user.name.split(' ')[0] : 'Account'})</span>
                 </button>
               ) : (
                 <Link
                   to="/login"
-                  className="w-full bg-gray-900 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full bg-gray-900 hover:bg-rose-600 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-colors"
                 >
                   <FaUser size={12} />
                   <span>Login / Sign Up</span>
@@ -502,7 +554,7 @@ const Navbar = () => {
                 href="https://wa.me/917780597718"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 text-xs text-emerald-600 font-semibold py-1"
+                className="flex items-center justify-center gap-1.5 text-xs text-emerald-600 font-semibold py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 transition-colors"
               >
                 <FaWhatsapp size={14} />
                 <span>WhatsApp Customer Support</span>
@@ -510,7 +562,8 @@ const Navbar = () => {
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </header>
