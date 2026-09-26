@@ -125,91 +125,9 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-[#f8f9fa] text-neutral-900">
       
-      {/* 1. TOP HERO CANVAS MATCHING REFERENCE DESIGN */}
-      <section className="bg-[#D4D4D6] pt-5 sm:pt-7 pb-10 sm:pb-16 px-4 sm:px-6 lg:px-12 transition-all">
-        
-        {/* Floating Capsule / Pill Navbar */}
-        <div className="w-full max-w-6xl mx-auto mb-8 sm:mb-12">
-          <div className="bg-white rounded-full px-6 sm:px-10 py-3 sm:py-3.5 shadow-[0_4px_25px_rgba(0,0,0,0.06)] border border-neutral-200/70 flex items-center justify-between">
-            
-            {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-7 lg:gap-11 text-[15px] lg:text-[17px] font-medium text-neutral-800 tracking-normal">
-              <Link to="/" className="text-neutral-900 font-semibold hover:text-black transition-colors">
-                Home
-              </Link>
-              <Link to="/about" className="text-neutral-700 hover:text-black transition-colors">
-                About
-              </Link>
-              <Link to="/products" className="text-neutral-700 hover:text-black transition-colors">
-                Product
-              </Link>
-              <Link to="/products" className="text-neutral-700 hover:text-black transition-colors">
-                Shop
-              </Link>
-              <button 
-                type="button" 
-                onClick={() => scrollToSection('discounts')} 
-                className="text-neutral-700 hover:text-black transition-colors cursor-pointer"
-              >
-                Discount
-              </button>
-              <button 
-                type="button" 
-                onClick={() => scrollToSection('reviews')} 
-                className="text-neutral-700 hover:text-black transition-colors cursor-pointer"
-              >
-                Reviews
-              </button>
-            </nav>
-
-            {/* Mobile Header elements */}
-            <div className="flex md:hidden items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(true)}
-                className="p-1.5 text-neutral-800 hover:text-black rounded-lg focus:outline-none"
-                aria-label="Open Mobile Menu"
-              >
-                <FaBars size={19} />
-              </button>
-              <Link to="/" className="font-bold text-sm sm:text-base tracking-tight text-neutral-900 font-serif-title">
-                VINTAGE DREAMS
-              </Link>
-            </div>
-
-            {/* Right Action: Cart Icon */}
-            <div className="flex items-center gap-3 sm:gap-4">
-              <Link
-                to="/cart"
-                className="relative p-1.5 text-neutral-900 hover:opacity-75 transition-all group flex items-center justify-center"
-                aria-label="Shopping Cart"
-                title="View Shopping Cart"
-              >
-                {/* Outline shopping cart matching reference image */}
-                <svg
-                  className="w-6 h-6 stroke-[1.8] group-hover:scale-105 transition-transform"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.7 2.682-7.15H6.182m1.318 7.15L5.105 5.272M7.5 14.25a3 3 0 01-3 3m12.75-3a3 3 0 00-3 3m0 0a3 3 0 100-6 3 3 0 000 6zm-9 0a3 3 0 100-6 3 3 0 000 6z"
-                  />
-                </svg>
-                {totalItemsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-black text-white text-[10px] font-bold w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full flex items-center justify-center shadow">
-                    {totalItemsCount}
-                  </span>
-                )}
-              </Link>
-            </div>
-
-          </div>
-        </div>
-
-        {/* 2. Hero Content: 3-Column / Asymmetric Layout */}
+      {/* 1. TOP HERO CANVAS WITH EDITORIAL 3-COLUMN LAYOUT */}
+      <section className="bg-[#D4D4D6] pt-8 sm:pt-12 pb-12 sm:pb-20 px-4 sm:px-6 lg:px-12 transition-all">
+        {/* Hero Content: 3-Column / Asymmetric Layout */}
         <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
           
           {/* Left Column: Bold Typography & Shop Now Button (col-span-5) */}
