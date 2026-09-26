@@ -9,6 +9,8 @@ import {
   FaCheck
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import toast from 'react-hot-toast';
 import RatingStars from './RatingStars';
 import QuickViewModal from './QuickViewModal';
