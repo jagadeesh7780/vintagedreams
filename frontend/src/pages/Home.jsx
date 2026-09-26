@@ -67,24 +67,40 @@ const Home = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const vintageProducts = fallbackProducts.filter(p => p.category === 'vintage-collection' || p.tags?.includes('vintage')).slice(0, 8);
-  const [featuredProducts, setFeaturedProducts] = useState(() => fallbackProducts.slice(0, 4));
-  const [trendingProducts, setTrendingProducts] = useState(() => fallbackProducts.slice(4, 8));
+  // Curate balanced selections across Men's wear, Women's wear, and Vintage
+  const getCuratedFeatured = (list = fallbackProducts) => {
+    const shirt = list.find(p => p.category === 'shirts') || list[0];
+    const vintageDress = list.find(p => p._id === 'prod_vintage_1930s_tea_dress') || list[1];
+    const watch = list.find(p => p.category === 'watches') || list[2];
+    const saree = list.find(p => p.category === 'women-sarees') || list[3];
+    const cargo = list.find(p => p.category === 'pants') || list[4];
+    const vintageCoat = list.find(p => p._id === 'prod_vintage_1960s_camel_coat') || list[5];
+    const ring = list.find(p => p.category === 'rings') || list[6];
+    const shoe = list.find(p => p.category === 'shoes') || list[7];
+    return [shirt, vintageDress, watch, saree, cargo, vintageCoat, ring, shoe].filter(Boolean);
+  };
+
+  const getCuratedTrending = (list = fallbackProducts) => {
+    const cargo = list.find(p => p.name?.includes('Solids Heavyweight Cotton Cargos')) || list.find(p => p.category === 'pants');
+    const vintageSuit = list.find(p => p._id === 'prod_vintage_1920s_tweed_suit') || list.find(p => p.category === 'vintage-collection');
+    const sneaker = list.find(p => p.category === 'shoes') || list[0];
+    const swingDress = list.find(p => p._id === 'prod_vintage_1950s_polka_dress') || list.find(p => p.category === 'women-dresses');
+    return [cargo, vintageSuit, sneaker, swingDress].filter(Boolean);
+  };
+
+  const vintageShowroomProducts = fallbackProducts.filter(p => p.category === 'vintage-collection').slice(0, 8);
+  const [featuredProducts, setFeaturedProducts] = useState(() => getCuratedFeatured(fallbackProducts));
+  const [trendingProducts, setTrendingProducts] = useState(() => getCuratedTrending(fallbackProducts));
   const [newsletterEmail, setNewsletterEmail] = useState('');
 
   useEffect(() => {
     const loadHomeData = async () => {
       try {
-        const res = await api.get('/products?limit=16');
+        const res = await api.get('/products?limit=30');
         if (res.data.success && res.data.products?.length > 0) {
           const allProds = res.data.products;
-          const feat = allProds.filter(p => p.isFeatured);
-          const finalFeat = feat.length >= 4 
-            ? feat.slice(0, 4) 
-            : [...feat, ...allProds.filter(p => !p.isFeatured)].slice(0, 4);
-
-          setFeaturedProducts(finalFeat);
-          setTrendingProducts(allProds.slice(4, 8).length >= 4 ? allProds.slice(4, 8) : allProds.slice(0, 4));
+          setFeaturedProducts(getCuratedFeatured(allProds));
+          setTrendingProducts(getCuratedTrending(allProds));
         }
       } catch (error) {
         // Keeps instant offline fallback
@@ -138,18 +154,18 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Center Column: Iconic Arch Portrait (col-span-4) */}
+          {/* Center Column: Iconic Arch Portrait (col-span-4) - Woman in Vintage Wearing */}
           <div className="lg:col-span-4 flex justify-center items-end">
             <div className="w-full max-w-[260px] xs:max-w-[300px] sm:max-w-[340px] lg:max-w-none h-[320px] xs:h-[380px] sm:h-[460px] lg:h-[540px] rounded-t-full overflow-hidden shadow-sm bg-neutral-300 relative group">
               <img
                 src="/images/hero-arch.jpg"
-                alt="Woman in green floral dress and sun hat"
+                alt="Woman in authentic vintage summer dress and straw hat"
                 className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
               />
               <Link 
-                to="/products?category=women-dresses" 
+                to="/products?category=vintage-collection" 
                 className="absolute inset-0"
-                aria-label="Shop Summer Dresses"
+                aria-label="Shop Vintage Heritage Dresses"
               />
             </div>
           </div>
@@ -157,31 +173,31 @@ const Home = () => {
           {/* Right Column: Two Cards (Side-by-side 2-col on mobile, stacked on desktop) */}
           <div className="w-full max-w-[360px] sm:max-w-[500px] lg:max-w-none mx-auto lg:col-span-3 grid grid-cols-2 lg:grid-cols-1 gap-2.5 sm:gap-4 lg:gap-6 justify-between">
             
-            {/* Top Card: Pink Floral Dress */}
+            {/* Top Card: Woman in Modern Dress */}
             <div className="h-[130px] xs:h-[155px] sm:h-[210px] lg:h-[258px] rounded-[16px] sm:rounded-[26px] overflow-hidden shadow-sm bg-neutral-300 relative group">
               <img
                 src="/images/hero-top-right.jpg"
-                alt="Fashion model in chic floral dress"
+                alt="Woman in modern chic floral dress and white boots"
                 className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
               />
               <Link 
                 to="/products?category=women-dresses" 
                 className="absolute inset-0"
-                aria-label="Shop New Arrivals"
+                aria-label="Shop Modern Women Dresses"
               />
             </div>
 
-            {/* Bottom Card: Meadow Wildflower Summer Dress */}
+            {/* Bottom Card: Man in Vintage Wearing */}
             <div className="h-[130px] xs:h-[155px] sm:h-[210px] lg:h-[258px] rounded-[16px] sm:rounded-[26px] overflow-hidden shadow-sm bg-neutral-300 relative group">
               <img
                 src="/images/hero-bottom-right.jpg"
-                alt="Vintage fashion in flower meadow"
+                alt="Man in tailored vintage suit and vintage wearing"
                 className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
               />
               <Link 
-                to="/products?category=vintage-collection" 
+                to="/products?gender=men" 
                 className="absolute inset-0"
-                aria-label="Shop Vintage Archive"
+                aria-label="Shop Men's Vintage & Utility"
               />
             </div>
 
@@ -191,7 +207,7 @@ const Home = () => {
 
       </section>
 
-      {/* 3. CATEGORY HIGHLIGHT CURATION */}
+      {/* 2. CATEGORY HIGHLIGHT CURATION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           
@@ -212,7 +228,7 @@ const Home = () => {
             </div>
             <div className="relative z-10">
               <h3 className="text-white font-bold text-lg sm:text-xl font-serif-title">Vintage Archive</h3>
-              <p className="text-stone-300 text-xs">Distressed jackets & rare corduroy</p>
+              <p className="text-stone-300 text-xs">1930s-1970s authentic showroom drops</p>
             </div>
           </Link>
 
@@ -282,13 +298,45 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 4. FEATURED PRODUCTS SECTION */}
+      {/* 3. DEDICATED VINTAGE COLLECTION SHOWROOM SPOTLIGHT (1930s-1970s Boutique Collection) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-amber-50/40 rounded-3xl border border-amber-200/60 my-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-amber-200/80 gap-3">
+          <div>
+            <div className="flex items-center gap-2 text-amber-800 text-xs font-bold uppercase tracking-wider mb-1">
+              <span className="w-2 h-2 rounded-full bg-amber-600 animate-ping"></span>
+              <span>AUTHENTIC SHOWROOM ARCHIVE</span>
+            </div>
+            <h2 className="font-serif-title text-2xl sm:text-3xl font-bold text-gray-900">
+              ✨ The Vintage Collection (1920s – 1970s)
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">
+              Handpicked 1930s tea dresses, 1950s rockabilly swing dresses, 1960s wool trench coats, Scottish tweed suits, and Victorian boots.
+            </p>
+          </div>
+
+          <Link
+            to="/products?category=vintage-collection"
+            className="text-xs sm:text-sm font-bold text-amber-900 hover:text-rose-600 flex items-center gap-1.5 transition-colors shrink-0 bg-white px-4 py-2 rounded-full border border-amber-300 shadow-xs"
+          >
+            <span>Explore All Vintage Items</span>
+            <FaArrowRight size={11} />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          {vintageShowroomProducts.map((product) => (
+            <ProductCard key={product._id || product.id || product.name} product={product} />
+          ))}
+        </div>
+      </section>
+
+      {/* 4. FEATURED PRODUCTS SECTION (Men's & Women's Balanced Selection) */}
       <section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex items-end justify-between mb-8 pb-4 border-b border-gray-200">
           <div>
             <div className="flex items-center gap-2 text-neutral-500 text-xs font-bold uppercase tracking-wider mb-1">
               <FaStar className="text-amber-400" />
-              <span>HANDPICKED FAVORITES</span>
+              <span>HANDPICKED MEN'S & WOMEN'S FAVORITES</span>
             </div>
             <h2 className="font-serif-title text-2xl sm:text-3xl font-bold text-neutral-900">
               Featured Products
@@ -299,13 +347,13 @@ const Home = () => {
             to="/products"
             className="text-xs sm:text-sm font-bold text-neutral-900 hover:text-rose-600 flex items-center gap-1.5 transition-colors"
           >
-            <span>View All</span>
+            <span>View All Products</span>
             <FaArrowRight size={12} />
           </Link>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-          {featuredProducts.slice(0, 4).map((product) => (
+          {featuredProducts.slice(0, 8).map((product) => (
             <ProductCard key={product._id || product.id || product.name} product={product} />
           ))}
         </div>
